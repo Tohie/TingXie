@@ -49,7 +49,8 @@ class CharactersQuizViewModel @Inject constructor(
                      isVisibile = currentCharacter.isVisibile,
                      isCorrect = event.isCharacterCorrect
                 )
-                _state.value.copy(
+
+                _state.value = state.value.copy(
                     characters = _state.value.characters.map { character ->
                         if (character.character == newCurrentCharacter.character) newCurrentCharacter else { character }
                     },
@@ -58,22 +59,34 @@ class CharactersQuizViewModel @Inject constructor(
                 Log.i("Characters", "Updated the correctness")
             }
             is CharacterQuizEvents.ChangeCharacterVisibility -> {
-                val currentCharacter = _state.value.characters.get(_state.value.currentCharacter)
+                Log.i("Characters",
+                    "Changing the currentCharacter visibility to ${event.isCharacterVisible}")
+                val currentCharacter = getCurrentCharacter()
+
                 val newCurrentCharacter = currentCharacter.copy(
                     character = currentCharacter.character,
                     isVisibile = event.isCharacterVisible,
                     isCorrect = currentCharacter.isCorrect
                 )
-                _state.value.copy(
+
+                _state.value = _state.value.copy(
                     characters = _state.value.characters.map { character ->
-                        if (character.character == newCurrentCharacter.character) newCurrentCharacter else { character }
+                        if (character.character == currentCharacter.character) { newCurrentCharacter } else { character }
                     },
                     currentCharacter = _state.value.currentCharacter
                 )
-                Log.i("Characters", "Updated the currentCharacter")
+                Log.i("Characters",
+                    "Updated the currentCharacter visibility to ${_state.value.characters.get(_state.value.currentCharacter).isVisibile}")
             }
             CharacterQuizEvents.FinishedQuiz -> {
-                // Emit finished
+                viewModelScope.launch {
+                    _eventFlow.emit(
+                        UiEvent.QuizFinished(
+                            finalMessage =
+                            "Congrats you got ${countResults()} out of ${_state.value.characters.size}"
+                        )
+                    )
+                }
             }
             is CharacterQuizEvents.PageChange -> {
                 _state.value = _state.value.copy(currentCharacter = event.number)
@@ -81,8 +94,8 @@ class CharactersQuizViewModel @Inject constructor(
         }
     }
 
-    fun getCurrentCharacter(number: Int): Character {
-        return _state.value.characters.get(number).character
+    fun getCurrentCharacter(): CharacterState {
+        return _state.value.characters.get(_state.value.currentCharacter)
     }
 
     private fun getNRandomCharacters(number: Int) {
@@ -99,6 +112,11 @@ class CharactersQuizViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private fun countResults(): Int {
+        return _state.value.characters.foldRight(0) { characterState, acc ->
+            if (characterState.isCorrect) { acc + 1} else { acc }
+        }
+    }
     sealed class UiEvent {
         data class QuizFinished(val finalMessage: String): UiEvent()
     }

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.tingxie.presentation.util.TopBar
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -49,6 +50,7 @@ fun EditCharacterScreen(
                 Icon(imageVector = Icons.Default.Done, contentDescription = "Save Note")
             }
         },
+        topBar = { TopBar() },
         scaffoldState = scaffoldState
     ) {
         Column(

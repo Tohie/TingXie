@@ -10,6 +10,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +22,7 @@ import com.example.tingxie.presentation.characters.components.CharactersScreen
 import com.example.tingxie.presentation.edit_character.EditCharacterScreen
 import com.example.tingxie.presentation.util.Screen
 import com.example.tingxie.ui.theme.TingXieTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,12 +31,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val systemUiController = rememberSystemUiController()
             TingXieTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                    systemUiController.setSystemBarsColor(MaterialTheme.colors.primary)
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = Screen.CharactersScreen.route) {
                         composable(route = Screen.CharactersScreen.route) {

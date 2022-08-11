@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,6 +20,7 @@ import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.characters.CharactersViewModel
 import com.example.tingxie.presentation.util.CharacterDetail
 import com.example.tingxie.presentation.util.Screen
+import com.example.tingxie.presentation.util.TopBar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -31,6 +33,7 @@ fun CharactersScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        topBar = { TopBar() },
         bottomBar = {
             BottomAppBar() {
                 Row(
@@ -63,31 +66,46 @@ fun CharactersScreen(
                 .fillMaxWidth()
         ) {
             items(state.characters) { character ->
-                Column {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     CharacterDetail(
                         character = character,
-                        modifier = Modifier.clickable {
-                            navController.navigate(
-                                Screen.EditCharacterScreen.route + "?characterId=${character.id}"
-                            )
-                        },
-                        showCharacter = true
-                    )
-                    IconButton(
-                        onClick = {
-                            viewModel.onEvent(CharactersEvent.Delete(character))
-                            scope.launch {
-                                val result = scaffoldState.snackbarHostState.showSnackbar(
-                                    message = "Note deleted",
-                                    actionLabel = "Undo"
+                        modifier = Modifier
+                            .clickable {
+                                navController.navigate(
+                                    Screen.EditCharacterScreen.route + "?characterId=${character.id}"
                                 )
-                                if (result == SnackbarResult.ActionPerformed) {
-                                    viewModel.onEvent(CharactersEvent.RestoreCharacter)
+                            }
+                            .padding(8.dp),
+                        showCharacter = true
+                    ) {
+                        Row (
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.onEvent(CharactersEvent.Delete(character))
+                                    scope.launch {
+                                        val result = scaffoldState.snackbarHostState.showSnackbar(
+                                            message = "Note deleted",
+                                            actionLabel = "Undo"
+                                        )
+                                        if (result == SnackbarResult.ActionPerformed) {
+                                            viewModel.onEvent(CharactersEvent.RestoreCharacter)
+                                        }
+                                    }
                                 }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete"
+                                )
                             }
                         }
-                    ) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
+
                     }
                 }
             }
