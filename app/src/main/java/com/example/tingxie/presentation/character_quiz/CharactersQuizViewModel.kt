@@ -43,38 +43,28 @@ class CharactersQuizViewModel @Inject constructor(
     fun onEvent(event: CharacterQuizEvents) {
         when (event) {
             is CharacterQuizEvents.ChangeCharacterCorrect -> {
-                val currentCharacter = _state.value.characters.get(_state.value.currentCharacter)
+                val currentCharacter = getCurrentCharacter()
                 val newCurrentCharacter = currentCharacter.copy(
                      character = currentCharacter.character,
                      isVisibile = currentCharacter.isVisibile,
                      isCorrect = event.isCharacterCorrect
                 )
 
-                _state.value = state.value.copy(
-                    characters = _state.value.characters.map { character ->
-                        if (character.character == newCurrentCharacter.character) newCurrentCharacter else { character }
-                    },
-                    currentCharacter = _state.value.currentCharacter
-                )
+                changeCharacter(currentCharacter, newCurrentCharacter)
+
                 Log.i("Characters", "Updated the correctness")
             }
             is CharacterQuizEvents.ChangeCharacterVisibility -> {
                 Log.i("Characters",
                     "Changing the currentCharacter visibility to ${event.isCharacterVisible}")
-                val currentCharacter = getCurrentCharacter()
 
+                val currentCharacter = getCurrentCharacter()
                 val newCurrentCharacter = currentCharacter.copy(
                     character = currentCharacter.character,
                     isVisibile = event.isCharacterVisible,
                     isCorrect = currentCharacter.isCorrect
                 )
-
-                _state.value = _state.value.copy(
-                    characters = _state.value.characters.map { character ->
-                        if (character.character == currentCharacter.character) { newCurrentCharacter } else { character }
-                    },
-                    currentCharacter = _state.value.currentCharacter
-                )
+                changeCharacter(currentCharacter, newCurrentCharacter)
                 Log.i("Characters",
                     "Updated the currentCharacter visibility to ${_state.value.characters.get(_state.value.currentCharacter).isVisibile}")
             }
@@ -116,6 +106,15 @@ class CharactersQuizViewModel @Inject constructor(
         return _state.value.characters.foldRight(0) { characterState, acc ->
             if (characterState.isCorrect) { acc + 1} else { acc }
         }
+    }
+
+    private fun changeCharacter(oldCharacterState: CharacterState, newCharacterState: CharacterState) {
+        _state.value = _state.value.copy(
+            characters = _state.value.characters.map { character ->
+                if (character.character == oldCharacterState.character) { newCharacterState } else { character }
+            },
+            currentCharacter = _state.value.currentCharacter
+        )
     }
     sealed class UiEvent {
         data class QuizFinished(val finalMessage: String): UiEvent()
