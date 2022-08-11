@@ -1,4 +1,4 @@
-package com.example.tingxie.presentation.characters.components
+package com.example.tingxie.presentation.util
 
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
@@ -17,31 +17,29 @@ import com.example.tingxie.domain.model.Character
 fun CharacterDetail(
     character: Character,
     modifier: Modifier = Modifier,
-    showCharacter: Boolean
+    showCharacter: Boolean = true
 ) {
-    Box(modifier = modifier) {
-        Row {
-            if (showCharacter) {
-                Text(
-                    text = character.character,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onSurface,
-                )
-            }
-            Column() {
-                Text(
-                    text = character.pinyin,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onSurface,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+    Row {
+        if (showCharacter) {
+            Text(
+                text = character.character,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSurface,
+            )
+        }
+        Column() {
+            Text(
+                text = character.pinyin,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSurface,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = character.description,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onSurface,
-                )
-            }
+            Text(
+                text = character.description,
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSurface,
+            )
         }
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -16,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.characters.CharactersViewModel
+import com.example.tingxie.presentation.util.CharacterDetail
 import com.example.tingxie.presentation.util.Screen
 import kotlinx.coroutines.launch
 
@@ -61,27 +63,40 @@ fun CharactersScreen(
                 .fillMaxWidth()
         ) {
             items(state.characters) { character ->
-                CharacterDetail(
-                    character = character,
-                    modifier = Modifier.clickable {
-                        navController.navigate(
-                            Screen.EditCharacterScreen.route + "?characterId=${character.id}"
-                        )
-                    }
-                ) {
-                    viewModel.onEvent(CharactersEvent.Delete(character))
-                    scope.launch {
-                        val result = scaffoldState.snackbarHostState.showSnackbar(
-                            message = "Note deleted",
-                            actionLabel = "Undo"
-                        )
-                        if (result == SnackbarResult.ActionPerformed) {
-                            viewModel.onEvent(CharactersEvent.RestoreCharacter)
+                Column {
+                    CharacterDetail(
+                        character = character,
+                        modifier = Modifier.clickable {
+                            navController.navigate(
+                                Screen.EditCharacterScreen.route + "?characterId=${character.id}"
+                            )
+                        },
+                        showCharacter = true
+                    )
+                    IconButton(
+                        onClick = {
+                            viewModel.onEvent(CharactersEvent.Delete(character))
+                            scope.launch {
+                                val result = scaffoldState.snackbarHostState.showSnackbar(
+                                    message = "Note deleted",
+                                    actionLabel = "Undo"
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.onEvent(CharactersEvent.RestoreCharacter)
+                                }
+                            }
                         }
+                    ) {
+                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
                     }
                 }
             }
         }
-
     }
+}
+
+
+@Composable
+fun DeleteAndUndoButton() {
+
 }
