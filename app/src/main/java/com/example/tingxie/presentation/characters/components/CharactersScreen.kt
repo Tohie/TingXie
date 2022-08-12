@@ -50,11 +50,15 @@ fun CharactersScreen(
                     }
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.CharacterQuizScreen.route + "?characterNumber=5")
+                            navController.navigate(Screen.CharacterQuizScreen.route + "?characterNumber=20")
                         }
                     ) {
                         Icon(imageVector = Icons.Default.Checklist, contentDescription = "Start a test")
                     }
+                    goToTestPage(navController = navController, numberOfCharacter = 5)
+                    goToTestPage(navController = navController, numberOfCharacter = 10)
+                    goToTestPage(navController = navController, numberOfCharacter = 15)
+                    goToTestPage(navController = navController, numberOfCharacter = 20)
                 }
             }
         },
@@ -114,6 +118,12 @@ fun CharactersScreen(
 
 
 @Composable
-fun DeleteAndUndoButton() {
-
+fun goToTestPage(navController: NavController, numberOfCharacter: Int) {
+    Button(
+        onClick = {
+            navController.navigate(Screen.CharacterQuizScreen.route + "?characterNumber=${numberOfCharacter}")
+        }
+    ) {
+        Text(text = numberOfCharacter.toString())
+    }
 }

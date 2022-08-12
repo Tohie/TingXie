@@ -1,6 +1,7 @@
 package com.example.tingxie.presentation.character_quiz.components
 
 import android.util.Log
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -23,6 +24,8 @@ import com.example.tingxie.presentation.util.CharacterDetail
 import com.example.tingxie.presentation.util.Screen
 import com.example.tingxie.presentation.util.TopBar
 import com.google.accompanist.pager.*
+import io.ak1.drawbox.DrawBox
+import io.ak1.drawbox.rememberDrawController
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.absoluteValue
 
@@ -60,6 +63,7 @@ fun CharacterQuizScreen(
 @Composable
 fun Pager(viewModel: CharactersQuizViewModel) {
     val pagerState = rememberPagerState()
+    val drawController = rememberDrawController()
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
@@ -113,6 +117,17 @@ fun Pager(viewModel: CharactersQuizViewModel) {
                 QuizCardOptions(viewModel = viewModel , currentCharacter = currentCharacter , pageIndex = pageIndex)
             }
 
+            /*
+            DrawBox(
+                drawController = drawController,
+                modifier = Modifier
+                    .padding(60.dp)
+                    .fillMaxSize()
+                    .weight(1f, true)
+                    .border(2.dp, color = MaterialTheme.colors.primary),
+                bitmapCallback = { _, _ -> Unit }
+            )
+            */
         }
     }
 }

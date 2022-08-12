@@ -90,7 +90,6 @@ class CharactersQuizViewModel @Inject constructor(
 
     private fun getNRandomCharacters(number: Int) {
         characterUseCases.getNRandomCharacters(number).onEach { characters ->
-            Log.i("Characters", "Got ${characters.first().character}")
             _state.value = _state.value.copy(
                 characters = characters.map { character ->
                     CharacterState(character = character, isCorrect = false, isVisibile = false)
