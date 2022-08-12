@@ -175,10 +175,6 @@ fun QuizCardOptions(viewModel: CharactersQuizViewModel, currentCharacter: Charac
             Icon(imageVector = Icons.Default.Done, contentDescription = "Correct")
         }
 
-        Log.i(
-            "Character",
-            "Character in rendering is ${currentCharacter.isVisibile}"
-        )
         IconButton(onClick = {
             viewModel.onEvent(
                 CharacterQuizEvents.ChangeCharacterVisibility(
