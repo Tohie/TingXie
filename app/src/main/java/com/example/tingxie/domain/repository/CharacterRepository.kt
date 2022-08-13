@@ -1,6 +1,7 @@
 package com.example.tingxie.domain.repository
 
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.QuizResult
 import kotlinx.coroutines.flow.Flow
 
 interface CharacterRepository {
@@ -11,5 +12,14 @@ interface CharacterRepository {
     suspend fun deleteCharacter(character: Character)
 
     suspend fun insertCharacter(character: Character)
+
     fun getNRandomCharacters(number: Int): Flow<List<Character>>
+
+    suspend fun insertQuizResult(quizResult: QuizResult)
+
+    fun getQuizResults(): Flow<Map<QuizResult, Character>>
+
+    fun getCharacterResults(character: String): Flow<Map<QuizResult, Character>>
+
+    fun getQuizResult(timestamp: Long): Flow<Map<QuizResult, Character>>
 }

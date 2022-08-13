@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -58,7 +59,13 @@ fun CharactersScreen(
                     goToTestPage(navController = navController, numberOfCharacter = 5)
                     goToTestPage(navController = navController, numberOfCharacter = 10)
                     goToTestPage(navController = navController, numberOfCharacter = 15)
-                    goToTestPage(navController = navController, numberOfCharacter = 20)
+                    IconButton(
+                        onClick = {
+                            navController.navigate(Screen.QuizStatisticsScreen.route)
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.QueryStats, contentDescription = "See quiz results")
+                    }
                 }
             }
         },

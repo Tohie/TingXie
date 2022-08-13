@@ -5,5 +5,9 @@ data class CharacterUseCases(
     val deleteCharacter: DeleteCharacter,
     val getCharacters: GetCharacters,
     val getCharacter: GetCharacter,
-    val getNRandomCharacters: GetNRandomCharacters
+    val getNRandomCharacters: GetNRandomCharacters,
+    val insertQuizResult: InsertQuizResult,
+    val getCharacterResults: GetCharacterResults,
+    val getQuizResult: GetQuizResult,
+    val getQuizResults: GetQuizResults
 )

@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.QuizResult
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import com.example.tingxie.presentation.character_quiz.components.CharacterState
 import com.example.tingxie.presentation.characters.CharactersState
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,6 +82,21 @@ class CharactersQuizViewModel @Inject constructor(
             }
             is CharacterQuizEvents.PageChange -> {
                 _state.value = _state.value.copy(currentCharacter = event.number)
+            }
+            CharacterQuizEvents.SaveQuizResults -> {
+                val timestamp = Instant.now().toEpochMilli()
+                val quizResults = _state.value.characters.map { characterState ->
+                    QuizResult(
+                        resultId = null,
+                        characterIdMap = characterState.character.id!!, // if the character id is null, we're in trouble
+                        isCorrect = characterState.isCorrect,
+                        timestamp = timestamp
+                    )
+                }. forEach { quizResult ->
+                    viewModelScope.launch {
+                        characterUseCases.insertQuizResult(quizResult)
+                    }
+                }
             }
         }
     }

@@ -6,4 +6,5 @@ sealed class CharacterQuizEvents {
     data class ChangeCharacterCorrect(val index: Int, val isCharacterCorrect: Boolean = false) : CharacterQuizEvents()
 
     object FinishedQuiz : CharacterQuizEvents()
+    object SaveQuizResults : CharacterQuizEvents()
 }

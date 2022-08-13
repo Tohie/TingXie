@@ -20,6 +20,7 @@ import com.example.tingxie.presentation.character_quiz.components.CharacterQuizS
 import com.example.tingxie.presentation.characters.CharactersViewModel
 import com.example.tingxie.presentation.characters.components.CharactersScreen
 import com.example.tingxie.presentation.edit_character.EditCharacterScreen
+import com.example.tingxie.presentation.quiz_statistics.components.QuizStatisticsScreen
 import com.example.tingxie.presentation.util.Screen
 import com.example.tingxie.ui.theme.TingXieTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -71,6 +72,12 @@ class MainActivity : ComponentActivity() {
                             )
                         ) {
                             CharacterQuizScreen(navController = navController)
+                        }
+
+                        composable(
+                            route = Screen.QuizStatisticsScreen.route
+                        ) {
+                            QuizStatisticsScreen(navController = navController)
                         }
                     }
                 }

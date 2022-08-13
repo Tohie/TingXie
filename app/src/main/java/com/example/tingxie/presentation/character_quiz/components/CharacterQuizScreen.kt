@@ -142,7 +142,7 @@ fun BottomRow(viewModel: CharactersQuizViewModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Todo add a function to save and record results
-            IconButton(onClick = { viewModel.onEvent(CharacterQuizEvents.FinishedQuiz) }) {
+            IconButton(onClick = { viewModel.onEvent(CharacterQuizEvents.SaveQuizResults) }) {
                 Icon(
                     imageVector = Icons.Default.Save,
                     contentDescription = "Save and exit quiz"

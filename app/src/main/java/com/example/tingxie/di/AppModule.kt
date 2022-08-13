@@ -39,7 +39,11 @@ class AppModule {
             deleteCharacter = DeleteCharacter(repository),
             getCharacters = GetCharacters(repository),
             getCharacter = GetCharacter(repository),
-            getNRandomCharacters = GetNRandomCharacters(repository)
+            getNRandomCharacters = GetNRandomCharacters(repository),
+            insertQuizResult = InsertQuizResult(repository),
+            getCharacterResults = GetCharacterResults(repository),
+            getQuizResult = GetQuizResult(repository),
+            getQuizResults = GetQuizResults(repository)
         )
     }
 }

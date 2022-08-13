@@ -2,7 +2,9 @@ package com.example.tingxie.data.data_source
 
 import androidx.room.*
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.QuizResult
 import kotlinx.coroutines.flow.Flow
+import java.sql.Timestamp
 
 @Dao
 interface CharacterDao {
@@ -18,6 +20,19 @@ interface CharacterDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: Character)
+
+    @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id")
+    fun allCharacterResults(): Flow<Map<QuizResult, Character>>
+
+    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp IN (:timestamp)")
+    fun getQuizResults(timestamp: Long): Flow<Map<QuizResult, Character>>
+
+    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE character IN (:character)")
+    fun getCharacterResult(character: String): Flow<Map<QuizResult, Character>>
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insetQuizResult(quizResult: QuizResult)
 
     @Delete
     suspend fun deleteCharacter(character: Character)
