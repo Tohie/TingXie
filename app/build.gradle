@@ -89,6 +89,8 @@ dependencies {
     // Draw box
     implementation  'io.ak1:drawbox:1.0.3'
 
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
     // Testing dependencies
     implementation "androidx.test:core:1.4.0"
     testImplementation 'junit:junit:4.13.2'
