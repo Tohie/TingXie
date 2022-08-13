@@ -4,5 +4,5 @@ import com.example.tingxie.domain.model.Character
 import com.example.tingxie.domain.model.QuizResult
 
 data class QuizStatisticsState (
-    val quizResults: Map<QuizResult, Character> = mapOf()
+    val quizResults: List<CharacterQuizStatistic> = listOf()
 )

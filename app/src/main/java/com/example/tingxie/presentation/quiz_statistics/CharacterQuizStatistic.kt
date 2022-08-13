@@ -4,6 +4,6 @@ import com.example.tingxie.domain.model.Character
 
 data class CharacterQuizStatistic (
     val character: Character,
-    val correctAnswers: Int,
-    val incorrectAnswers: Int
+    var correctAnswers: Int = 0,
+    val incorrectAnswers: Int = 0
 )
