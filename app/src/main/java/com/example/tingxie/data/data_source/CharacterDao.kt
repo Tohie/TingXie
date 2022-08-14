@@ -24,6 +24,9 @@ interface CharacterDao {
     @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id")
     fun allCharacterResults(): Flow<Map<QuizResult, Character>>
 
+    @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id LIMIT (:limit)" )
+    fun allCharacterResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>>
+
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp IN (:timestamp)")
     fun getQuizResults(timestamp: Long): Flow<Map<QuizResult, Character>>
 

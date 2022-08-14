@@ -96,6 +96,7 @@ class CharactersQuizViewModel @Inject constructor(
                     viewModelScope.launch {
                         characterUseCases.insertQuizResult(quizResult)
                     }
+                    onEvent(CharacterQuizEvents.FinishedQuiz)
                 }
             }
         }

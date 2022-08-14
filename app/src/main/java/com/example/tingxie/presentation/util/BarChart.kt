@@ -14,10 +14,21 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.tingxie.domain.model.BarChartData
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
+import java.text.SimpleDateFormat
+import java.time.Instant
 
 @Composable
-fun BarChart(
+fun StatisticsBarChart(
     modifier: Modifier = Modifier,
     barChartData: List<BarChartData>,
     padding: Dp = 0.dp,
@@ -25,77 +36,48 @@ fun BarChart(
 ) {
     if (barChartData.isEmpty()) return
 
-    Canvas(modifier = modifier) {
-        val totalTests = barChartData.size
-        val withNoPaddingBarSize = size.width / (totalTests + 1)
-        val barSize = withNoPaddingBarSize - padding.times(2).toPx()
-
-        val height = size.height
-        val actualHeight = height - padding.toPx() - fontSize.toPx()
-        val maxValue = barChartData.maxBy { it.value }.value
-        val fontSpace = fontSize.toPx() // One text above, one below
-
-        barChartData.forEachIndexed { index, barChartData ->
-            val barHeight =  ((barChartData.value / maxValue) * actualHeight)
-            val topLeft = Offset(2 * padding.toPx() + (withNoPaddingBarSize * index), (actualHeight - barHeight ))
-            val size = Size(barSize, barHeight)
-
-            drawRect(
-                color = barChartData.color,
-                topLeft = topLeft,
-                alpha = 1.0f,
-                style = Fill,
-                colorFilter = null,
-                blendMode = DefaultBlendMode,
-                size = size
-            )
-
-            drawLine(
-                start = Offset(padding.toPx() + (withNoPaddingBarSize * index), actualHeight),
-                end = Offset(padding.toPx() + (withNoPaddingBarSize * index), actualHeight - 20),
-                color = Color.Black,
-                strokeWidth = 5f
-            )
-
-            drawContext.canvas.nativeCanvas.apply {
-                drawText(
-                    barChartData.label,
-                    ((2 * padding.toPx()) + (withNoPaddingBarSize * index )) + (barSize / 2),
-                    height - padding.toPx() - (fontSpace / 2),
-                    Paint().apply {
-                        textSize = 20f
-                        color = Color.Black.toArgb()
-                        textAlign = Paint.Align.CENTER
-                    }
+    AndroidView(
+        modifier = modifier,
+        factory = {
+            BarChart(it)
+        },
+        update = { barChart ->
+            val entries = barChartData.mapIndexed { index, barChartData ->
+                BarEntry(
+                    index.toFloat(),
+                    barChartData.value
                 )
             }
 
-            drawContext.canvas.nativeCanvas.apply {
-                drawText(
-                    barChartData.value.toString(),
-                    ((2 * padding.toPx()) + (withNoPaddingBarSize * index)) + (barSize / 2),
-                    height - (barHeight + fontSpace) - (fontSpace/2),
-                    Paint().apply {
-                        textSize = 50f
-                        color = Color.Black.toArgb()
-                        textAlign = Paint.Align.CENTER
-                    }
-                )
+            val xLabels = barChartData.map { barChartData ->
+                barChartData.label
+            }
+            barChart.xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(xLabels)
+                setDrawGridLines(false)
+                position = XAxis.XAxisPosition.BOTTOM
+                labelRotationAngle = 15f
+                isEnabled = true
+                setDrawAxisLine(true)
+            }
+            barChart.axisLeft.apply {
+                setDrawGridLines(false)
+            }
+            barChart.axisRight.apply {
+                setDrawGridLines(false)
+            }
+
+
+            val dataSet = BarDataSet(entries, "Percentage").apply {
+                color = barChartData.first().color.toArgb()
+            }
+            val barData = BarData(dataSet)
+
+            barChart.apply {
+                data = barData
+                invalidate()
             }
         }
-
-        drawLine(
-            start = Offset(padding.toPx(), actualHeight),
-            end = Offset(size.width - padding.toPx(), actualHeight),
-            color = Color.Black,
-            strokeWidth = 5f
-        )
-
-        drawLine(
-            start = Offset(padding.toPx(), 0f),
-            end = Offset(padding.toPx(), actualHeight),
-            color = Color.Black,
-            strokeWidth = 5f
-        )
-    }
+    )
 }
+

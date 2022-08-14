@@ -27,6 +27,7 @@ import com.google.accompanist.pager.*
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.rememberDrawController
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
@@ -64,6 +65,7 @@ fun CharacterQuizScreen(
 fun Pager(viewModel: CharactersQuizViewModel) {
     val pagerState = rememberPagerState()
     val drawController = rememberDrawController()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
@@ -114,20 +116,17 @@ fun Pager(viewModel: CharactersQuizViewModel) {
                     },
                 showCharacter = currentCharacter.isVisibile
             ) {
-                QuizCardOptions(viewModel = viewModel , currentCharacter = currentCharacter , pageIndex = pageIndex)
+                QuizCardOptions(
+                    viewModel = viewModel,
+                    currentCharacter = currentCharacter,
+                    pageIndex = pageIndex,
+                    changePage = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(pageIndex+1)
+                        }
+                    }
+                )
             }
-
-            /*
-            DrawBox(
-                drawController = drawController,
-                modifier = Modifier
-                    .padding(60.dp)
-                    .fillMaxSize()
-                    .weight(1f, true)
-                    .border(2.dp, color = MaterialTheme.colors.primary),
-                bitmapCallback = { _, _ -> Unit }
-            )
-            */
         }
     }
 }
@@ -160,35 +159,24 @@ fun BottomRow(viewModel: CharactersQuizViewModel) {
 }
 
 @Composable
-fun QuizCardOptions(viewModel: CharactersQuizViewModel, currentCharacter: CharacterState, pageIndex: Int) {
+fun QuizCardOptions(viewModel: CharactersQuizViewModel, currentCharacter: CharacterState, pageIndex: Int, changePage: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
-        IconButton(onClick = {
-            viewModel.onEvent(
-                CharacterQuizEvents.ChangeCharacterCorrect(
-                    pageIndex,
-                    false
-                )
-            )
-        }) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Incorrect"
-            )
-        }
+        ChangeCharacterCorrectnessButton(
+            viewModel = viewModel,
+            pageIndex = pageIndex,
+            changePage = changePage,
+            isCorrect = true
+        )
 
-        IconButton(onClick = {
-            viewModel.onEvent(
-                CharacterQuizEvents.ChangeCharacterCorrect(
-                    pageIndex,
-                    true
-                )
-            )
-        }) {
-            Icon(imageVector = Icons.Default.Done, contentDescription = "Correct")
-        }
+        ChangeCharacterCorrectnessButton(
+            viewModel = viewModel,
+            pageIndex = pageIndex,
+            changePage = changePage,
+            isCorrect = false
+        )
 
         IconButton(onClick = {
             viewModel.onEvent(
@@ -208,5 +196,28 @@ fun QuizCardOptions(viewModel: CharactersQuizViewModel, currentCharacter: Charac
             )
         }
 
+    }
+}
+
+@Composable
+fun ChangeCharacterCorrectnessButton(
+    viewModel: CharactersQuizViewModel,
+    pageIndex: Int,
+    changePage: () -> Unit,
+    isCorrect: Boolean
+) {
+    IconButton(onClick = {
+        viewModel.onEvent(
+            CharacterQuizEvents.ChangeCharacterCorrect(
+                pageIndex,
+                isCorrect
+            )
+        )
+        changePage()
+    }) {
+        Icon(
+            imageVector = if (isCorrect)  Icons.Default.Done else Icons.Default.Close,
+            contentDescription = if (isCorrect) "Correct" else "Incorrect"
+        )
     }
 }

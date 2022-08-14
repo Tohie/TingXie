@@ -28,6 +28,10 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.allCharacterResults()
     }
 
+    override fun getQuizResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>> {
+        return characterDao.allCharacterResultsLimitedBy(limit)
+    }
+
     override fun getCharacterResults(character: String): Flow<Map<QuizResult, Character>> {
         return characterDao.getCharacterResult(character = character)
     }

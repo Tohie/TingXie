@@ -43,7 +43,8 @@ class AppModule {
             insertQuizResult = InsertQuizResult(repository),
             getCharacterResults = GetCharacterResults(repository),
             getQuizResult = GetQuizResult(repository),
-            getQuizResults = GetQuizResults(repository)
+            getQuizResults = GetQuizResults(repository),
+            getQuizResultsLimitedBy = GetQuizResultsLimitedBy(repository)
         )
     }
 }

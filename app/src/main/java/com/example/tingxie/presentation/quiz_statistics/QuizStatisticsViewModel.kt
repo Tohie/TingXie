@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tingxie.domain.model.BarChartData
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.QuizResult
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import com.example.tingxie.presentation.character_quiz.CharacterQuizState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +32,15 @@ class QuizStatisticsViewModel @Inject constructor(
     init {
         getCharacterQuizResults()
         getTestScores()
+    }
+
+    fun onEvent(event: QuizStatisticsEvent) {
+        when (event) {
+            is QuizStatisticsEvent.DateChanged -> TODO()
+            is QuizStatisticsEvent.ChangeNumberOfTestsDisplayed -> {
+                getTestScoresLimitedBy(event.amount)
+            }
+        }
     }
 
     private fun getCharacterQuizResults() {
@@ -57,41 +67,54 @@ class QuizStatisticsViewModel @Inject constructor(
 
     private fun getTestScores() {
         characterUseCases.getQuizResults().onEach { quizResults ->
-            val testScores: MutableMap<Long, TestScore> = mutableMapOf()
-            for ((quizResult, _) in quizResults) {
-                if (testScores.containsKey(quizResult.timestamp)) {
-                    testScores[quizResult.timestamp]!!.addToTotalScore(1)
-                    if (quizResult.isCorrect) {
-                        testScores[quizResult.timestamp]!!.addToCurrentScore(1)
-                    }
-                } else {
-                    testScores[quizResult.timestamp] = TestScore(
-                        currentScore = if (quizResult.isCorrect) 1 else 0,
-                        totalScore = 1
-                    )
-                }
-            }
-
-            val testScoreBarChartData = mutableListOf<BarChartData>()
-            val formatter = DateTimeFormatter.ofPattern("dd/MM/yy hh:ss")
-                .withZone(ZoneId.systemDefault())
-
-            for ((timestamp, testScore) in testScores) {
-                val date = formatter.format(Instant.ofEpochMilli(timestamp))
-
-                val newBarChartData = BarChartData(
-                    label = date!!,
-                    value = (testScore.currentScore.toFloat() / testScore.totalScore.toFloat())*100,
-                    color = Color(255, 210, 117)
-                )
-                testScoreBarChartData.add(newBarChartData)
-            }
-
-            _state.value = _state.value.copy(
-                quizResults = _state.value.quizResults,
-                testScoreBarChartData = testScoreBarChartData
-            )
+            updateTestScoreData(convertQuizResultsToTestScoreData(quizResults))
         }.launchIn(viewModelScope)
+    }
+
+    private fun getTestScoresLimitedBy(limit: Int) {
+        characterUseCases.getQuizResultsLimitedBy(limit).onEach { quizResults ->
+            updateTestScoreData(convertQuizResultsToTestScoreData(quizResults))
+        }.launchIn(viewModelScope)
+    }
+
+    private fun updateTestScoreData(newBarChartData: List<BarChartData>) {
+        _state.value = _state.value.copy(
+            quizResults = _state.value.quizResults,
+            testScoreBarChartData = newBarChartData
+        )
+    }
+
+    private fun convertQuizResultsToTestScoreData(quizResults: Map<QuizResult, Character>): List<BarChartData> {
+        val testScores: MutableMap<Long, TestScore> = mutableMapOf()
+        for ((quizResult, _) in quizResults) {
+            if (testScores.containsKey(quizResult.timestamp)) {
+                testScores[quizResult.timestamp]!!.addToTotalScore(1)
+                if (quizResult.isCorrect) {
+                    testScores[quizResult.timestamp]!!.addToCurrentScore(1)
+                }
+            } else {
+                testScores[quizResult.timestamp] = TestScore(
+                    currentScore = if (quizResult.isCorrect) 1 else 0,
+                    totalScore = 1
+                )
+            }
+        }
+
+        val testScoreBarChartData = mutableListOf<BarChartData>()
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yy hh:ss")
+            .withZone(ZoneId.systemDefault())
+
+        for ((timestamp, testScore) in testScores) {
+            val date = formatter.format(Instant.ofEpochMilli(timestamp))
+
+            val newBarChartData = BarChartData(
+                label = date!!,
+                value = (testScore.currentScore.toFloat() / testScore.totalScore.toFloat())*100,
+                color = Color(255, 210, 117)
+            )
+            testScoreBarChartData.add(newBarChartData)
+        }
+        return testScoreBarChartData
     }
 
     class TestScore(

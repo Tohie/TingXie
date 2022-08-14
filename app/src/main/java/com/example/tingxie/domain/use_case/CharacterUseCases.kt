@@ -9,5 +9,6 @@ data class CharacterUseCases(
     val insertQuizResult: InsertQuizResult,
     val getCharacterResults: GetCharacterResults,
     val getQuizResult: GetQuizResult,
-    val getQuizResults: GetQuizResults
+    val getQuizResults: GetQuizResults,
+    val getQuizResultsLimitedBy: GetQuizResultsLimitedBy
 )
