@@ -40,6 +40,10 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.getQuizResults(timestamp)
     }
 
+    override fun getQuizResultBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>> {
+        return characterDao.getQuizResultsBetween(start, end)
+    }
+
     override suspend fun deleteCharacter(character: Character) {
         characterDao.deleteCharacter(character)
     }

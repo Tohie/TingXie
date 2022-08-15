@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.tingxie.domain.model.BarChartData
+import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
@@ -31,8 +32,6 @@ import java.time.Instant
 fun StatisticsBarChart(
     modifier: Modifier = Modifier,
     barChartData: List<BarChartData>,
-    padding: Dp = 0.dp,
-    fontSize: Dp = 40.dp
 ) {
     if (barChartData.isEmpty()) return
 
@@ -67,7 +66,6 @@ fun StatisticsBarChart(
                 setDrawGridLines(false)
             }
 
-
             val dataSet = BarDataSet(entries, "Percentage").apply {
                 color = barChartData.first().color.toArgb()
             }
@@ -75,7 +73,7 @@ fun StatisticsBarChart(
 
             barChart.apply {
                 data = barData
-                invalidate()
+                animateY(1000, Easing.EaseInQuad)
             }
         }
     )

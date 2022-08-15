@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -14,19 +15,15 @@ import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsViewModel
 import java.util.*
 
 @Composable
-fun QuizStatisticsScreen(
+fun QuizStatisticsGraphScreen(
     viewModel: QuizStatisticsViewModel,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
+        Column() {
             GraphControls(
                 onDateChanged = { _, year, month, dayOfMonth ->
-                    // Send Date changed event
+                    viewModel.onEvent(QuizStatisticsEvent.DateChanged(year, month, dayOfMonth))
                 }, onClick = { amount ->
                     viewModel.onEvent(QuizStatisticsEvent.ChangeNumberOfTestsDisplayed(amount))
                 }
@@ -50,7 +47,7 @@ fun GraphControls(
     Box(modifier = modifier) {
         Column {
             GraphDateSelectorControls(onDateChanged = onDateChanged)
-            GraphButtons(onClick = onClick)
+            GraphButtons(text = "Last: ", onClick = onClick)
         }
     }
 }
@@ -75,21 +72,25 @@ fun GraphDateSelectorControls(
         day
     )
 
-    Box(
-        modifier = modifier
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
     ) {
+        Text(text = "On:  ")
         Button(
             onClick = {
                 datePickerDialog.show()
             }
         ) {
-            Text(text = "Choose tests from a specific date")
+            Text(text = "$day/$month/$year")
         }
     }
 }
 
 @Composable
 fun GraphButtons (
+    text: String,
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit
 ) {
@@ -98,9 +99,10 @@ fun GraphButtons (
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Show last selected amount of texts")
+            Text(text = text)
             for (i in listOf(5, 10, 15)) {
                 GraphButton(onClick = { onClick(i) }, text = i.toString() )
             }
@@ -114,6 +116,6 @@ fun GraphButton(
     text: String
 ) {
     Button(onClick = onClick) {
-        Text(text = String())
+        Text(text = text.toString())
     }
 }

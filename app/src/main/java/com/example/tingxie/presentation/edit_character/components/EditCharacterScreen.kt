@@ -41,15 +41,7 @@ fun EditCharacterScreen(
         }
     }
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.onEvent(EditCharacterEvent.SaveCharacter)
-            },
-            backgroundColor = MaterialTheme.colors.primary
-            ) {
-                Icon(imageVector = Icons.Default.Done, contentDescription = "Save Note")
-            }
-        },
+        floatingActionButton = { FloatingActionButton(viewModel) },
         topBar = { TopBar() },
         scaffoldState = scaffoldState
     ) {
@@ -90,5 +82,17 @@ fun EditCharacterScreen(
                 textStyle = MaterialTheme.typography.h5
             )
         }
+    }
+}
+
+@Composable
+private fun FloatingActionButton(viewModel: EditCharacterViewModel) {
+    FloatingActionButton(
+        onClick = {
+            viewModel.onEvent(EditCharacterEvent.SaveCharacter)
+        },
+        backgroundColor = MaterialTheme.colors.primary
+    ) {
+        Icon(imageVector = Icons.Default.Done, contentDescription = "Save Note")
     }
 }

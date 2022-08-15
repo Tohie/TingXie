@@ -11,43 +11,83 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsViewModel
 import com.example.tingxie.presentation.util.TopBar
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.pagerTabIndicatorOffset
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun QuizStatisticsScreen(
+fun QuizStatisticsGraphScreen(
     viewModel: QuizStatisticsViewModel = hiltViewModel(),
     navController: NavController
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState()
 
     Scaffold(
         topBar = { TopBar() },
         scaffoldState = scaffoldState
-    ) {
-        if (viewModel.state.value.quizResults.isEmpty() || viewModel.state.value.testScoreBarChartData.isEmpty()) {
-            return@Scaffold
-        }
-
-        BoxWithConstraints(
-            modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier.padding(innerPadding)
         ) {
-            QuizStatisticsGraph(
-                viewModel = viewModel,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(maxHeight / 2)
-                    .align(Alignment.TopStart)
-                    .padding(8.dp),
-            )
+            Column {
+                TabRow(
+                    selectedTabIndex = pagerState.currentPage,
+                    indicator = { tabPositions ->
+                        TabRowDefaults.Indicator(
+                            Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+                        )
+                    }
+                ) {
+                    Tab(
+                        selected = pagerState.currentPage == 0,
+                        onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
+                        text = { Text(text = "Graphs")}
+                    )
+                    Tab(
+                        selected = pagerState.currentPage == 1,
+                        onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
+                        text = { Text(text = "Characters")}
+                    )
+                }
 
-            QuizStatisticsCharacterList (
-                viewModel = viewModel,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomStart)
-                    .height(this@BoxWithConstraints.maxHeight / 2)
-                    .padding(8.dp),
-            )
+                Box(
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    HorizontalPager(
+                        count = 2,
+                        state = pagerState
+                    ) { page ->
+                        when (page) {
+                            0 -> {
+                                QuizStatisticsGraphScreen(
+                                    viewModel = viewModel,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp),
+                                )
+                            }
+                            1 -> {
+                                if (viewModel.state.value.quizResults.isEmpty()) return@HorizontalPager
+                                QuizStatisticsCharacterList (
+                                    viewModel = viewModel,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp),
+                                )
+
+                            }
+                            else -> {
+                                Text(text = "Woops....")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -21,10 +21,7 @@ fun QuizStatisticsGraph(
     ) {
         StatisticsBarChart(
             barChartData = viewModel.state.value.testScoreBarChartData,
-            modifier = Modifier
-                .fillMaxWidth()
-                .matchParentSize(),
-            padding = 8.dp
+            modifier = modifier,
         )
     }
 }

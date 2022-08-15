@@ -16,10 +16,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +36,17 @@ class QuizStatisticsViewModel @Inject constructor(
 
     fun onEvent(event: QuizStatisticsEvent) {
         when (event) {
-            is QuizStatisticsEvent.DateChanged -> TODO()
+            is QuizStatisticsEvent.DateChanged -> {
+                val calendar = Calendar.getInstance()
+                calendar.set(event.year, event.month, event.dayOfMonth)
+                val time = calendar.time
+                val localDate = time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                val startOfDay = localDate.atStartOfDay().toInstant(ZoneOffset.MIN).toEpochMilli()
+                val endOfDay = localDate.atTime(LocalTime.MAX).toInstant(ZoneOffset.MAX).toEpochMilli()
+
+                getTestScoresBetween(startOfDay, endOfDay)
+            }
+
             is QuizStatisticsEvent.ChangeNumberOfTestsDisplayed -> {
                 getTestScoresLimitedBy(event.amount)
             }
@@ -72,7 +82,13 @@ class QuizStatisticsViewModel @Inject constructor(
     }
 
     private fun getTestScoresLimitedBy(limit: Int) {
-        characterUseCases.getQuizResultsLimitedBy(limit).onEach { quizResults ->
+        characterUseCases.getQuizResults().onEach { quizResults ->
+            updateTestScoreData(convertQuizResultsToTestScoreData(quizResults).take(limit))
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getTestScoresBetween(start: Long, end: Long) {
+        characterUseCases.getQuizResultsBetween(start, end).onEach { quizResults ->
             updateTestScoreData(convertQuizResultsToTestScoreData(quizResults))
         }.launchIn(viewModelScope)
     }

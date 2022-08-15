@@ -22,5 +22,7 @@ interface CharacterRepository {
     fun getCharacterResults(character: String): Flow<Map<QuizResult, Character>>
 
     fun getQuizResult(timestamp: Long): Flow<Map<QuizResult, Character>>
+
     fun getQuizResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>>
+    fun getQuizResultBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>>
 }

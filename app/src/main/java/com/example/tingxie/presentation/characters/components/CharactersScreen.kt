@@ -1,5 +1,6 @@
 package com.example.tingxie.presentation.characters.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +28,7 @@ import com.example.tingxie.presentation.util.TopBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CharactersScreen(
     navController: NavController,
@@ -46,17 +48,27 @@ fun CharactersScreen(
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            items(state.characters) { character ->
+            items(
+                items = state.characters,
+                key = { item: Character -> item.id!! }
+            ) { character ->
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CharacterScreenCharacterDetail(
                         character = character,
-                        navController = navController,
                         viewModel = viewModel,
                         scope = scope,
-                        scaffoldState = scaffoldState
+                        scaffoldState = scaffoldState,
+                        modifier = Modifier
+                            .animateItemPlacement()
+                            .clickable {
+                                navController.navigate(
+                                    Screen.EditCharacterScreen.route + "?characterId=${character.id}"
+                                )
+                            }
+                            .padding(8.dp),
                     )
                 }
             }
@@ -67,20 +79,14 @@ fun CharactersScreen(
 @Composable
 private fun CharacterScreenCharacterDetail(
     character: Character,
-    navController: NavController,
     viewModel: CharactersViewModel,
     scope: CoroutineScope,
-    scaffoldState: ScaffoldState
+    scaffoldState: ScaffoldState,
+    modifier: Modifier
 ) {
     CharacterDetail(
         character = character,
-        modifier = Modifier
-            .clickable {
-                navController.navigate(
-                    Screen.EditCharacterScreen.route + "?characterId=${character.id}"
-                )
-            }
-            .padding(8.dp),
+        modifier = modifier,
         showCharacter = true
     ) {
         EndAlignedDeleteButton(viewModel, character, scope, scaffoldState)

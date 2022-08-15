@@ -3,24 +3,19 @@ package com.example.tingxie
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.tingxie.presentation.character_quiz.components.CharacterQuizScreen
-import com.example.tingxie.presentation.characters.CharactersViewModel
 import com.example.tingxie.presentation.characters.components.CharactersScreen
 import com.example.tingxie.presentation.edit_character.EditCharacterScreen
-import com.example.tingxie.presentation.quiz_statistics.components.QuizStatisticsScreen
+import com.example.tingxie.presentation.quiz_statistics.components.QuizStatisticsGraphScreen
 import com.example.tingxie.presentation.util.Screen
 import com.example.tingxie.ui.theme.TingXieTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -77,7 +72,7 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Screen.QuizStatisticsScreen.route
                         ) {
-                            QuizStatisticsScreen(navController = navController)
+                            QuizStatisticsGraphScreen(navController = navController)
                         }
                     }
                 }
