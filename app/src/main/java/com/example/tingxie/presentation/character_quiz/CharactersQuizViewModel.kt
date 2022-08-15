@@ -85,7 +85,7 @@ class CharactersQuizViewModel @Inject constructor(
             }
             CharacterQuizEvents.SaveQuizResults -> {
                 val timestamp = Instant.now().toEpochMilli()
-                val quizResults = _state.value.characters.map { characterState ->
+                state.value.characters.map { characterState ->
                     QuizResult(
                         resultId = null,
                         characterIdMap = characterState.character.id!!, // if the character id is null, we're in trouble
@@ -107,7 +107,7 @@ class CharactersQuizViewModel @Inject constructor(
     }
 
     private fun getNRandomCharacters(number: Int) {
-        characterUseCases.getNRandomCharacters(number).onEach { characters ->
+        characterUseCases.getCharacters.getNRandomCharacters(number).onEach { characters ->
             _state.value = _state.value.copy(
                 characters = characters.map { character ->
                     CharacterState(character = character, isCorrect = false, isVisibile = false)

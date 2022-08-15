@@ -38,8 +38,50 @@ class GetCharactersTest {
     @Test
     fun `GetCharacters will return all characters, returns all`() {
         runBlocking {
-            getCharacters().onEach { characters ->
+            getCharacters.getCharacters().onEach { characters ->
                 assertThat(characters).isEqualTo(charactersToInsert)
+            }
+        }
+    }
+
+    @Test
+    fun `Get an existing Character, returns the correct Character`() {
+        val aCharacter = Character(
+            id = 0,
+            character = "a",
+            pinyin = "a",
+            description = "a"
+        )
+        runBlocking {
+            val character = getCharacters.getCharacter(0)
+            assertThat(character).isEqualTo(aCharacter)
+        }
+    }
+
+    @Test
+    fun `Get a non existing Character, returns null`() {
+        runBlocking {
+            val character = getCharacters.getCharacter(100)
+            assertThat(character).isEqualTo(null)
+        }
+    }
+
+    @Test
+    fun `getNRandom characters should return correct amount, returns correct amount`() {
+        runBlocking {
+            getCharacters.getNRandomCharacters(5).onEach { characters ->
+                assertThat(characters.size == 5)
+            }
+        }
+    }
+
+    @Test
+    fun `getNRandomCharacters should return different each time, returns different characters`() {
+        runBlocking {
+            getCharacters.getNRandomCharacters(10).onEach { firstCall ->
+                runBlocking { getCharacters.getNRandomCharacters(10).onEach { secondCall ->
+                    assertThat(firstCall).isNotEqualTo(secondCall)
+                } }
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.example.tingxie.domain.model
 
-class TestScore(
+class SingleTestScores(
     var currentScore: Int = 0,
     var totalScore: Int = 0
 ) {

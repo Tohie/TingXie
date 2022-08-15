@@ -2,7 +2,6 @@ package com.example.tingxie.presentation.quiz_statistics
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tingxie.domain.model.*
@@ -10,9 +9,6 @@ import com.example.tingxie.domain.use_case.CharacterUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.time.*
-import java.time.format.DateTimeFormatter
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -57,12 +53,12 @@ class QuizStatisticsViewModel @Inject constructor(
     }
 
     private fun getTestScoresBetween(year: Int, month: Int, dayofMonth: Int) {
-        characterUseCases.getQuizResultsBetween(year, month, dayofMonth).onEach { testScores ->
+        characterUseCases.getQuizResults.getQuizResultsOn(year, month, dayofMonth).onEach { testScores ->
             updateTestScoreData(testScores)
         }.launchIn(viewModelScope)
     }
 
-    private fun updateTestScoreData(newBarChartData: List<BarChartData>) {
+    private fun updateTestScoreData(newBarChartData: List<CharacterQuizBarChartData>) {
         _state.value = _state.value.copy(
             quizResults = _state.value.quizResults,
             testScoreBarChartData = newBarChartData

@@ -43,7 +43,7 @@ class CharactersViewModel @Inject constructor(
     }
 
     private fun getCharacters() {
-        characterUseCases.getCharacters()
+        characterUseCases.getCharacters.getCharacters()
             .onEach { characters ->
                 _state.value = _state.value.copy(
                     characters = characters

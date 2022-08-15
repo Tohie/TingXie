@@ -1,16 +1,8 @@
 package com.example.tingxie.domain.use_case.utils
 
-import androidx.compose.ui.graphics.Color
-import com.example.tingxie.domain.model.BarChartData
-import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.CharacterQuizStatistic
-import com.example.tingxie.domain.model.QuizResult
-import org.junit.Assert.*
+import com.example.tingxie.domain.model.CharacterQuizBarChartData
+import com.example.tingxie.domain.model.CharacterQuizStatistics
 import org.junit.Test
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.*
 import com.google.common.truth.Truth.assertThat
 
 
@@ -31,12 +23,12 @@ class ConvertersTest {
     @Test
     fun `convertToTestScoreWorks works with empty data, doesn't crash`() {
         val actualBarChartResults = Converters.convertQuizResultsToTestData(mapOf())
-        assertThat(actualBarChartResults).isEqualTo(listOf<BarChartData>())
+        assertThat(actualBarChartResults).isEqualTo(listOf<CharacterQuizBarChartData>())
     }
 
     @Test
     fun `convertToList works with empty data, doesn't crash`() {
         val actualCharacterResults = Converters.convertQuizResultsToList(mapOf())
-        assertThat(actualCharacterResults).isEqualTo(listOf<CharacterQuizStatistic>())
+        assertThat(actualCharacterResults).isEqualTo(listOf<CharacterQuizStatistics>())
     }
 }

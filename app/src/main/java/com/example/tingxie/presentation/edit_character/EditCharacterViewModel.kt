@@ -44,7 +44,7 @@ class EditCharacterViewModel @Inject constructor (
         savedStateHandle.get<Int>("characterId")?.let { characterId ->
             if(characterId != -1) {
                 viewModelScope.launch {
-                    characterUseCases.getCharacter(characterId)?.also { newCharacter ->
+                    characterUseCases.getCharacters.getCharacter(characterId)?.also { newCharacter ->
                         currentCharId = characterId
                         _character.value = character.value.copy(
                             text = newCharacter.character,

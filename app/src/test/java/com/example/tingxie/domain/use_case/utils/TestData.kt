@@ -1,9 +1,9 @@
 package com.example.tingxie.domain.use_case.utils
 
 import androidx.compose.ui.graphics.Color
-import com.example.tingxie.domain.model.BarChartData
+import com.example.tingxie.domain.model.CharacterQuizBarChartData
 import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.CharacterQuizStatistic
+import com.example.tingxie.domain.model.CharacterQuizStatistics
 import com.example.tingxie.domain.model.QuizResult
 import java.time.Instant
 import java.time.ZoneId
@@ -73,21 +73,21 @@ val formatter = DateTimeFormatter.ofPattern("dd/MM/yy hh:ss")
 val expectedDateTest1 = formatter.format(Instant.ofEpochMilli(0))
 val expectedDateTest2 = formatter.format(Instant.ofEpochMilli(1))
 
-val expectedBarChartResults: List<BarChartData> = listOf(
-    BarChartData(
+val expectedBarChartResults: List<CharacterQuizBarChartData> = listOf(
+    CharacterQuizBarChartData(
         label = expectedDateTest1,
         color = Color(255, 210, 117),
         value = 50f
     ),
-    BarChartData(
+    CharacterQuizBarChartData(
         label = expectedDateTest2,
         color = Color(255, 210, 117),
         value = 100f
     )
 )
 
-val expectedCharacterResults: List<CharacterQuizStatistic> = listOf(
-    CharacterQuizStatistic(
+val expectedCharacterResults: List<CharacterQuizStatistics> = listOf(
+    CharacterQuizStatistics(
         character = Character(
             id = 0,
             character =  "你",
@@ -97,7 +97,7 @@ val expectedCharacterResults: List<CharacterQuizStatistic> = listOf(
         correctAnswers = 1,
         incorrectAnswers = 1
     ),
-    CharacterQuizStatistic(
+    CharacterQuizStatistics(
         character = Character(
             id = 1,
             character =  "b",

@@ -7,8 +7,8 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 object Converters {
-    fun convertQuizResultsToTestData(quizResults: Map<QuizResult, Character>): List<BarChartData> {
-        val testScores: MutableMap<Long, TestScore> = mutableMapOf()
+    fun convertQuizResultsToTestData(quizResults: Map<QuizResult, Character>): List<CharacterQuizBarChartData> {
+        val testScores: MutableMap<Long, SingleTestScores> = mutableMapOf()
         for ((quizResult, _) in quizResults) {
             if (testScores.containsKey(quizResult.timestamp)) {
                 testScores[quizResult.timestamp]!!.addToTotalScore(1)
@@ -16,21 +16,21 @@ object Converters {
                     testScores[quizResult.timestamp]!!.addToCurrentScore(1)
                 }
             } else {
-                testScores[quizResult.timestamp] = TestScore(
+                testScores[quizResult.timestamp] = SingleTestScores(
                     currentScore = if (quizResult.isCorrect) 1 else 0,
                     totalScore = 1
                 )
             }
         }
 
-        val testScoreBarChartData = mutableListOf<BarChartData>()
+        val testScoreBarChartData = mutableListOf<CharacterQuizBarChartData>()
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yy hh:ss")
             .withZone(ZoneId.systemDefault())
 
         for ((timestamp, testScore) in testScores) {
             val date = formatter.format(Instant.ofEpochMilli(timestamp))
 
-            val newBarChartData = BarChartData(
+            val newBarChartData = CharacterQuizBarChartData(
                 label = date!!,
                 value = (testScore.currentScore.toFloat() / testScore.totalScore.toFloat())*100,
                 color = Color(255, 210, 117)
@@ -40,19 +40,19 @@ object Converters {
         return testScoreBarChartData
     }
 
-    fun convertQuizResultsToList(quizResults: Map<QuizResult, Character>): List<CharacterQuizStatistic> {
-        val characterMap: MutableMap<Character, CharacterQuizStatistic> = mutableMapOf()
+    fun convertQuizResultsToList(quizResults: Map<QuizResult, Character>): List<CharacterQuizStatistics> {
+        val characterMap: MutableMap<Character, CharacterQuizStatistics> = mutableMapOf()
         for ((quizResult, character) in quizResults) {
             if (characterMap.containsKey(character)) {
                 val currentCorrectAnswers = characterMap[character]!!.correctAnswers
                 val currentIncorrectAnswers = characterMap[character]!!.incorrectAnswers
-                characterMap[character] = CharacterQuizStatistic(
+                characterMap[character] = CharacterQuizStatistics(
                     correctAnswers = if (quizResult.isCorrect) currentCorrectAnswers + 1 else currentCorrectAnswers,
                     incorrectAnswers = if (!quizResult.isCorrect) currentIncorrectAnswers + 1 else currentIncorrectAnswers,
                     character = character
                 )
             } else if (!characterMap.containsKey(character)){
-                characterMap[character] = CharacterQuizStatistic(
+                characterMap[character] = CharacterQuizStatistics(
                     character = character,
                     correctAnswers = if (quizResult.isCorrect) 1 else 0,
                     incorrectAnswers = if (!quizResult.isCorrect) 1 else 0

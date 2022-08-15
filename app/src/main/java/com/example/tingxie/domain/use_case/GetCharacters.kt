@@ -8,8 +8,16 @@ import javax.inject.Inject
 class GetCharacters (
     private val characterRepository: CharacterRepository
 ) {
-    operator fun invoke(): Flow<List<Character>> {
+    fun getCharacters(): Flow<List<Character>> {
         // Can do ordering here
         return characterRepository.getCharacters()
+    }
+
+    suspend fun getCharacter(id: Int): Character? {
+        return characterRepository.getCharacter(id)
+    }
+
+    fun getNRandomCharacters(number: Int): Flow<List<Character>> {
+        return characterRepository.getNRandomCharacters(number)
     }
 }

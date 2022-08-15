@@ -2,11 +2,10 @@ package com.example.tingxie.domain.use_case
 
 import com.example.tingxie.data.repository.EmptyRepository
 import com.example.tingxie.data.repository.FakeCharacterRepository
-import com.example.tingxie.domain.model.CharacterQuizStatistic
+import com.example.tingxie.domain.model.CharacterQuizStatistics
 import com.example.tingxie.domain.use_case.utils.expectedBarChartResults
 import com.example.tingxie.domain.use_case.utils.expectedCharacterResults
 import com.example.tingxie.domain.use_case.utils.testQuizResults
-import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
@@ -49,7 +48,7 @@ class GetQuizResultsTest {
     fun `getCharacterResults doesn't break on empty input, returns empty list`() {
         runBlocking {
             getEmptyQuizResults.getCharacterQuizResults().onEach { quizStatistics ->
-                assertThat(quizStatistics).isEqualTo(listOf<CharacterQuizStatistic>())
+                assertThat(quizStatistics).isEqualTo(listOf<CharacterQuizStatistics>())
             }
         }
     }
@@ -67,7 +66,7 @@ class GetQuizResultsTest {
     fun `getQuizResults doesn't break on empty input, returns empty list`() {
         runBlocking {
             getEmptyQuizResults.getTestScoreData().onEach { testData ->
-                assertThat(testData).isEqualTo(listOf<CharacterQuizStatistic>())
+                assertThat(testData).isEqualTo(listOf<CharacterQuizStatistics>())
             }
         }
     }
