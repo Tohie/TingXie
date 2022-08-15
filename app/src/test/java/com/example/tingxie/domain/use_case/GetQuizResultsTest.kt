@@ -2,10 +2,16 @@ package com.example.tingxie.domain.use_case
 
 import com.example.tingxie.data.repository.EmptyRepository
 import com.example.tingxie.data.repository.FakeCharacterRepository
+import com.example.tingxie.domain.model.CharacterQuizStatistic
+import com.example.tingxie.domain.use_case.utils.expectedBarChartResults
+import com.example.tingxie.domain.use_case.utils.expectedCharacterResults
 import com.example.tingxie.domain.use_case.utils.testQuizResults
+import com.google.common.truth.Truth
+import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Test
 
 class GetQuizResultsTest {
     private lateinit var getQuizResults: GetQuizResults
@@ -19,8 +25,8 @@ class GetQuizResultsTest {
         val repository = FakeCharacterRepository()
         val emptyRepository = EmptyRepository()
 
-        val getEmptyQuizResults = GetQuizResults(emptyRepository)
-        val getQuizResults = GetQuizResults(repository)
+        getEmptyQuizResults = GetQuizResults(emptyRepository)
+        getQuizResults = GetQuizResults(repository)
 
         runBlocking {
             for ((result, char) in testQuizResults) {
@@ -30,5 +36,40 @@ class GetQuizResultsTest {
         }
     }
 
+    @Test
+    fun `getCharacterResults sorts results into characters, returns expected statistics`() {
+        runBlocking {
+            getQuizResults.getCharacterQuizResults().onEach { quizStatistics ->
+                assertThat(quizStatistics).isEqualTo(expectedCharacterResults)
+            }
+        }
+    }
+
+    @Test
+    fun `getCharacterResults doesn't break on empty input, returns empty list`() {
+        runBlocking {
+            getEmptyQuizResults.getCharacterQuizResults().onEach { quizStatistics ->
+                assertThat(quizStatistics).isEqualTo(listOf<CharacterQuizStatistic>())
+            }
+        }
+    }
+
+    @Test
+    fun `getQuizResults sorts results into quizzes, returns expected quizzes`() {
+        runBlocking {
+            getQuizResults.getTestScoreData().onEach { testData ->
+                assertThat(testData).isEqualTo(expectedBarChartResults)
+            }
+        }
+    }
+
+    @Test
+    fun `getQuizResults doesn't break on empty input, returns empty list`() {
+        runBlocking {
+            getEmptyQuizResults.getTestScoreData().onEach { testData ->
+                assertThat(testData).isEqualTo(listOf<CharacterQuizStatistic>())
+            }
+        }
+    }
 
 }
