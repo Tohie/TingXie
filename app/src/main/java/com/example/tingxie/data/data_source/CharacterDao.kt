@@ -12,6 +12,9 @@ interface CharacterDao {
     @Query("SELECT * FROM character")
     fun getAll(): Flow<List<Character>>
 
+    @Query("SELECT * FROM character WHERE character LIKE '%' || :searchWord || '%'")
+    fun getCharactersLike(searchWord: String): Flow<List<Character>>
+
     @Query("SELECT * FROM character WHERE id IN (:id)")
     suspend fun getId(id: Int): Character?
 
@@ -35,7 +38,6 @@ interface CharacterDao {
 
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE character IN (:character)")
     fun getCharacterResult(character: String): Flow<Map<QuizResult, Character>>
-
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insetQuizResult(quizResult: QuizResult)

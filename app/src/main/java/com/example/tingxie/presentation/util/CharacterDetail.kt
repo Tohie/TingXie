@@ -37,7 +37,7 @@ fun CharacterDetail(
             if (showCharacter) {
                 Log.i("Character", "Showing character")
                 Text(
-                    text = character.character,
+                    text = "${character.id} - ${character.character}",
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.onSurface,
                     fontSize = 32.sp,

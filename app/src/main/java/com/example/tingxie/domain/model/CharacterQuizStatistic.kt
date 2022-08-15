@@ -1,4 +1,4 @@
-package com.example.tingxie.presentation.quiz_statistics
+package com.example.tingxie.domain.model
 
 import com.example.tingxie.domain.model.Character
 
