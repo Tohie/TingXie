@@ -97,4 +97,25 @@ class GetQuizResultsTest {
             }
         }
     }
+
+    @Test
+    fun `getQuizResultsLimitedBy returns correct amount of quizzes in descending order from most recent`() {
+        runBlocking {
+            getQuizResults.getQuizResultsLimitedBy(1).onEach { result ->
+                assertThat(result).hasSize(1)
+                assertThat(result).isEqualTo(listOf(
+                    CharacterQuizBarChartData(
+                        label = "2022/8/15 00:00",
+                        value = 100f,
+                        color = Color(255, 210, 117)
+                    )
+                ))
+            }
+
+            // Test data only has two tests, so when user asks for more should return all results
+            getQuizResults.getQuizResultsLimitedBy(100).onEach { result ->
+                assertThat(result).hasSize(2)
+            }
+        }
+    }
 }
