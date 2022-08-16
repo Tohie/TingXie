@@ -1,11 +1,14 @@
 package com.example.tingxie.domain.use_case
 
+import androidx.compose.ui.graphics.Color
 import com.example.tingxie.data.repository.EmptyRepository
 import com.example.tingxie.data.repository.FakeCharacterRepository
+import com.example.tingxie.domain.model.CharacterQuizBarChartData
 import com.example.tingxie.domain.model.CharacterQuizStatistics
 import com.example.tingxie.domain.use_case.utils.expectedBarChartResults
 import com.example.tingxie.domain.use_case.utils.expectedCharacterResults
 import com.example.tingxie.domain.use_case.utils.testQuizResults
+import com.example.tingxie.presentation.util.StatisticsBarChart
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
@@ -71,4 +74,27 @@ class GetQuizResultsTest {
         }
     }
 
+    @Test
+    fun `getQuizResultsOn returns quizzes on a specified day`() {
+        runBlocking {
+            getQuizResults.getQuizResultsOn(2022, 8, 14).onEach { testQuizResults ->
+                assertThat(testQuizResults).hasSize(1)
+                assertThat(testQuizResults).isEqualTo(listOf(
+                    CharacterQuizBarChartData(
+                        label = "2022/8/14 00:00",
+                        value = 50f,
+                        color = Color(255, 210, 117)
+                    )
+                ))
+            }
+
+            getQuizResults.getQuizResultsOn(2022, 8, 15).onEach { testQuizResults ->
+                assertThat(testQuizResults).hasSize(1)
+            }
+
+            getQuizResults.getQuizResultsOn(2022, 8, 4).onEach { testQuizResults ->
+                assertThat(testQuizResults).hasSize(0)
+            }
+        }
+    }
 }

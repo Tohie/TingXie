@@ -8,12 +8,22 @@ import com.example.tingxie.domain.model.QuizResult
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
+
+val october15Calendar = GregorianCalendar(2022, 8, 15)
+val october14Calendar = GregorianCalendar(2022, 8, 14)
+
+val october15Instant = october15Calendar.toInstant().atZone(ZoneId.systemDefault())
+val october14Instant = october14Calendar.toInstant().atZone(ZoneId.systemDefault())
+
+val october15TimeStamp = october15Instant.toInstant().toEpochMilli()
+val october14Timestamp = october14Instant.toInstant().toEpochMilli()
 
 val testQuizResults: Map<QuizResult, Character> = mapOf(
     Pair(
         QuizResult(
             resultId = 0,
-            timestamp = 0,
+            timestamp = october14Timestamp,
             isCorrect = true,
             characterIdMap = 0
         ),
@@ -27,7 +37,7 @@ val testQuizResults: Map<QuizResult, Character> = mapOf(
     Pair(
         QuizResult(
             resultId = 1,
-            timestamp = 0,
+            timestamp = october14Timestamp,
             isCorrect = false,
             characterIdMap = 0
         ),
@@ -41,7 +51,7 @@ val testQuizResults: Map<QuizResult, Character> = mapOf(
     Pair(
         QuizResult(
             resultId = 2,
-            timestamp = 1,
+            timestamp = october15TimeStamp,
             isCorrect = true,
             characterIdMap = 1
         ),
@@ -55,7 +65,7 @@ val testQuizResults: Map<QuizResult, Character> = mapOf(
     Pair(
         QuizResult(
             resultId = 3,
-            timestamp = 1,
+            timestamp = october15TimeStamp,
             isCorrect = true,
             characterIdMap = 1
         ),
@@ -70,8 +80,8 @@ val testQuizResults: Map<QuizResult, Character> = mapOf(
 
 val formatter = DateTimeFormatter.ofPattern("dd/MM/yy hh:ss")
     .withZone(ZoneId.systemDefault())
-val expectedDateTest1 = formatter.format(Instant.ofEpochMilli(0))
-val expectedDateTest2 = formatter.format(Instant.ofEpochMilli(1))
+val expectedDateTest1 = formatter.format(Instant.ofEpochMilli(october14Timestamp))
+val expectedDateTest2 = formatter.format(Instant.ofEpochMilli(october15TimeStamp))
 
 val expectedBarChartResults: List<CharacterQuizBarChartData> = listOf(
     CharacterQuizBarChartData(

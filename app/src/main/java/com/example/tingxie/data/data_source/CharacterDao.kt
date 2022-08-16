@@ -33,7 +33,7 @@ interface CharacterDao {
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp IN (:timestamp)")
     fun getQuizResults(timestamp: Long): Flow<Map<QuizResult, Character>>
 
-    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp BETWEEN (:end) AND (:start)")
+    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp BETWEEN (:start) AND (:end)")
     fun getQuizResultsBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>>
 
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE character IN (:character)")

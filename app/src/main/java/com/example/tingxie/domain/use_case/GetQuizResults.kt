@@ -6,6 +6,7 @@ import com.example.tingxie.domain.use_case.utils.toCharacterQuizStatistics
 import com.example.tingxie.domain.use_case.utils.toTestResultData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -31,14 +32,18 @@ class GetQuizResults(
     }
 
     fun getQuizResultsOn(year: Int, month: Int, dayOfMonth: Int): Flow<List<CharacterQuizBarChartData>> {
-        val calendar = Calendar.getInstance()
-        calendar.set(year, month, dayOfMonth)
-        val time = calendar.time
-        val localDate = time.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-        val startOfDay = localDate.atStartOfDay().toInstant(ZoneOffset.MIN).toEpochMilli()
-        val endOfDay = localDate.atTime(LocalTime.MAX).toInstant(ZoneOffset.MAX).toEpochMilli()
+        val calendar = GregorianCalendar(year, month, dayOfMonth)
+        val instant = calendar.toInstant()
+        val zonedDateTime = instant.atZone(ZoneId.systemDefault())
+        val localDate = zonedDateTime.toLocalDate()
 
-        return repository.getQuizResultBetween(startOfDay, endOfDay).map { it.toTestResultData() }
+        val startOfDay: LocalDateTime = localDate.atTime(LocalTime.MIN)
+        val endOfDay = localDate.atTime(LocalTime.MAX)
+
+        val startOfDayTimeStamp = startOfDay.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val endOfDayTimeStamp = endOfDay.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+        return repository.getQuizResultBetween(startOfDayTimeStamp, endOfDayTimeStamp).map { it.toTestResultData() }
     }
 
     fun getQuizResultsLimitedBy(limit: Int): Flow<List<CharacterQuizBarChartData>> {
