@@ -3,6 +3,7 @@ package com.example.tingxie.di
 import android.app.Application
 import androidx.room.Room
 import com.example.tingxie.data.data_source.CharacterDatabase
+import com.example.tingxie.data.data_source.MIGRATION_1_2
 import com.example.tingxie.data.repository.CharacterRepositoryImpl
 import com.example.tingxie.domain.repository.CharacterRepository
 import com.example.tingxie.domain.use_case.*
@@ -22,7 +23,9 @@ class AppModule {
             app,
             CharacterDatabase::class.java,
             CharacterDatabase.DATABASE_NAME
-        ).build()
+        )
+            .addMigrations(MIGRATION_1_2)
+            .build()
     }
 
     @Provides

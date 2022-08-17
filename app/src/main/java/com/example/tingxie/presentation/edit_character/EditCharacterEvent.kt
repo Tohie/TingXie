@@ -4,6 +4,9 @@ import androidx.compose.ui.focus.FocusState
 import com.example.tingxie.domain.model.Character
 
 sealed class EditCharacterEvent {
+    data class EnteredCharacterNumber(val value: String): EditCharacterEvent()
+    data class ChangeCharacterNumberFocus(val focusState: FocusState): EditCharacterEvent()
+
     data class EnteredCharacter(val value: String): EditCharacterEvent()
     data class ChangeCharacterFocus(val focusState: FocusState): EditCharacterEvent()
 

@@ -7,6 +7,6 @@ import com.example.tingxie.domain.model.Ordering
 data class CharactersState(
     val characters: List<Character> = emptyList(),
     val isOrderingOptionsVisible: Boolean = false,
-    val ordering: OrderBy = OrderBy.Id(Ordering.Acsending),
+    val ordering: OrderBy = OrderBy.DateAdded(Ordering.Acsending),
 )
 

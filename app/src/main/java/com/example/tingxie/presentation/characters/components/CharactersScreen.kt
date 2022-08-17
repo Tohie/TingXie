@@ -1,25 +1,19 @@
 package com.example.tingxie.presentation.characters.components
 
 import androidx.compose.animation.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Center
-import androidx.compose.foundation.layout.Arrangement.End
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -29,7 +23,6 @@ import com.example.tingxie.domain.model.Ordering
 import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.characters.CharactersState
 import com.example.tingxie.presentation.characters.CharactersViewModel
-import com.example.tingxie.presentation.edit_character.TransparentHintTextField
 import com.example.tingxie.presentation.util.CharacterDetail
 import com.example.tingxie.presentation.util.Screen
 import com.example.tingxie.presentation.util.TopBar
@@ -116,7 +109,8 @@ private fun SortingControls(
             onClick = {
                 val event = when (viewModel.state.value.ordering) {
                     is OrderBy.Character -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Acsending))
-                    is OrderBy.Id -> CharactersEvent.ChangeSorting(OrderBy.Id(Ordering.Acsending))
+                    is OrderBy.DateAdded -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Acsending))
+                    is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Acsending))
                 }
                 viewModel.onEvent(event)
             }
@@ -131,7 +125,8 @@ private fun SortingControls(
             onClick = {
                 val event = when (viewModel.state.value.ordering) {
                     is OrderBy.Character -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Descending))
-                    is OrderBy.Id -> CharactersEvent.ChangeSorting(OrderBy.Id(Ordering.Descending))
+                    is OrderBy.DateAdded -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Descending))
+                    is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Descending))
                 }
                 viewModel.onEvent(event)
             }
@@ -142,19 +137,34 @@ private fun SortingControls(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Id",
+            text = "Date Added",
             style = MaterialTheme.typography.body2
         )
         RadioButton(
-            selected = viewModel.state.value.ordering.isOrderingById(),
+            selected = viewModel.state.value.ordering is OrderBy.DateAdded,
             onClick = {
                 val event = when (viewModel.state.value.ordering.isAscending()) {
-                    true -> CharactersEvent.ChangeSorting(OrderBy.Id(Ordering.Acsending))
-                    false -> CharactersEvent.ChangeSorting(OrderBy.Id(Ordering.Descending))
+                    true -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Acsending))
+                    false -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Descending))
                 }
                 viewModel.onEvent(event)
             }
-            )
+        )
+
+        Text(
+            text = "Number",
+            style = MaterialTheme.typography.body2
+        )
+        RadioButton(
+            selected = viewModel.state.value.ordering is OrderBy.CharacterNumber,
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Acsending))
+                    false -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        )
 
         Text(
             text = "Character",
@@ -162,9 +172,9 @@ private fun SortingControls(
         )
 
         RadioButton(
-            selected = viewModel.state.value.ordering.isOrderingByCharacter(),
+            selected = viewModel.state.value.ordering is OrderBy.Character,
             onClick = {
-                val event = when (viewModel.state.value.ordering.ordering == Ordering.Descending) {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
                     true -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Acsending))
                     false -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Descending))
                 }

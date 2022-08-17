@@ -6,12 +6,11 @@ import com.example.tingxie.domain.model.Ordering
 import com.example.tingxie.domain.repository.CharacterRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class GetCharacters (
     private val characterRepository: CharacterRepository
 ) {
-    fun getCharacters(orderBy: OrderBy = OrderBy.Id(Ordering.Acsending)): Flow<List<Character>> {
+    fun getCharacters(orderBy: OrderBy = OrderBy.DateAdded(Ordering.Acsending)): Flow<List<Character>> {
         return characterRepository.getCharacters().map { characters ->
             sortCharacters(characters, orderBy)
         }
@@ -38,10 +37,17 @@ class GetCharacters (
                         Ordering.Descending -> characters.sortedByDescending { it.character }
                     }
                 }
-                is OrderBy.Id -> {
+                // IDs are auto incremented so sorting by date added is the same as sorting by id
+                is OrderBy.DateAdded -> {
                     when (orderBy.ordering) {
                         Ordering.Acsending -> characters.sortedBy { it.id }
                         Ordering.Descending -> characters.sortedByDescending { it.id }
+                    }
+                }
+                is OrderBy.CharacterNumber -> {
+                    when (orderBy.ordering) {
+                        Ordering.Acsending -> characters.sortedBy { it.characterNumber }
+                        Ordering.Descending -> characters.sortedByDescending { it.characterNumber }
                     }
                 }
             }

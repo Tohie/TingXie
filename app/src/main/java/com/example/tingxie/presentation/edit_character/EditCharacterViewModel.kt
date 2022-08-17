@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.lang.NumberFormatException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +21,11 @@ class EditCharacterViewModel @Inject constructor (
     private val characterUseCases: CharacterUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private val _characterNumber = mutableStateOf(EditCharacterTextField(
+        hint = "Enter character number from the book"
+    ))
+    val characterNumber: State<EditCharacterTextField> = _characterNumber
+
     private val _character = mutableStateOf(EditCharacterTextField(
         hint = "Enter 汉字"
     ))
@@ -46,6 +52,12 @@ class EditCharacterViewModel @Inject constructor (
                 viewModelScope.launch {
                     characterUseCases.getCharacters.getCharacter(characterId)?.also { newCharacter ->
                         currentCharId = characterId
+
+                        _characterNumber.value = characterNumber.value.copy(
+                            text = newCharacter.characterNumber.toString(),
+                            isHintVisible = false
+                        )
+
                         _character.value = character.value.copy(
                             text = newCharacter.character,
                             isHintVisible = false
@@ -66,6 +78,18 @@ class EditCharacterViewModel @Inject constructor (
     }
     fun onEvent(event: EditCharacterEvent) {
         when (event) {
+            is EditCharacterEvent.EnteredCharacterNumber -> {
+                _characterNumber.value = characterNumber.value.copy(
+                    event.value
+                )
+            }
+            is EditCharacterEvent.ChangeCharacterNumberFocus -> {
+                _characterNumber.value = characterNumber.value.copy(
+                    isHintVisible = !event.focusState.isFocused &&
+                            characterNumber.value.text.isBlank()
+                )
+            }
+
             is EditCharacterEvent.EnteredCharacter -> {
                 _character.value = character.value.copy(
                     event.value
@@ -104,6 +128,7 @@ class EditCharacterViewModel @Inject constructor (
                     try {
                         characterUseCases.addCharacter(
                             Character(
+                                characterNumber = characterNumber.value.text.toInt(),
                                 character = character.value.text,
                                 pinyin = pinyin.value.text,
                                 description = description.value.text,
@@ -117,9 +142,16 @@ class EditCharacterViewModel @Inject constructor (
                                 message = e.message ?: "Couldn't save note"
                             )
                         )
+                    }  catch (e: NumberFormatException) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = "Please enter a valid number"
+                            )
+                        )
                     }
                 }
             }
+
         }
     }
     sealed class UiEvent {
