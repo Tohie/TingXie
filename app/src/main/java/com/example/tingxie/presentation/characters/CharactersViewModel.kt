@@ -1,11 +1,15 @@
 package com.example.tingxie.presentation.characters
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.OrderBy
+import com.example.tingxie.domain.model.Ordering
 import com.example.tingxie.domain.use_case.CharacterUseCases
+import com.example.tingxie.domain.use_case.GetCharacters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -39,16 +43,37 @@ class CharactersViewModel @Inject constructor(
                     lastDeletedCharacter = null
                 }
             }
+            is CharactersEvent.Search -> {
+                characterUseCases.getCharacters.getCharactersLike(event.character).onEach { chars ->
+                    Log.i("characters", "found some chars ")
+                    setCharacters(chars)
+                }.launchIn(viewModelScope)
+            }
+            is CharactersEvent.ChangeSortingOptionsVisibility -> {
+                val currentSortingOptionsVisibility = _state.value.isOrderingOptionsVisible
+                _state.value = _state.value.copy(
+                    isOrderingOptionsVisible = !currentSortingOptionsVisibility
+                )
+            }
+            is CharactersEvent.ChangeSorting -> {
+                _state.value = _state.value.copy(
+                    ordering = event.orderBy
+                )
+                val sorted = GetCharacters.sortCharacters(_state.value.characters, event.orderBy)
+                setCharacters(sorted)
+            }
         }
     }
 
     private fun getCharacters() {
         characterUseCases.getCharacters.getCharacters()
-            .onEach { characters ->
-                _state.value = _state.value.copy(
-                    characters = characters
-                )
-            }
+            .onEach { setCharacters(it) }
             .launchIn(viewModelScope)
+    }
+
+    private fun setCharacters(characters: List<Character>) {
+        _state.value = _state.value.copy(
+            characters = characters
+        )
     }
 }

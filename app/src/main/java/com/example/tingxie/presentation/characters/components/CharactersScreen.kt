@@ -1,26 +1,31 @@
 package com.example.tingxie.presentation.characters.components
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.Center
+import androidx.compose.foundation.layout.Arrangement.End
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.OrderBy
+import com.example.tingxie.domain.model.Ordering
 import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.characters.CharactersState
 import com.example.tingxie.presentation.characters.CharactersViewModel
@@ -41,33 +46,30 @@ fun CharactersScreen(
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
+
     Scaffold(
         topBar = { TopBar() },
         bottomBar = { BottomBar(navController) },
         scaffoldState = scaffoldState
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    BasicTextField(
-                        value = "",
-                        onValueChange = { /* TODO */},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                            .border(BorderStroke(4.dp, Color.Black))
-                    )
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                    ) {
-                        Icon(imageVector = Icons.Default.Expand, contentDescription = "Expand search options")
-                    }
-                }
+                SearchBar(
+                    viewModel = viewModel
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                SortingOptions(state, viewModel)
+
+                Spacer(modifier = Modifier.height(12.dp))
                 CharacterScreenCharacterList(
                     state = state,
                     viewModel = viewModel,
@@ -76,6 +78,128 @@ fun CharactersScreen(
                     navController = navController
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ColumnScope.SortingOptions(state: CharactersState, viewModel: CharactersViewModel) {
+    AnimatedVisibility(
+        visible = state.isOrderingOptionsVisible,
+        enter = expandVertically(),
+        exit = shrinkVertically()
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SortingControls(state, viewModel)
+        }
+    }
+}
+
+@Composable
+private fun SortingControls(
+    state: CharactersState,
+    viewModel: CharactersViewModel
+) {
+    Row(
+        horizontalArrangement = Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Ascending",
+            style = MaterialTheme.typography.body2
+        )
+        RadioButton(
+            selected = viewModel.state.value.ordering.isAscending(),
+            onClick = {
+                val event = when (viewModel.state.value.ordering) {
+                    is OrderBy.Character -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Acsending))
+                    is OrderBy.Id -> CharactersEvent.ChangeSorting(OrderBy.Id(Ordering.Acsending))
+                }
+                viewModel.onEvent(event)
+            }
+        )
+
+        Text(
+            text = "Descending",
+            style = MaterialTheme.typography.body2
+        )
+        RadioButton(
+            selected = !viewModel.state.value.ordering.isAscending(),
+            onClick = {
+                val event = when (viewModel.state.value.ordering) {
+                    is OrderBy.Character -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Descending))
+                    is OrderBy.Id -> CharactersEvent.ChangeSorting(OrderBy.Id(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        )
+    }
+    Row(
+        horizontalArrangement = Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Id",
+            style = MaterialTheme.typography.body2
+        )
+        RadioButton(
+            selected = viewModel.state.value.ordering.isOrderingById(),
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> CharactersEvent.ChangeSorting(OrderBy.Id(Ordering.Acsending))
+                    false -> CharactersEvent.ChangeSorting(OrderBy.Id(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+            )
+
+        Text(
+            text = "Character",
+            style = MaterialTheme.typography.body2
+        )
+
+        RadioButton(
+            selected = viewModel.state.value.ordering.isOrderingByCharacter(),
+            onClick = {
+                val event = when (viewModel.state.value.ordering.ordering == Ordering.Descending) {
+                    true -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Acsending))
+                    false -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        )
+    }
+}
+
+@Composable
+private fun SearchBar(
+    viewModel: CharactersViewModel
+) {
+    var searchText by remember { mutableStateOf("") }
+    Row(modifier = Modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = { newSearch ->
+                searchText = newSearch
+                viewModel.onEvent(CharactersEvent.Search(searchText))
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .weight(6f),
+            textStyle = MaterialTheme.typography.h5,
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        IconButton(
+            onClick = { viewModel.onEvent(CharactersEvent.ChangeSortingOptionsVisibility) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = false)
+        ) {
+            Icon(imageVector = Icons.Default.Expand, contentDescription = "Expand search options")
         }
     }
 }

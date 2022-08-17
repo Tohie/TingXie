@@ -118,4 +118,13 @@ class GetQuizResultsTest {
             }
         }
     }
+
+    @Test
+    fun `convertingToTimeStamp works`() {
+        val (start, end) = GetQuizResults.timestampToStartAndEndOfDay(2022,8, 16)
+        assertThat(start).isLessThan(end)
+        assertThat(start).isEqualTo(1663257600000)
+        assertThat(end).isEqualTo(1663343999999)
+
+    }
 }

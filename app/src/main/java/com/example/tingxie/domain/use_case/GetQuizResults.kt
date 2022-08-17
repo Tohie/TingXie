@@ -32,18 +32,9 @@ class GetQuizResults(
     }
 
     fun getQuizResultsOn(year: Int, month: Int, dayOfMonth: Int): Flow<List<CharacterQuizBarChartData>> {
-        val calendar = GregorianCalendar(year, month, dayOfMonth)
-        val instant = calendar.toInstant()
-        val zonedDateTime = instant.atZone(ZoneId.systemDefault())
-        val localDate = zonedDateTime.toLocalDate()
+        val (start, end) = timestampToStartAndEndOfDay(year, month, dayOfMonth)
 
-        val startOfDay: LocalDateTime = localDate.atTime(LocalTime.MIN)
-        val endOfDay = localDate.atTime(LocalTime.MAX)
-
-        val startOfDayTimeStamp = startOfDay.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        val endOfDayTimeStamp = endOfDay.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-
-        return repository.getQuizResultBetween(startOfDayTimeStamp, endOfDayTimeStamp).map { it.toTestResultData() }
+        return repository.getQuizResultBetween(start, end).map { it.toTestResultData() }
     }
 
     fun getQuizResultsLimitedBy(limit: Int): Flow<List<CharacterQuizBarChartData>> {
@@ -52,5 +43,22 @@ class GetQuizResults(
 
     fun getCharacterResults(character: String): Flow<Map<QuizResult, Character>> {
         return repository.getCharacterResults(character)
+    }
+
+    companion object{
+        fun timestampToStartAndEndOfDay(year: Int, month: Int, dayOfMonth: Int): Pair<Long, Long> {
+            val calendar = GregorianCalendar(year, month, dayOfMonth)
+            val instant = calendar.toInstant()
+            val zonedDateTime = instant.atZone(ZoneId.systemDefault())
+            val localDate = zonedDateTime.toLocalDate()
+
+            val startOfDay: LocalDateTime = localDate.atTime(LocalTime.MIN)
+            val endOfDay = localDate.atTime(LocalTime.MAX)
+
+            val startOfDayTimeStamp = startOfDay.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val endOfDayTimeStamp = endOfDay.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+            return Pair(startOfDayTimeStamp, endOfDayTimeStamp)
+        }
     }
 }

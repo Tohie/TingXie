@@ -20,6 +20,10 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.getNRandomCharacters(number)
     }
 
+    override fun getCharactersLike(searchWord: String): Flow<List<Character>> {
+        return characterDao.getCharactersLike(searchWord)
+    }
+
     override suspend fun insertQuizResult(quizResult: QuizResult) {
         characterDao.insetQuizResult(quizResult)
     }
