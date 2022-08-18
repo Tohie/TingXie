@@ -3,6 +3,7 @@ package com.example.tingxie.data.data_source
 import androidx.room.*
 import com.example.tingxie.domain.model.Character
 import com.example.tingxie.domain.model.QuizResult
+import com.example.tingxie.domain.model.QuizResults
 import kotlinx.coroutines.flow.Flow
 import java.sql.Timestamp
 
@@ -34,7 +35,7 @@ interface CharacterDao {
     fun getQuizResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>>
 
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp IN (:timestamp)")
-    fun getQuizResults(timestamp: Long): Flow<Map<Character, QuizResult>>
+    fun getQuizResults(timestamp: Long): Flow<Map<QuizResult, Character>>
 
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp BETWEEN (:start) AND (:end)")
     fun getQuizResultsBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>>
@@ -44,6 +45,9 @@ interface CharacterDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insetQuizResult(quizResult: QuizResult)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertQuizResults(quizResults: List<QuizResult>)
 
     @Delete
     suspend fun deleteCharacter(character: Character)

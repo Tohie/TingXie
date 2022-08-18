@@ -55,3 +55,12 @@ fun Map<Character, List<QuizResult>>.toCharacterQuizStatistics(): List<Character
         )
     }
 }
+
+fun Map<QuizResult, Character>.toQuizResultList(): List<QuizResults> {
+    return this.map { (result, char) ->
+        QuizResults(
+            character = char,
+            wasCorrect = result.isCorrect
+        )
+    }
+}

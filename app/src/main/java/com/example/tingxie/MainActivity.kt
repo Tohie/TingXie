@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.tingxie.presentation.character_quiz.components.CharacterQuizScreen
+import com.example.tingxie.presentation.character_quiz_results.components.CharacterQuizResultsScreen
 import com.example.tingxie.presentation.characters.components.CharactersScreen
 import com.example.tingxie.presentation.edit_character.EditCharacterScreen
 import com.example.tingxie.presentation.quiz_statistics.components.QuizStatisticsGraphScreen
@@ -73,6 +74,20 @@ class MainActivity : ComponentActivity() {
                             route = Screen.QuizStatisticsScreen.route
                         ) {
                             QuizStatisticsGraphScreen(navController = navController)
+                        }
+
+                        composable(
+                            route = Screen.QuizResultsScreen.route,
+                            arguments = listOf(
+                                navArgument(
+                                    name = "timestamp"
+                                ) {
+                                    type = NavType.LongType
+                                    defaultValue = -1
+                                }
+                            )
+                        ) {
+                            CharacterQuizResultsScreen(navController = navController)
                         }
                     }
                 }

@@ -2,6 +2,7 @@ package com.example.tingxie.domain.repository
 
 import com.example.tingxie.domain.model.Character
 import com.example.tingxie.domain.model.QuizResult
+import com.example.tingxie.domain.model.QuizResults
 import kotlinx.coroutines.flow.Flow
 
 interface CharacterRepository {
@@ -25,9 +26,10 @@ interface CharacterRepository {
 
     fun getCharacterResults(character: String): Flow<Map<Character, List<QuizResult>>>
 
-    fun getQuizResult(timestamp: Long): Flow<Map<Character, QuizResult>>
+    fun getQuizResult(timestamp: Long): Flow<Map<QuizResult, Character>>
 
     fun getQuizResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>>
 
     fun getQuizResultBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>>
+    suspend fun insetQuizResults(quizResults: List<QuizResult>)
 }

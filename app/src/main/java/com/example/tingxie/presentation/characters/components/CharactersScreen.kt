@@ -135,7 +135,7 @@ private fun SortingControls(
                     is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Descending))
                 }
                 viewModel.onEvent(event)
-            }
+            },
         )
     }
     Row(

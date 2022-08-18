@@ -3,6 +3,7 @@ package com.example.tingxie.domain.use_case
 import com.example.tingxie.domain.model.*
 import com.example.tingxie.domain.repository.CharacterRepository
 import com.example.tingxie.domain.use_case.utils.toCharacterQuizStatistics
+import com.example.tingxie.domain.use_case.utils.toQuizResultList
 import com.example.tingxie.domain.use_case.utils.toTestResultData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -27,8 +28,10 @@ class GetQuizResults(
         return repository.getQuizResults().map { it.toTestResultData() }
     }
 
-    fun getQuizResult(timestamp: Long): Flow<Map<Character, QuizResult>> {
-        return repository.getQuizResult(timestamp)
+    fun getQuizResult(timestamp: Long): Flow<List<QuizResults>> {
+        return repository.getQuizResult(timestamp).map { results: Map<QuizResult, Character> ->
+            results.toQuizResultList()
+        }
     }
 
     fun getQuizResultsOn(year: Int, month: Int, dayOfMonth: Int): Flow<List<CharacterQuizBarChartData>> {
@@ -49,12 +52,8 @@ class GetQuizResults(
                 .toList()
                 .sortedByDescending { (quizResult, _) -> quizResult.timestamp }
                 .takeWhile { (quizResult, _) -> quizResult.timestamp == firstTimestamp }
-                .map { (quizResult, char) ->
-                    QuizResults(
-                        character = char,
-                        wasCorrect = quizResult.isCorrect
-                    )
-                }
+                .toMap()
+                .toQuizResultList()
         }
     }
 

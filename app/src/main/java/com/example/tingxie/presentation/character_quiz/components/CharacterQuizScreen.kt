@@ -44,9 +44,11 @@ fun CharacterQuizScreen(
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is CharactersQuizViewModel.UiEvent.QuizFinished -> {
-                    scaffoldState.snackbarHostState.showSnackbar(event.finalMessage)
-                    navController.navigate(Screen.CharactersScreen.route)
+                is CharactersQuizViewModel.UiEvent.SaveAndFinishQuiz -> {
+                    navController.navigate(Screen.QuizResultsScreen.route)
+                }
+                is CharactersQuizViewModel.UiEvent.QuitQuiz -> {
+                    // Add dialogue prompting if they are sure
                 }
             }
         }
@@ -120,6 +122,7 @@ fun Pager(viewModel: CharactersQuizViewModel) {
             .padding(8.dp),
         state = pagerState,
     ) { pageIndex ->
+        if (viewModel.state.value.characters.isEmpty()) return@VerticalPager
         val currentCharacter = viewModel.state.value.characters.get(pageIndex)
 
         Column(

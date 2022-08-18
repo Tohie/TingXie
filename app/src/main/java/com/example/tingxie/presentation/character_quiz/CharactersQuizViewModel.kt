@@ -74,10 +74,7 @@ class CharactersQuizViewModel @Inject constructor(
             CharacterQuizEvents.FinishedQuiz -> {
                 viewModelScope.launch {
                     _eventFlow.emit(
-                        UiEvent.QuizFinished(
-                            finalMessage =
-                            "Congrats you got ${countResults()} out of ${_state.value.characters.size}"
-                        )
+                        UiEvent.QuitQuiz
                     )
                 }
             }
@@ -86,18 +83,31 @@ class CharactersQuizViewModel @Inject constructor(
             }
             CharacterQuizEvents.SaveQuizResults -> {
                 val timestamp = Instant.now().toEpochMilli()
-                state.value.characters.map { characterState ->
+                val results = state.value.characters.map { characterState ->
                     QuizResult(
                         resultId = null,
                         characterIdMap = characterState.character.id!!, // if the character id is null, we're in trouble
                         isCorrect = characterState.isCorrect,
                         timestamp = timestamp
                     )
-                }. forEach { quizResult ->
-                    viewModelScope.launch {
-                        characterUseCases.insertQuizResult(quizResult)
-                    }
-                    onEvent(CharacterQuizEvents.FinishedQuiz)
+                }
+
+                viewModelScope.launch {
+                    characterUseCases.insertQuizResult(results)
+                }
+
+                // Reset all state in case user comes back
+                _state.value = _state.value.copy(
+                    characters = emptyList(),
+                    numberOfCharacters = 0,
+                    currentCharacter = 0,
+                )
+
+                // Go to results page
+                viewModelScope.launch {
+                    _eventFlow.emit(
+                        UiEvent.SaveAndFinishQuiz
+                    )
                 }
             }
         }
@@ -135,6 +145,7 @@ class CharactersQuizViewModel @Inject constructor(
         )
     }
     sealed class UiEvent {
-        data class QuizFinished(val finalMessage: String): UiEvent()
+        object SaveAndFinishQuiz : UiEvent()
+        object QuitQuiz : UiEvent()
     }
 }
