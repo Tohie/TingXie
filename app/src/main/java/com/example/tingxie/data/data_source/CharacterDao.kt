@@ -25,19 +25,22 @@ interface CharacterDao {
     suspend fun insertCharacter(character: Character)
 
     @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id")
-    fun allCharacterResults(): Flow<Map<QuizResult, Character>>
+    fun allCharacterResults(): Flow<Map<Character, List<QuizResult>>>
+
+    @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id")
+    fun allQuizResults(): Flow<Map<QuizResult, Character>>
 
     @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id LIMIT (:limit)" )
-    fun allCharacterResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>>
+    fun getQuizResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>>
 
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp IN (:timestamp)")
-    fun getQuizResults(timestamp: Long): Flow<Map<QuizResult, Character>>
+    fun getQuizResults(timestamp: Long): Flow<Map<Character, QuizResult>>
 
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp BETWEEN (:start) AND (:end)")
     fun getQuizResultsBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>>
 
     @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE character IN (:character)")
-    fun getCharacterResult(character: String): Flow<Map<QuizResult, Character>>
+    fun getCharacterResults(character: String): Flow<Map<Character, List<QuizResult>>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insetQuizResult(quizResult: QuizResult)

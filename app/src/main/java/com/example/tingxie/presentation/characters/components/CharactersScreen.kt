@@ -23,6 +23,7 @@ import com.example.tingxie.domain.model.Ordering
 import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.characters.CharactersState
 import com.example.tingxie.presentation.characters.CharactersViewModel
+import com.example.tingxie.presentation.util.BottomBar
 import com.example.tingxie.presentation.util.CharacterDetail
 import com.example.tingxie.presentation.util.Screen
 import com.example.tingxie.presentation.util.TopBar
@@ -43,68 +44,41 @@ fun CharactersScreen(
         bottomSheetState = sheetState
     )
 
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetScaffoldState,
-        sheetElevation = 10.dp,
-        sheetPeekHeight = 0.dp,
-        sheetContent = {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(20.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ){
-                    Slider(
-                        value = state.numberOfCharactersToTest.toFloat(),
-                        onValueChange = { viewModel.onEvent(CharactersEvent.ChangeAmountOfCharactersToTest(it)) },
-                        steps = 1,
-                        valueRange = 5f..20f,
-                    )
-                    GoToTestPage(
-                        navController = navController,
-                        numberOfCharacter = state.numberOfCharactersToTest,
-                        text = "Test ${viewModel.state.value.numberOfCharactersToTest} characters now!"
-                    )
-                }
-            }
-        }
-    ) { bottomSheetPadding ->
-        Scaffold(
-            topBar = { TopBar() },
-            bottomBar = { BottomBar(navController, sheetState) },
-            scaffoldState = scaffoldState,
-            modifier = Modifier.padding(bottomSheetPadding)
-        ) { innerPadding ->
-            Box(
+
+    Scaffold(
+        topBar = { TopBar {} },
+        bottomBar = { BottomBar(navController) },
+        scaffoldState = scaffoldState,
+        modifier = Modifier
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
+                    .padding(16.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    SearchBar(
-                        viewModel = viewModel
-                    )
+                SearchBar(
+                    viewModel = viewModel
+                )
 
-                    SortingOptions(state, viewModel)
+                SortingOptions(state, viewModel)
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    CharacterScreenCharacterList(
-                        state = state,
-                        viewModel = viewModel,
-                        scope = scope,
-                        scaffoldState = scaffoldState,
-                        navController = navController
-                    )
-                }
+                Spacer(modifier = Modifier.height(12.dp))
+                CharacterScreenCharacterList(
+                    state = state,
+                    viewModel = viewModel,
+                    scope = scope,
+                    scaffoldState = scaffoldState,
+                    navController = navController
+                )
             }
         }
     }
+
 }
 
 @Composable
@@ -337,76 +311,3 @@ private fun EndAlignedDeleteButton(
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun BottomBar(navController: NavController, sheetState: BottomSheetState) {
-    val scope = rememberCoroutineScope()
-    BottomAppBar() {
-        Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            NavigationIconButton(
-                navController = navController,
-                route = Screen.EditCharacterScreen.route,
-                icon = Icons.Default.Add,
-                contentDescription = "Add new note"
-            )
-
-            IconButton(onClick = {
-                scope.launch {
-                    if (sheetState.isCollapsed) {
-                        sheetState.expand()
-                    } else {
-                        sheetState.collapse()
-                    }
-                }
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Checklist,
-                    contentDescription = "Test"
-                )
-            }
-
-            /*
-            GoToTestPage(navController = navController, numberOfCharacter = 5)
-            GoToTestPage(navController = navController, numberOfCharacter = 10)
-            GoToTestPage(navController = navController, numberOfCharacter = 15)
-            */
-            NavigationIconButton(
-                navController = navController,
-                route = Screen.QuizStatisticsScreen.route,
-                icon = Icons.Default.QueryStats,
-                contentDescription = "See quiz results"
-            )
-        }
-    }
-}
-
-@Composable
-fun NavigationIconButton(
-    navController: NavController,
-    route: String,
-    icon: ImageVector,
-    contentDescription: String
-) {
-    IconButton(
-        onClick = {
-            navController.navigate(route)
-        }
-    ) {
-        Icon(imageVector = icon, contentDescription = contentDescription)
-    }
-}
-
-@Composable
-fun GoToTestPage(navController: NavController, numberOfCharacter: Int, text: String = numberOfCharacter.toString()) {
-    Button(
-        onClick = {
-            navController.navigate(Screen.CharacterQuizScreen.route + "?characterNumber=${numberOfCharacter}")
-        }
-    ) {
-        Text(text = text)
-    }
-}

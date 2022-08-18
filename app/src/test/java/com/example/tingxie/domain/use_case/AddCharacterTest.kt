@@ -24,7 +24,8 @@ class AddCharacterTest {
                     id = index,
                     character = c.toString(),
                     pinyin = c.toString(),
-                    description = c.toString()
+                    description = c.toString(),
+                    characterNumber = index
                 )
             )
         }
@@ -39,7 +40,8 @@ class AddCharacterTest {
             id = 27,
             character = "你",
             pinyin = "You",
-            description = "To have"
+            description = "To have",
+            characterNumber = 27
         )
 
         addCharacter(addChinese)
@@ -51,7 +53,8 @@ class AddCharacterTest {
             id = 27,
             character = "",
             pinyin = "you",
-            description = "has"
+            description = "has",
+            characterNumber = 27
         )
         try {
             addCharacter(noTitle)
@@ -66,7 +69,8 @@ class AddCharacterTest {
             id = 27,
             character = "莫",
             pinyin = "",
-            description = "has"
+            description = "has",
+            characterNumber = 27
         )
         try {
             addCharacter(noTitle)
@@ -81,7 +85,8 @@ class AddCharacterTest {
             id = 27,
             character = "莫",
             pinyin = "ni",
-            description = ""
+            description = "",
+            characterNumber = 27
         )
         try {
             addCharacter(noTitle)
@@ -96,7 +101,8 @@ class AddCharacterTest {
             id = null,
             character = "莫",
             pinyin = "ni",
-            description = "has"
+            description = "has",
+            characterNumber = 27
         )
 
         addCharacter(noTitle)

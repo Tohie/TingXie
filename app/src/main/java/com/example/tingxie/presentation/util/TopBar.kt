@@ -13,13 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-@Preview
-fun TopBar() {
+fun TopBar(additonal: @Composable () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.primary),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -27,5 +26,6 @@ fun TopBar() {
             fontSize = 32.sp,
             modifier = Modifier.padding(8.dp),
         )
+        additonal()
     }
 }

@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.MutableStateFlow
 data class CharacterQuizState(
     val characters: List<CharacterState> = mutableListOf<CharacterState>(),
     val currentCharacter: Int = 0,
+    val numberOfCharacters: Int = 0,
 )

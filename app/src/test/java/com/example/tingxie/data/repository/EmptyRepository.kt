@@ -16,6 +16,10 @@ class EmptyRepository : CharacterRepository {
         return null
     }
 
+    override fun getCharactersLike(searchWord: String): Flow<List<Character>> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun deleteCharacter(character: Character) {
         // Do nothing
     }
@@ -33,14 +37,18 @@ class EmptyRepository : CharacterRepository {
     }
 
     override fun getQuizResults(): Flow<Map<QuizResult, Character>> {
-        return flow { emit(mapOf())}
-    }
-
-    override fun getCharacterResults(character: String): Flow<Map<QuizResult, Character>> {
         return flow { emit(mapOf()) }
     }
 
-    override fun getQuizResult(timestamp: Long): Flow<Map<QuizResult, Character>> {
+    override fun getCharacterResults(): Flow<Map<Character, List<QuizResult>>> {
+        return flow { emit(mapOf())}
+    }
+
+    override fun getCharacterResults(character: String): Flow<Map<Character, List<QuizResult>>> {
+        return flow { emit(mapOf()) }
+    }
+
+    override fun getQuizResult(timestamp: Long): Flow<Map<Character, QuizResult>> {
         return flow { emit(mapOf()) }
     }
 

@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.tingxie.presentation.util.BottomBar
 import com.example.tingxie.presentation.util.TopBar
 import kotlinx.coroutines.flow.collectLatest
 
@@ -45,7 +46,9 @@ fun EditCharacterScreen(
     }
     Scaffold(
         floatingActionButton = { FloatingActionButton(viewModel) },
-        topBar = { TopBar() },
+        bottomBar = { BottomBar(navController = navController) },
+        isFloatingActionButtonDocked = true,
+        topBar = { TopBar {} },
         scaffoldState = scaffoldState
     ) {
         Column(

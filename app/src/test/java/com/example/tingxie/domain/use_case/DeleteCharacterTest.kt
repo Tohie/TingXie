@@ -25,7 +25,8 @@ class DeleteCharacterTest {
                     id = index,
                     character = c.toString(),
                     pinyin = c.toString(),
-                    description = c.toString()
+                    description = c.toString(),
+                    characterNumber = index
                 )
             )
         }
@@ -40,7 +41,8 @@ class DeleteCharacterTest {
             id = 0,
             character = 'a'.toString(),
             pinyin = 'a'.toString(),
-            description = 'a'.toString()
+            description = 'a'.toString(),
+            characterNumber = 0
         )
         runBlocking {
             deleteCharacter(character)
@@ -56,7 +58,8 @@ class DeleteCharacterTest {
             id = 0,
             character = "aa",
             pinyin = "aa",
-            description = "aa"
+            description = "aa",
+            characterNumber = 0
         )
         runBlocking {
             runBlocking { repository.getCharacters() }.onEach { originalCharacters ->

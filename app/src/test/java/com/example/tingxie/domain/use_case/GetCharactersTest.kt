@@ -26,7 +26,8 @@ class GetCharactersTest {
                     id = index,
                     character = c.toString(),
                     pinyin = c.toString(),
-                    description = c.toString()
+                    description = c.toString(),
+                    characterNumber = index
                 )
             )
         }
@@ -50,7 +51,8 @@ class GetCharactersTest {
             id = 0,
             character = "a",
             pinyin = "a",
-            description = "a"
+            description = "a",
+            characterNumber = 0
         )
         runBlocking {
             val character = getCharacters.getCharacter(0)

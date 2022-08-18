@@ -5,29 +5,29 @@ import com.example.tingxie.domain.repository.CharacterRepository
 import com.example.tingxie.domain.use_case.utils.toCharacterQuizStatistics
 import com.example.tingxie.domain.use_case.utils.toTestResultData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.util.*
 
 class GetQuizResults(
     private val repository: CharacterRepository
 ) {
-    operator fun invoke(): Flow<Map<QuizResult, Character>> {
-        return repository.getQuizResults()
+    operator fun invoke(): Flow<Map<Character, List<QuizResult>>> {
+        return repository.getCharacterResults()
     }
 
     fun getCharacterQuizResults(): Flow<List<CharacterQuizStatistics>> {
-        return repository.getQuizResults().map { it.toCharacterQuizStatistics() }
+        return repository.getCharacterResults().map { it.toCharacterQuizStatistics() }
     }
 
     fun getTestScoreData(): Flow<List<CharacterQuizBarChartData>> {
         return repository.getQuizResults().map { it.toTestResultData() }
     }
 
-    fun getQuizResult(timestamp: Long): Flow<Map<QuizResult, Character>> {
+    fun getQuizResult(timestamp: Long): Flow<Map<Character, QuizResult>> {
         return repository.getQuizResult(timestamp)
     }
 
@@ -41,7 +41,24 @@ class GetQuizResults(
         return repository.getQuizResultsLimitedBy(limit).map { it.toTestResultData() }
     }
 
-    fun getCharacterResults(character: String): Flow<Map<QuizResult, Character>> {
+    fun getLatestQuiz(): Flow<List<QuizResults>> {
+        return repository.getQuizResults().map { quizResults ->
+            val sortedQuizResults = quizResults.keys.sortedByDescending { it.timestamp }
+            val firstTimestamp = sortedQuizResults.first().timestamp
+            quizResults
+                .toList()
+                .sortedByDescending { (quizResult, _) -> quizResult.timestamp }
+                .takeWhile { (quizResult, _) -> quizResult.timestamp == firstTimestamp }
+                .map { (quizResult, char) ->
+                    QuizResults(
+                        character = char,
+                        wasCorrect = quizResult.isCorrect
+                    )
+                }
+        }
+    }
+
+    fun getCharacterResults(character: String): Flow<Map<Character, List<QuizResult>>> {
         return repository.getCharacterResults(character)
     }
 

@@ -12,3 +12,4 @@ data class QuizResult(
     val timestamp: Long,
     val characterIdMap: Int
 )
+

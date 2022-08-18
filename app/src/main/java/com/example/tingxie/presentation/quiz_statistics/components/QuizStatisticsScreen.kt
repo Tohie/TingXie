@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsViewModel
+import com.example.tingxie.presentation.util.BottomBar
 import com.example.tingxie.presentation.util.TopBar
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -28,8 +29,9 @@ fun QuizStatisticsGraphScreen(
     val pagerState = rememberPagerState()
 
     Scaffold(
-        topBar = { TopBar() },
-        scaffoldState = scaffoldState
+        topBar = { TopBar {} },
+        scaffoldState = scaffoldState,
+        bottomBar = { BottomBar(navController = navController)}
     ) { innerPadding ->
         Box(
             modifier = Modifier.padding(innerPadding)

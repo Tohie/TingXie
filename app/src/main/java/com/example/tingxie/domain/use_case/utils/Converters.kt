@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter
 
 fun Map<QuizResult, Character>.toTestResultData(): List<CharacterQuizBarChartData> {
     val testScores: MutableMap<Long, SingleTestScores> = mutableMapOf()
+
     for ((quizResult, _) in this) {
         if (testScores.containsKey(quizResult.timestamp)) {
             testScores[quizResult.timestamp]!!.addToTotalScore(1)
@@ -39,24 +40,18 @@ fun Map<QuizResult, Character>.toTestResultData(): List<CharacterQuizBarChartDat
     return testScoreBarChartData
 }
 
-fun Map<QuizResult, Character>.toCharacterQuizStatistics(): List<CharacterQuizStatistics> {
-    val characterMap: MutableMap<Character, CharacterQuizStatistics> = mutableMapOf()
-    for ((quizResult, character) in this) {
-        if (characterMap.containsKey(character)) {
-            val currentCorrectAnswers = characterMap[character]!!.correctAnswers
-            val currentIncorrectAnswers = characterMap[character]!!.incorrectAnswers
-            characterMap[character] = CharacterQuizStatistics(
-                correctAnswers = if (quizResult.isCorrect) currentCorrectAnswers + 1 else currentCorrectAnswers,
-                incorrectAnswers = if (!quizResult.isCorrect) currentIncorrectAnswers + 1 else currentIncorrectAnswers,
-                character = character
-            )
-        } else if (!characterMap.containsKey(character)){
-            characterMap[character] = CharacterQuizStatistics(
-                character = character,
-                correctAnswers = if (quizResult.isCorrect) 1 else 0,
-                incorrectAnswers = if (!quizResult.isCorrect) 1 else 0
-            )
+fun Map<Character, List<QuizResult>>.toCharacterQuizStatistics(): List<CharacterQuizStatistics> {
+    return this.map { (char, quizResults) ->
+        val (correct, incorrect) = quizResults.foldRight(Pair(0, 0)) { character, (correct, incorrect) ->
+            when (character.isCorrect) {
+                true -> Pair(correct + 1, incorrect)
+                false -> Pair(correct, incorrect + 1)
+            }
         }
+        CharacterQuizStatistics(
+            character = char,
+            incorrectAnswers = incorrect,
+            correctAnswers = correct
+        )
     }
-    return characterMap.values.toList()
 }

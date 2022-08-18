@@ -31,7 +31,8 @@ val testQuizResults: Map<QuizResult, Character> = mapOf(
             id = 0,
             character =  "你",
             pinyin = "ni",
-            description = "you"
+            description = "you",
+            characterNumber = 0
         )
     ),
     Pair(
@@ -45,7 +46,8 @@ val testQuizResults: Map<QuizResult, Character> = mapOf(
             id = 0,
             character =  "你",
             pinyin = "ni",
-            description = "you"
+            description = "you",
+            characterNumber = 0
         )
     ),
     Pair(
@@ -59,7 +61,8 @@ val testQuizResults: Map<QuizResult, Character> = mapOf(
             id = 1,
             character =  "b",
             pinyin = "ni",
-            description = "you"
+            description = "you",
+            characterNumber = 1
         )
     ),
     Pair(
@@ -73,7 +76,8 @@ val testQuizResults: Map<QuizResult, Character> = mapOf(
             id = 1,
             character =  "b",
             pinyin = "ni",
-            description = "you"
+            description = "you",
+            characterNumber = 1
         )
     )
 )
@@ -102,7 +106,8 @@ val expectedCharacterResults: List<CharacterQuizStatistics> = listOf(
             id = 0,
             character =  "你",
             pinyin = "ni",
-            description = "you"
+            description = "you",
+            characterNumber = 0
         ),
         correctAnswers = 1,
         incorrectAnswers = 1
@@ -112,7 +117,8 @@ val expectedCharacterResults: List<CharacterQuizStatistics> = listOf(
             id = 1,
             character =  "b",
             pinyin = "ni",
-            description = "you"
+            description = "you",
+            characterNumber = 1
         ),
         correctAnswers = 2,
         incorrectAnswers = 0

@@ -1,7 +1,7 @@
 package com.example.tingxie.presentation.character_quiz.components
 
 import android.util.Log
-import androidx.compose.foundation.border
+import android.widget.NumberPicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,23 +13,26 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.compose.ui.util.lerp
+import androidx.compose.ui.viewinterop.AndroidView
 
 import com.example.tingxie.presentation.character_quiz.CharacterQuizEvents
 import com.example.tingxie.presentation.character_quiz.CharactersQuizViewModel
+import com.example.tingxie.presentation.util.BottomBar
 import com.example.tingxie.presentation.util.CharacterDetail
 import com.example.tingxie.presentation.util.Screen
 import com.example.tingxie.presentation.util.TopBar
 import com.google.accompanist.pager.*
-import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.rememberDrawController
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CharacterQuizScreen(
     navController: NavController,
@@ -51,12 +54,50 @@ fun CharacterQuizScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { TopBar() },
-        bottomBar = { BottomRow(viewModel) },
+        topBar = { TopBar { SaveAndHomeFunctions(viewModel = viewModel) } },
+        bottomBar = { BottomBar(navController = navController ) },
         modifier = Modifier.fillMaxSize(),
 
     ) {
-        Pager(viewModel = viewModel)
+        if (viewModel.state.value.characters.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(text = "Let's start a quiz!")
+                Text(
+                    text = "Use a pen and paper to write the answers for each question, use the eye to see the correct answer and choose right or wrong",
+                    textAlign = TextAlign.Justify,
+                )
+                AndroidView(
+                    factory = { context ->
+                        NumberPicker(context).apply {
+                            minValue = 1
+                            maxValue = 20
+                            wrapSelectorWheel = true
+
+                            setOnValueChangedListener { _, _, newVal ->
+                                Log.i("character", "changed scroll wheel")
+                                viewModel.onEvent(CharacterQuizEvents.ChangeCharacterNumber(newVal))
+                            }
+                            value = 5
+                        }
+                    },
+                    update = { }
+                )
+                Button(onClick = { viewModel.onEvent(CharacterQuizEvents.StartQuiz) }) {
+                    Text(text = "Let's Start")
+                }
+            }
+        } else {
+            Pager(viewModel = viewModel)
+        }
     }
 }
 
@@ -114,7 +155,7 @@ fun Pager(viewModel: CharactersQuizViewModel) {
                             fraction = 1f - pageOffset.coerceIn(0f, 1f)
                         )
                     },
-                showCharacter = currentCharacter.isVisibile
+                showCharacter = currentCharacter.isVisible
             ) {
                 QuizCardOptions(
                     viewModel = viewModel,
@@ -132,12 +173,12 @@ fun Pager(viewModel: CharactersQuizViewModel) {
 }
 
 @Composable
-fun BottomRow(viewModel: CharactersQuizViewModel) {
-    BottomAppBar {
+fun SaveAndHomeFunctions(viewModel: CharactersQuizViewModel, modifier: Modifier = Modifier) {
+    Box(modifier = modifier) {
         Row (
             modifier = Modifier
-                .fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Todo add a function to save and record results
@@ -182,12 +223,12 @@ fun QuizCardOptions(viewModel: CharactersQuizViewModel, currentCharacter: Charac
             viewModel.onEvent(
                 CharacterQuizEvents.ChangeCharacterVisibility(
                     pageIndex,
-                    !currentCharacter.isVisibile
+                    !currentCharacter.isVisible
                 )
             )
         }) {
             Icon(
-                imageVector = if (!currentCharacter.isVisibile) {
+                imageVector = if (!currentCharacter.isVisible) {
                     Icons.Default.Visibility
                 } else {
                     Icons.Default.VisibilityOff
