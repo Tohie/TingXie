@@ -29,7 +29,7 @@ import com.example.tingxie.presentation.util.TopBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun CharactersScreen(
     navController: NavController,
@@ -38,38 +38,70 @@ fun CharactersScreen(
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = sheetState
+    )
 
-
-    Scaffold(
-        topBar = { TopBar() },
-        bottomBar = { BottomBar(navController) },
-        scaffoldState = scaffoldState
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            Column(
+    BottomSheetScaffold(
+        scaffoldState = bottomSheetScaffoldState,
+        sheetElevation = 10.dp,
+        sheetPeekHeight = 0.dp,
+        sheetContent = {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(20.dp),
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ){
+                    Slider(
+                        value = state.numberOfCharactersToTest.toFloat(),
+                        onValueChange = { viewModel.onEvent(CharactersEvent.ChangeAmountOfCharactersToTest(it)) },
+                        steps = 1,
+                        valueRange = 5f..20f,
+                    )
+                    GoToTestPage(
+                        navController = navController,
+                        numberOfCharacter = state.numberOfCharactersToTest,
+                        text = "Test ${viewModel.state.value.numberOfCharactersToTest} characters now!"
+                    )
+                }
+            }
+        }
+    ) { bottomSheetPadding ->
+        Scaffold(
+            topBar = { TopBar() },
+            bottomBar = { BottomBar(navController, sheetState) },
+            scaffoldState = scaffoldState,
+            modifier = Modifier.padding(bottomSheetPadding)
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(innerPadding)
             ) {
-                SearchBar(
-                    viewModel = viewModel
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    SearchBar(
+                        viewModel = viewModel
+                    )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                    SortingOptions(state, viewModel)
 
-                SortingOptions(state, viewModel)
-
-                Spacer(modifier = Modifier.height(12.dp))
-                CharacterScreenCharacterList(
-                    state = state,
-                    viewModel = viewModel,
-                    scope = scope,
-                    scaffoldState = scaffoldState,
-                    navController = navController
-                )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    CharacterScreenCharacterList(
+                        state = state,
+                        viewModel = viewModel,
+                        scope = scope,
+                        scaffoldState = scaffoldState,
+                        navController = navController
+                    )
+                }
             }
         }
     }
@@ -305,8 +337,10 @@ private fun EndAlignedDeleteButton(
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BottomBar(navController: NavController) {
+fun BottomBar(navController: NavController, sheetState: BottomSheetState) {
+    val scope = rememberCoroutineScope()
     BottomAppBar() {
         Row(
             modifier = Modifier
@@ -320,17 +354,26 @@ fun BottomBar(navController: NavController) {
                 contentDescription = "Add new note"
             )
 
-            NavigationIconButton(
-                navController = navController,
-                route = Screen.CharacterQuizScreen.route + "?characterNumber=20",
-                icon = Icons.Default.Checklist,
-                contentDescription = "Start a test"
-            )
+            IconButton(onClick = {
+                scope.launch {
+                    if (sheetState.isCollapsed) {
+                        sheetState.expand()
+                    } else {
+                        sheetState.collapse()
+                    }
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Checklist,
+                    contentDescription = "Test"
+                )
+            }
 
+            /*
             GoToTestPage(navController = navController, numberOfCharacter = 5)
             GoToTestPage(navController = navController, numberOfCharacter = 10)
             GoToTestPage(navController = navController, numberOfCharacter = 15)
-
+            */
             NavigationIconButton(
                 navController = navController,
                 route = Screen.QuizStatisticsScreen.route,
@@ -358,12 +401,12 @@ fun NavigationIconButton(
 }
 
 @Composable
-fun GoToTestPage(navController: NavController, numberOfCharacter: Int) {
+fun GoToTestPage(navController: NavController, numberOfCharacter: Int, text: String = numberOfCharacter.toString()) {
     Button(
         onClick = {
             navController.navigate(Screen.CharacterQuizScreen.route + "?characterNumber=${numberOfCharacter}")
         }
     ) {
-        Text(text = numberOfCharacter.toString())
+        Text(text = text)
     }
 }

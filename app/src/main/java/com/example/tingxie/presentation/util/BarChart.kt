@@ -41,8 +41,10 @@ fun StatisticsBarChart(
                 setDrawGridLines(false)
                 position = XAxis.XAxisPosition.BOTTOM
                 labelRotationAngle = 15f
+                setCenterAxisLabels(true)
                 isEnabled = true
                 setDrawAxisLine(true)
+                setLabelCount(xLabels.size, true)
             }
             barChart.axisLeft.apply {
                 setDrawGridLines(false)

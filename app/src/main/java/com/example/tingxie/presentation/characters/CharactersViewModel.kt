@@ -62,6 +62,11 @@ class CharactersViewModel @Inject constructor(
                 val sorted = GetCharacters.sortCharacters(_state.value.characters, event.orderBy)
                 setCharacters(sorted)
             }
+            is CharactersEvent.ChangeAmountOfCharactersToTest -> {
+                _state.value = _state.value.copy(
+                    numberOfCharactersToTest = event.amount.toInt()
+                )
+            }
         }
     }
 

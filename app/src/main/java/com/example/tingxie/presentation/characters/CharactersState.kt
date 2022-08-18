@@ -8,5 +8,7 @@ data class CharactersState(
     val characters: List<Character> = emptyList(),
     val isOrderingOptionsVisible: Boolean = false,
     val ordering: OrderBy = OrderBy.DateAdded(Ordering.Acsending),
+    val isBottomSheetVisible: Boolean = false,
+    val numberOfCharactersToTest: Int = 10
 )
 

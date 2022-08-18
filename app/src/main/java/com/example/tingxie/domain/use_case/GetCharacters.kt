@@ -31,10 +31,12 @@ class GetCharacters (
     companion object {
         fun sortCharacters(characters: List<Character>, orderBy: OrderBy): List<Character> {
             return when (orderBy) {
+                // As a western I don't understand how characters are sorted,
+                // sorting by pinyin is the behaviour I expect
                 is OrderBy.Character -> {
                     when (orderBy.ordering) {
-                        Ordering.Acsending -> characters.sortedBy { it.character }
-                        Ordering.Descending -> characters.sortedByDescending { it.character }
+                        Ordering.Acsending -> characters.sortedBy { it.pinyin }
+                        Ordering.Descending -> characters.sortedByDescending { it.pinyin }
                     }
                 }
                 // IDs are auto incremented so sorting by date added is the same as sorting by id
