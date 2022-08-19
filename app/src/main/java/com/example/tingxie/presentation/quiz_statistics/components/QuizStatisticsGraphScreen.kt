@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.tingxie.domain.model.Quiz
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsEvent
+import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsState
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsViewModel
 import java.util.*
 
@@ -26,7 +29,8 @@ fun QuizStatisticsGraphScreen(
                     viewModel.onEvent(QuizStatisticsEvent.DateChanged(year, month, dayOfMonth))
                 }, onClick = { amount ->
                     viewModel.onEvent(QuizStatisticsEvent.ChangeNumberOfTestsDisplayed(amount))
-                }
+                },
+                state = viewModel.state
             )
             QuizStatisticsGraph(
                 viewModel = viewModel,
@@ -41,12 +45,13 @@ fun QuizStatisticsGraphScreen(
 @Composable
 fun GraphControls(
     modifier: Modifier = Modifier,
+    state: State<QuizStatisticsState>,
     onDateChanged: (DatePicker, Int, Int, Int) -> Unit,
     onClick: (Int) -> Unit
 ) {
     Box(modifier = modifier) {
         Column {
-            GraphDateSelectorControls(onDateChanged = onDateChanged)
+            GraphDateSelectorControls(onDateChanged = onDateChanged, state = state)
             GraphButtons(text = "Last: ", onClick = onClick)
         }
     }
@@ -55,14 +60,13 @@ fun GraphControls(
 @Composable
 fun GraphDateSelectorControls(
     modifier: Modifier = Modifier,
-    onDateChanged: (DatePicker, Int, Int, Int) -> Unit
+    onDateChanged: (DatePicker, Int, Int, Int) -> Unit,
+    state: State<QuizStatisticsState>
 ) {
     val context = LocalContext.current
-    val calendar = Calendar.getInstance()
-
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val year = state.value.year
+    val month = state.value.month
+    val day = state.value.day
 
     val datePickerDialog = DatePickerDialog(
         context,

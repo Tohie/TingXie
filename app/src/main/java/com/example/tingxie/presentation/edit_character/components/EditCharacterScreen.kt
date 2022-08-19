@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +49,7 @@ fun EditCharacterScreen(
         floatingActionButton = { FloatingActionButton(viewModel) },
         bottomBar = { BottomBar(navController = navController) },
         isFloatingActionButtonDocked = true,
+        floatingActionButtonPosition = FabPosition.Center,
         topBar = { TopBar {} },
         scaffoldState = scaffoldState
     ) {
@@ -96,7 +98,7 @@ fun EditCharacterScreen(
                 onValueChange = { viewModel.onEvent(EditCharacterEvent.EnteredDescription(it)) },
                 onFocusChange = { viewModel.onEvent(EditCharacterEvent.ChangeDescriptionFocus(it)) },
                 isHintVisible = descriptionState.isHintVisible,
-                singleLine = true,
+                singleLine = false,
                 textStyle = MaterialTheme.typography.h5
             )
         }
@@ -111,6 +113,6 @@ private fun FloatingActionButton(viewModel: EditCharacterViewModel) {
         },
         backgroundColor = MaterialTheme.colors.primary
     ) {
-        Icon(imageVector = Icons.Default.Done, contentDescription = "Save Note")
+        Icon(imageVector = Icons.Default.Add, contentDescription = "Save Note")
     }
 }

@@ -13,7 +13,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tingxie.domain.model.Character
@@ -45,7 +47,20 @@ fun CharactersScreen(
 
 
     Scaffold(
-        topBar = { TopBar {} },
+        topBar = { TopBar {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ){
+                SearchBar(viewModel = viewModel)
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                SortingOptions(state = state, viewModel = viewModel)
+            }
+            SearchBar(viewModel = viewModel)
+        } },
         bottomBar = { BottomBar(navController) },
         scaffoldState = scaffoldState,
         modifier = Modifier
@@ -57,27 +72,20 @@ fun CharactersScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .padding(12.dp)
             ) {
-                SearchBar(
-                    viewModel = viewModel
-                )
 
-                SortingOptions(state, viewModel)
-
-                Spacer(modifier = Modifier.height(12.dp))
-                CharacterScreenCharacterList(
-                    state = state,
-                    viewModel = viewModel,
-                    scope = scope,
-                    scaffoldState = scaffoldState,
-                    navController = navController
-                )
             }
+            CharacterScreenCharacterList(
+                state = state,
+                viewModel = viewModel,
+                scope = scope,
+                scaffoldState = scaffoldState,
+                navController = navController
+            )
         }
     }
-
 }
 
 @Composable
@@ -101,13 +109,20 @@ private fun SortingControls(
     state: CharactersState,
     viewModel: CharactersViewModel
 ) {
+    val radioButtonColors = RadioButtonDefaults.colors(
+        selectedColor = MaterialTheme.colors.secondary,
+        unselectedColor = Color.White,
+        disabledColor = Color.Gray
+    )
+
     Row(
         horizontalArrangement = Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "Ascending",
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.body2,
+            fontSize = 10.sp
         )
         RadioButton(
             selected = viewModel.state.value.ordering.isAscending(),
@@ -120,12 +135,14 @@ private fun SortingControls(
                             Ordering.Acsending))
                 }
                 viewModel.onEvent(event)
-            }
+            },
+            colors = radioButtonColors
         )
 
         Text(
             text = "Descending",
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.body2,
+            fontSize = 10.sp
         )
         RadioButton(
             selected = !viewModel.state.value.ordering.isAscending(),
@@ -139,6 +156,7 @@ private fun SortingControls(
                 }
                 viewModel.onEvent(event)
             },
+            colors = radioButtonColors
         )
     }
     Row(
@@ -147,7 +165,8 @@ private fun SortingControls(
     ) {
         Text(
             text = "Date Added",
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.body2,
+            fontSize = 10.sp
         )
         RadioButton(
             selected = viewModel.state.value.ordering is OrderBy.DateAdded,
@@ -157,12 +176,14 @@ private fun SortingControls(
                     false -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Descending))
                 }
                 viewModel.onEvent(event)
-            }
+            },
+            colors = radioButtonColors
         )
 
         Text(
             text = "Number",
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.body2,
+            fontSize = 10.sp
         )
         RadioButton(
             selected = viewModel.state.value.ordering is OrderBy.CharacterNumber,
@@ -172,12 +193,14 @@ private fun SortingControls(
                     false -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Descending))
                 }
                 viewModel.onEvent(event)
-            }
+            },
+            colors = radioButtonColors
         )
 
         Text(
             text = "Character",
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.body2,
+            fontSize = 10.sp
         )
 
         RadioButton(
@@ -188,7 +211,8 @@ private fun SortingControls(
                     false -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Descending))
                 }
                 viewModel.onEvent(event)
-            }
+            },
+            colors = radioButtonColors
         )
     }
 }
@@ -210,6 +234,9 @@ private fun SearchBar(
                 .height(60.dp)
                 .weight(6f),
             textStyle = MaterialTheme.typography.h5,
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = MaterialTheme.colors.secondary
+            )
         )
         Spacer(modifier = Modifier.width(4.dp))
         IconButton(
@@ -235,6 +262,7 @@ private fun CharacterScreenCharacterList(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(16.dp)
     ) {
         items(
             items = state.characters,

@@ -74,11 +74,13 @@ class CharactersQuizViewModel @Inject constructor(
                     "Updated the currentCharacter visibility to ${_state.value.characters.get(_state.value.currentCharacter).isVisible}")
             }
 
-            CharacterQuizEvents.FinishedQuiz -> {
+            CharacterQuizEvents.QuitWithoutSaving -> {
                 viewModelScope.launch {
                     _eventFlow.emit(
                         UiEvent.QuitQuiz
                     )
+                    // So when user comes back, the quiz is gone
+                    resetState()
                 }
             }
 
@@ -111,11 +113,7 @@ class CharactersQuizViewModel @Inject constructor(
                     characterUseCases.insertQuizResult(results)
 
                     // Reset all state in case user comes back
-                    _state.value = _state.value.copy(
-                        characters = emptyList(),
-                        numberOfCharacters = 0,
-                        currentCharacter = 0,
-                    )
+                    resetState()
 
                     // Go to results page
                     viewModelScope.launch {
@@ -126,7 +124,20 @@ class CharactersQuizViewModel @Inject constructor(
 
                 }
             }
+            is CharacterQuizEvents.ChangeQuitWithoutSavingDialogueVisibility -> {
+                _state.value = _state.value.copy(
+                    isQuitWithoutSavingDialogueVisible = event.isVisible
+                )
+            }
         }
+    }
+
+    private fun resetState() {
+        _state.value = _state.value.copy(
+            characters = emptyList(),
+            numberOfCharacters = 0,
+            currentCharacter = 0,
+        )
     }
 
     fun getCurrentCharacter(): CharacterState {

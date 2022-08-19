@@ -51,6 +51,7 @@ interface CharacterDao {
     @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id WHERE quizId IS (:quizId)")
     fun getQuizResult(quizId: Int): Flow<Map<Quiz, List<CharacterResult>>>
 
+
     @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id ORDER BY quiz.timestamp DESC LIMIT 1")
     fun getLatestQuiz(): Flow<Map<Quiz, List<CharacterResult>>>
 
@@ -64,5 +65,5 @@ interface CharacterDao {
     suspend fun insertQuiz(quiz: Quiz): Long
 
     @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id")
-    fun getQuizzes(): Flow<Map<Quiz, CharacterResult>>
+    fun getQuizzes(): Flow<Map<Quiz, List<CharacterResult>>>
 }

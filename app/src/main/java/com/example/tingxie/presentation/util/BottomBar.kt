@@ -1,5 +1,6 @@
 package com.example.tingxie.presentation.util
 
+import android.transition.Scene
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,65 +18,87 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.compose.currentBackStackEntryAsState
+
+@Composable
+fun BottomNavigationBar(
+    items: List<BottomNavItem>,
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    onItemClick: (BottomNavItem) -> Unit
+) {
+    val backStackEntry = navController.currentBackStackEntryAsState()
+    BottomNavigation(
+        modifier = modifier,
+        elevation = 5.dp
+    ) {
+        items.forEach { item ->
+            val selected = backStackEntry.value?.destination?.route?.startsWith(item.route, true)?: false
+            BottomNavigationItem(
+                selected = selected,
+                onClick = { onItemClick(item) },
+                selectedContentColor = Color.White,
+                unselectedContentColor = Color.Gray,
+                icon = {
+                    Column(horizontalAlignment = CenterHorizontally) {
+                        Icon(imageVector = item.icon, contentDescription = item.name)
+                        if (selected) {
+                            Text(
+                                text = item.name,
+                                textAlign = TextAlign.Center,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomBar(navController: NavController) {
     val scope = rememberCoroutineScope()
-    val navBarBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBarBackStackEntry?.destination?.route
 
-    BottomAppBar() {
-        Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            NavigationIconButton(
-                navController = navController,
+    BottomNavigationBar(
+        items = listOf(
+            BottomNavItem(
+                name = "Home",
                 route = Screen.CharactersScreen.route,
-                isCurrentRoute = Screen.CharactersScreen.route == currentRoute,
-                currentRouteIcon = Icons.Default.Home,
-                nonCurrentRouteIcon = Icons.Outlined.Home,
-                currentLabel = "Home",
-                contentDescription = "Add new note"
-            )
-
-            NavigationIconButton(
-                navController = navController,
+                icon = Icons.Default.Home
+            ),
+            BottomNavItem(
+                name = "Add",
                 route = Screen.EditCharacterScreen.route,
-                isCurrentRoute = Screen.EditCharacterScreen.route == currentRoute,
-                currentRouteIcon = Icons.Default.Add,
-                nonCurrentRouteIcon = Icons.Outlined.Add,
-                currentLabel = "Add",
-                contentDescription = "Add new note"
-            )
-
-            NavigationIconButton(
-                navController = navController,
+                icon = Icons.Default.Add
+            ),
+            BottomNavItem(
+                name = "Test",
                 route = Screen.CharacterQuizScreen.route,
-                isCurrentRoute = Screen.CharacterQuizScreen.route == currentRoute,
-                currentRouteIcon = Icons.Default.Checklist,
-                nonCurrentRouteIcon = Icons.Outlined.Checklist,
-                currentLabel = "Test",
-                contentDescription = "Add new note"
-            )
-
-            NavigationIconButton(
-                navController = navController,
+                icon = Icons.Default.Checklist
+            ),
+            BottomNavItem(
+                name = "Stats",
                 route = Screen.QuizStatisticsScreen.route,
-                isCurrentRoute = Screen.QuizStatisticsScreen.route == currentRoute,
-                currentRouteIcon = Icons.Default.QueryStats,
-                nonCurrentRouteIcon = Icons.Filled.QueryStats,
-                currentLabel = "Stats",
-                contentDescription = "See quiz results"
-            )
+                icon = Icons.Default.QueryStats
+            ),
+        ),
+        navController = navController,
+        onItemClick = { item ->
+            navController.navigate(item.route)
         }
-    }
+    )
 }
 
 @Composable

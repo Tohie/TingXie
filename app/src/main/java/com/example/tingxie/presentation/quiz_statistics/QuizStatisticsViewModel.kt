@@ -2,6 +2,7 @@ package com.example.tingxie.presentation.quiz_statistics
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tingxie.domain.model.*
@@ -27,12 +28,20 @@ class QuizStatisticsViewModel @Inject constructor(
     init {
         getCharacterQuizResults()
         getTestScores()
+        val calendar = Calendar.getInstance()
+
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        updateDates(year, month, day)
     }
 
     fun onEvent(event: QuizStatisticsEvent) {
         when (event) {
             is QuizStatisticsEvent.DateChanged -> {
                 getTestScoresBetween(event.year, event.month, event.dayOfMonth)
+                updateDates(event.year, event.month, event.dayOfMonth)
             }
             is QuizStatisticsEvent.ChangeNumberOfTestsDisplayed -> {
                 getTestScoresLimitedBy(event.amount)
@@ -44,7 +53,7 @@ class QuizStatisticsViewModel @Inject constructor(
         return _state.value.quizzes.toList().mapIndexed() { index, (quiz, _) ->
             BarEntry(
                 index.toFloat(),
-                quiz.score.toFloat()
+                (quiz.score.toFloat() / quiz.numberOfCharacters) * 100 // Give score as percentage
             )
         }
     }
@@ -86,6 +95,14 @@ class QuizStatisticsViewModel @Inject constructor(
     private fun updateQuizzes(newQuizzes: Map<Quiz, List<CharacterResult>>) {
         _state.value = _state.value.copy(
             quizzes = newQuizzes,
+        )
+    }
+
+    private fun updateDates(year: Int, month: Int, day: Int) {
+        _state.value = _state.value.copy(
+            year = year,
+            month = month,
+            day = day
         )
     }
 }

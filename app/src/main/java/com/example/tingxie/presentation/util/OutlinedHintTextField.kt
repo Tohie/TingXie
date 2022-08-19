@@ -2,6 +2,7 @@ package com.example.tingxie.presentation.edit_character
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
@@ -12,6 +13,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun OutlinedHintTextField(
@@ -33,8 +35,9 @@ fun OutlinedHintTextField(
             textStyle = textStyle,
             modifier = Modifier
                 .fillMaxWidth()
-                .onFocusChanged { onFocusChange(it) },
-            keyboardOptions = keyboardOptions
+                .onFocusChanged { onFocusChange(it) }
+                .safeContentPadding(),
+            keyboardOptions = keyboardOptions,
         )
         if (isHintVisible) {
             Text(text = hint, style = textStyle)

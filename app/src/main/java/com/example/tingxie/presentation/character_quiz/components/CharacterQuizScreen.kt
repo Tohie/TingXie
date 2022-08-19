@@ -3,6 +3,7 @@ package com.example.tingxie.presentation.character_quiz.components
 import android.util.Log
 import android.widget.NumberPicker
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
 
 import com.example.tingxie.presentation.character_quiz.CharacterQuizEvents
 import com.example.tingxie.presentation.character_quiz.CharactersQuizViewModel
@@ -48,7 +51,7 @@ fun CharacterQuizScreen(
                     navController.navigate(Screen.QuizResultsScreen.route)
                 }
                 is CharactersQuizViewModel.UiEvent.QuitQuiz -> {
-                    // Add dialogue prompting if they are sure
+                    navController.navigate(Screen.CharactersScreen.route)
                 }
             }
         }
@@ -61,6 +64,9 @@ fun CharacterQuizScreen(
         modifier = Modifier.fillMaxSize(),
 
     ) {
+        if (viewModel.state.value.isQuitWithoutSavingDialogueVisible) {
+            QuitWithoutSavingDialogue(viewModel = viewModel, navController = navController)
+        }
         if (viewModel.state.value.characters.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -99,6 +105,47 @@ fun CharacterQuizScreen(
             }
         } else {
             Pager(viewModel = viewModel)
+        }
+    }
+}
+
+@Composable
+fun QuitWithoutSavingDialogue(
+    viewModel: CharactersQuizViewModel,
+    navController: NavController,
+) {
+    val onDismiss: () -> Unit =  {
+        viewModel.onEvent(CharacterQuizEvents.ChangeQuitWithoutSavingDialogueVisibility(false))
+    }
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Card(
+            elevation = 12.dp,
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = "Quit without saving")
+                Text(text = "Are you sure all progress will be lost!")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Button(onClick = { viewModel.onEvent(CharacterQuizEvents.QuitWithoutSaving) }) {
+                        Text(
+                            text = "Confirm quit without saving",
+                            fontSize = 10.sp,
+                        )
+                    }
+                    Button(onClick = { onDismiss() }) {
+                        Text(
+                            text = "Continue quiz",
+                            fontSize = 10.sp,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -184,14 +231,13 @@ fun SaveAndHomeFunctions(viewModel: CharactersQuizViewModel, modifier: Modifier 
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Todo add a function to save and record results
             IconButton(onClick = { viewModel.onEvent(CharacterQuizEvents.SaveQuizResults) }) {
                 Icon(
                     imageVector = Icons.Default.Save,
                     contentDescription = "Save and exit quiz"
                 )
             }
-            IconButton(onClick = { viewModel.onEvent(CharacterQuizEvents.FinishedQuiz) }) {
+            IconButton(onClick = { viewModel.onEvent(CharacterQuizEvents.ChangeQuitWithoutSavingDialogueVisibility(isVisible = true)) }) {
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Exit quiz without saving"

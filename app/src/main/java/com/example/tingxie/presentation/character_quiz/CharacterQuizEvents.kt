@@ -5,8 +5,9 @@ sealed class CharacterQuizEvents {
     data class PageChange(val number: Int): CharacterQuizEvents()
     data class ChangeCharacterVisibility(val index: Int, val isCharacterVisible: Boolean = false) : CharacterQuizEvents()
     data class ChangeCharacterCorrect(val index: Int, val isCharacterCorrect: Boolean = false) : CharacterQuizEvents()
+    data class ChangeQuitWithoutSavingDialogueVisibility(val isVisible: Boolean = false) : CharacterQuizEvents ()
 
-    object FinishedQuiz : CharacterQuizEvents()
+    object QuitWithoutSaving : CharacterQuizEvents()
     object SaveQuizResults : CharacterQuizEvents()
     object StartQuiz: CharacterQuizEvents()
 

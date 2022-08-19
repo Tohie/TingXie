@@ -8,4 +8,5 @@ data class CharacterQuizState(
     val characters: List<CharacterState> = mutableListOf<CharacterState>(),
     val currentCharacter: Int = 0,
     val numberOfCharacters: Int = 5,
+    val isQuitWithoutSavingDialogueVisible: Boolean = false
 )
