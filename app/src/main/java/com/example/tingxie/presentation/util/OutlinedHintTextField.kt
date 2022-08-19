@@ -1,8 +1,6 @@
 package com.example.tingxie.presentation.edit_character
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
@@ -12,8 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun OutlinedHintTextField(
@@ -25,6 +26,7 @@ fun OutlinedHintTextField(
     onValueChange: (String) -> Unit,
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = false,
+    height: Dp = 60.dp,
     onFocusChange: (FocusState) -> Unit
 ) {
     Box(modifier = modifier) {
@@ -36,11 +38,17 @@ fun OutlinedHintTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged { onFocusChange(it) }
-                .safeContentPadding(),
+                .height(height),
             keyboardOptions = keyboardOptions,
         )
+        Spacer(modifier = Modifier.width(4.dp))
         if (isHintVisible) {
-            Text(text = hint, style = textStyle)
+            Text(
+                text = hint,
+                style = textStyle,
+                modifier = Modifier.offset(x = 10.dp, y = 13.dp),
+                fontSize = 20.sp
+            )
         }
     }
 }

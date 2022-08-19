@@ -63,7 +63,7 @@ fun EditCharacterScreen(
                 hint = characterNumberState.hint,
                 onValueChange = { viewModel.onEvent(EditCharacterEvent.EnteredCharacterNumber(it)) },
                 onFocusChange = { viewModel.onEvent(EditCharacterEvent.ChangeCharacterNumberFocus(it)) },
-                isHintVisible = characterState.isHintVisible,
+                isHintVisible = characterNumberState.isHintVisible,
                 singleLine = true,
                 textStyle = MaterialTheme.typography.h5,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -99,6 +99,7 @@ fun EditCharacterScreen(
                 onFocusChange = { viewModel.onEvent(EditCharacterEvent.ChangeDescriptionFocus(it)) },
                 isHintVisible = descriptionState.isHintVisible,
                 singleLine = false,
+                height = 120.dp,
                 textStyle = MaterialTheme.typography.h5
             )
         }
