@@ -2,14 +2,14 @@ package com.example.tingxie.data.data_source
 
 import androidx.room.*
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.CharacterResult
 import com.example.tingxie.domain.model.QuizResult
-import com.example.tingxie.domain.model.QuizResults
+import com.example.tingxie.domain.model.Quiz
 import kotlinx.coroutines.flow.Flow
-import java.sql.Timestamp
 
 @Dao
 interface CharacterDao {
-
+    // Characters
     @Query("SELECT * FROM character")
     fun getAll(): Flow<List<Character>>
 
@@ -25,23 +25,15 @@ interface CharacterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: Character)
 
+    @Delete
+    suspend fun deleteCharacter(character: Character)
+
+    // QuizResults
     @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id")
-    fun allCharacterResults(): Flow<Map<Character, List<QuizResult>>>
+    fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>>
 
-    @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id")
-    fun allQuizResults(): Flow<Map<QuizResult, Character>>
-
-    @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id LIMIT (:limit)" )
-    fun getQuizResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>>
-
-    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp IN (:timestamp)")
-    fun getQuizResults(timestamp: Long): Flow<Map<QuizResult, Character>>
-
-    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE timestamp BETWEEN (:start) AND (:end)")
-    fun getQuizResultsBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>>
-
-    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE character IN (:character)")
-    fun getCharacterResults(character: String): Flow<Map<Character, List<QuizResult>>>
+    @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id WHERE quizResultsIdMap IN (:quizId)")
+    fun getCharacterResultsByQuizId(quizId: Int): Flow<Map<Character, List<CharacterResult>>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insetQuizResult(quizResult: QuizResult)
@@ -49,6 +41,28 @@ interface CharacterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuizResults(quizResults: List<QuizResult>)
 
-    @Delete
-    suspend fun deleteCharacter(character: Character)
+    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE character IN (:character)")
+    fun getCharacterResults(character: String): Flow<Map<Character, List<CharacterResult>>>
+
+    // Quizzes
+    @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id")
+    fun getAllQuizResults(): Flow<Map<Quiz, List<CharacterResult>>>
+
+    @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id WHERE quizId IS (:quizId)")
+    fun getQuizResult(quizId: Int): Flow<Map<Quiz, List<CharacterResult>>>
+
+    @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id ORDER BY quiz.timestamp LIMIT 1")
+    fun getLatestQuiz(): Flow<Map<Quiz, List<CharacterResult>>>
+
+    @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id LIMIT (:limit)")
+    fun getQuizResultsLimitedBy(limit: Int): Flow<Map<Quiz, List<CharacterResult>>>
+
+    @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id WHERE quiz.timestamp BETWEEN (:start) AND (:end)")
+    fun getQuizResultsBetween(start: Long, end: Long): Flow<Map<Quiz, List<CharacterResult>>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertQuiz(quiz: Quiz): Long
+
+    @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id")
+    fun getQuizzes(): Flow<Map<Quiz, CharacterResult>>
 }

@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.OrderBy
-import com.example.tingxie.domain.model.Ordering
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import com.example.tingxie.domain.use_case.GetCharacters
 import dagger.hilt.android.lifecycle.HiltViewModel

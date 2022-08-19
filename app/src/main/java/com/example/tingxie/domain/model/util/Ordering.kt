@@ -1,4 +1,4 @@
-package com.example.tingxie.domain.model
+package com.example.tingxie.domain.model.util
 
 sealed class Ordering {
     object Acsending : Ordering()

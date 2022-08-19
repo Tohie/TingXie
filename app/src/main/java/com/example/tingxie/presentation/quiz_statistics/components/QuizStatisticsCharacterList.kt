@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.tingxie.domain.model.CharacterResult
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsViewModel
 import com.example.tingxie.presentation.util.CharacterDetail
 
@@ -24,9 +25,11 @@ fun QuizStatisticsCharacterList(
         modifier = modifier
     ) {
         LazyColumn {
-            items(viewModel.state.value.quizResults) { char ->
+            items(
+                items = viewModel.state.value.characterResults,
+            ) { characterResult ->
                 CharacterDetail(
-                    character = char.character,
+                    character = characterResult.character,
                     modifier = Modifier.padding(8.dp),
                     showCharacter = true
                 ) {
@@ -38,11 +41,11 @@ fun QuizStatisticsCharacterList(
                     ) {
                         Column {
                             Icon(imageVector = Icons.Default.Done, contentDescription = "Correct Answers")
-                            Text(text = char.correctAnswers.toString())
+                            Text(text = characterResult.correctAnswers.toString())
                         }
                         Column {
                             Icon(imageVector = Icons.Default.Close, contentDescription = "Incorrect answers" )
-                            Text(text = char.incorrectAnswers.toString())
+                            Text(text = characterResult.incorrectAnswers.toString())
 
                         }
                     }

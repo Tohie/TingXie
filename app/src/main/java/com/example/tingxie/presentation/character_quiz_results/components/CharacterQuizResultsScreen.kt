@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
@@ -15,9 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.QuizResults
-import com.example.tingxie.presentation.character_quiz_results.CharacterQuizResultsState
+import com.example.tingxie.domain.model.CharacterResult
+import com.example.tingxie.domain.model.CharacterStatistics
 import com.example.tingxie.presentation.character_quiz_results.CharacterQuizResultsViewModel
 import com.example.tingxie.presentation.util.BottomBar
 import com.example.tingxie.presentation.util.CharacterDetail
@@ -74,7 +72,7 @@ private fun CongratulationsMessage(viewModel: CharacterQuizResultsViewModel) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(text = "Congrats!!!")
-        Text(text = "You got ${viewModel.state.value.userScore} out of ${viewModel.state.value.totalScore}")
+        Text(text = "You got ${viewModel.state.value.quizResults.score} out of ${viewModel.state.value.quizResults.numberOfCharacters}")
         Text(text = "Below is a detailed breakdown of which character you got right and wrong!")
     }
 }
@@ -85,11 +83,11 @@ private fun QuizResultBreakdown(viewModel: CharacterQuizResultsViewModel) {
         modifier = Modifier.fillMaxWidth()
     ) {
         items(
-            items = viewModel.state.value.quizResults,
-            key = { item: QuizResults -> item.character.id!! }
-        ) { quizResult ->
+            items = viewModel.state.value.characterStatistics,
+            key = { item: CharacterStatistics -> item.character.id!! }
+        ) { characterResult ->
             CharacterDetail(
-                character = quizResult.character,
+                character = characterResult.character,
                 showCharacter = true,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -102,7 +100,7 @@ private fun QuizResultBreakdown(viewModel: CharacterQuizResultsViewModel) {
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (quizResult.wasCorrect) {
+                    if (characterResult.correctAnswers == 1) {
                         Icon(imageVector = Icons.Default.Done, contentDescription = "Correct")
                     } else {
                         Icon(imageVector = Icons.Default.Close, contentDescription = "Incorrect")

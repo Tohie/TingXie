@@ -1,4 +1,4 @@
-package com.example.tingxie.domain.model
+package com.example.tingxie.domain.model.util
 
 sealed class OrderBy(val ordering: Ordering) {
     fun isAscending() : Boolean {

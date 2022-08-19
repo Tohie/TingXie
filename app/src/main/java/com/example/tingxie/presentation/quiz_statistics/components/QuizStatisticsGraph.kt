@@ -20,8 +20,9 @@ fun QuizStatisticsGraph(
         modifier = modifier
     ) {
         StatisticsBarChart(
-            barChartData = viewModel.state.value.testScoreBarChartData,
+            barChartData = viewModel.getBarChartData(),
             modifier = modifier,
+            labels = viewModel.getBarChartLabels()
         )
     }
 }

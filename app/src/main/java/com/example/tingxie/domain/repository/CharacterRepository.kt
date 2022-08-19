@@ -1,8 +1,9 @@
 package com.example.tingxie.domain.repository
 
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.CharacterResult
+import com.example.tingxie.domain.model.Quiz
 import com.example.tingxie.domain.model.QuizResult
-import com.example.tingxie.domain.model.QuizResults
 import kotlinx.coroutines.flow.Flow
 
 interface CharacterRepository {
@@ -20,16 +21,21 @@ interface CharacterRepository {
 
     suspend fun insertQuizResult(quizResult: QuizResult)
 
-    fun getQuizResults(): Flow<Map<QuizResult, Character>>
+    fun getQuizResults(): Flow<Map<Quiz, List<CharacterResult>>>
 
-    fun getCharacterResults(): Flow<Map<Character, List<QuizResult>>>
+    fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>>
 
-    fun getCharacterResults(character: String): Flow<Map<Character, List<QuizResult>>>
+    fun getCharacterResults(character: String): Flow<Map<Character, List<CharacterResult>>>
 
-    fun getQuizResult(timestamp: Long): Flow<Map<QuizResult, Character>>
+    fun getQuizResultsLimitedBy(limit: Int): Flow<Map<Quiz, List<CharacterResult>>>
 
-    fun getQuizResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>>
+    fun getQuizResultBetween(start: Long, end: Long): Flow<Map<Quiz, List<CharacterResult>>>
 
-    fun getQuizResultBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>>
     suspend fun insetQuizResults(quizResults: List<QuizResult>)
+
+    fun getQuizResult(quizId: Int): Flow<Map<Quiz, List<CharacterResult>>>
+
+    fun getLatestQuiz(): Flow<Map<Quiz, List<CharacterResult>>>
+    suspend fun insertQuiz(quiz: Quiz): Long
+    fun getCharacterResultsByQuiz(quizId: Int): Flow<Map<Character, List<CharacterResult>>>
 }

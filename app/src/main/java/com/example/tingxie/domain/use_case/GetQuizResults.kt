@@ -2,11 +2,8 @@ package com.example.tingxie.domain.use_case
 
 import com.example.tingxie.domain.model.*
 import com.example.tingxie.domain.repository.CharacterRepository
-import com.example.tingxie.domain.use_case.utils.toCharacterQuizStatistics
-import com.example.tingxie.domain.use_case.utils.toQuizResultList
-import com.example.tingxie.domain.use_case.utils.toTestResultData
+import com.example.tingxie.domain.use_case.utils.toCharacterStatistics
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -16,48 +13,41 @@ import java.util.*
 class GetQuizResults(
     private val repository: CharacterRepository
 ) {
-    operator fun invoke(): Flow<Map<Character, List<QuizResult>>> {
+    operator fun invoke(): Flow<Map<Character, List<CharacterResult>>> {
         return repository.getCharacterResults()
     }
 
-    fun getCharacterQuizResults(): Flow<List<CharacterQuizStatistics>> {
-        return repository.getCharacterResults().map { it.toCharacterQuizStatistics() }
+    fun getCharactersQuizResults(): Flow<List<CharacterStatistics>> {
+       return  repository.getCharacterResults().map { it.toCharacterStatistics() }
     }
 
-    fun getTestScoreData(): Flow<List<CharacterQuizBarChartData>> {
-        return repository.getQuizResults().map { it.toTestResultData() }
+    fun getCharacterQuizResultsByQuizId(quizId: Int): Flow<List<CharacterStatistics>> {
+        return repository.getCharacterResultsByQuiz(quizId).map { it.toCharacterStatistics() }
     }
 
-    fun getQuizResult(timestamp: Long): Flow<List<QuizResults>> {
-        return repository.getQuizResult(timestamp).map { results: Map<QuizResult, Character> ->
-            results.toQuizResultList()
-        }
+    fun getTestScoreData(): Flow<Map<Quiz, List<CharacterResult>>> {
+        return repository.getQuizResults()
     }
 
-    fun getQuizResultsOn(year: Int, month: Int, dayOfMonth: Int): Flow<List<CharacterQuizBarChartData>> {
+    fun getQuizResult(quizId: Int): Flow<Map<Quiz, List<CharacterResult>>> {
+        return repository.getQuizResult(quizId)
+    }
+
+    fun getQuizResultsOn(year: Int, month: Int, dayOfMonth: Int): Flow<Map<Quiz, List<CharacterResult>>> {
         val (start, end) = timestampToStartAndEndOfDay(year, month, dayOfMonth)
 
-        return repository.getQuizResultBetween(start, end).map { it.toTestResultData() }
+        return repository.getQuizResultBetween(start, end)
     }
 
-    fun getQuizResultsLimitedBy(limit: Int): Flow<List<CharacterQuizBarChartData>> {
-        return repository.getQuizResultsLimitedBy(limit).map { it.toTestResultData() }
+    fun getQuizResultsLimitedBy(limit: Int): Flow<Map<Quiz, List<CharacterResult>>> {
+        return repository.getQuizResultsLimitedBy(limit)
     }
 
-    fun getLatestQuiz(): Flow<List<QuizResults>> {
-        return repository.getQuizResults().map { quizResults ->
-            val sortedQuizResults = quizResults.keys.sortedByDescending { it.timestamp }
-            val firstTimestamp = sortedQuizResults.first().timestamp
-            quizResults
-                .toList()
-                .sortedByDescending { (quizResult, _) -> quizResult.timestamp }
-                .takeWhile { (quizResult, _) -> quizResult.timestamp == firstTimestamp }
-                .toMap()
-                .toQuizResultList()
-        }
+    fun getLatestQuiz(): Flow<Map<Quiz, List<CharacterResult>>> {
+        return repository.getLatestQuiz()
     }
 
-    fun getCharacterResults(character: String): Flow<Map<Character, List<QuizResult>>> {
+    fun getCharacterResults(character: String): Flow<Map<Character, List<CharacterResult>>> {
         return repository.getCharacterResults(character)
     }
 

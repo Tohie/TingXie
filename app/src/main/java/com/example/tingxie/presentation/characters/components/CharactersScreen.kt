@@ -13,13 +13,12 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.OrderBy
-import com.example.tingxie.domain.model.Ordering
+import com.example.tingxie.domain.model.util.OrderBy
+import com.example.tingxie.domain.model.util.Ordering
 import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.characters.CharactersState
 import com.example.tingxie.presentation.characters.CharactersViewModel
@@ -116,7 +115,9 @@ private fun SortingControls(
                 val event = when (viewModel.state.value.ordering) {
                     is OrderBy.Character -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Acsending))
                     is OrderBy.DateAdded -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Acsending))
-                    is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Acsending))
+                    is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(
+                        OrderBy.CharacterNumber(
+                            Ordering.Acsending))
                 }
                 viewModel.onEvent(event)
             }
@@ -132,7 +133,9 @@ private fun SortingControls(
                 val event = when (viewModel.state.value.ordering) {
                     is OrderBy.Character -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Descending))
                     is OrderBy.DateAdded -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Descending))
-                    is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Descending))
+                    is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(
+                        OrderBy.CharacterNumber(
+                            Ordering.Descending))
                 }
                 viewModel.onEvent(event)
             },

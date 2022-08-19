@@ -43,6 +43,7 @@ class AppModule {
             getCharacters = GetCharacters(repository),
             insertQuizResult = InsertQuizResult(repository),
             getQuizResults = GetQuizResults(repository),
+            addQuiz = AddQuiz(repository)
         )
     }
 }

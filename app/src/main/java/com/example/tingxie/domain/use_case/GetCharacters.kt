@@ -1,8 +1,8 @@
 package com.example.tingxie.domain.use_case
 
 import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.OrderBy
-import com.example.tingxie.domain.model.Ordering
+import com.example.tingxie.domain.model.util.OrderBy
+import com.example.tingxie.domain.model.util.Ordering
 import com.example.tingxie.domain.repository.CharacterRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

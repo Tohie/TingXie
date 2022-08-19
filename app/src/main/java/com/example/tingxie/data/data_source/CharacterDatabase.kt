@@ -6,8 +6,9 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.tingxie.domain.model.Character
 import com.example.tingxie.domain.model.QuizResult
+import com.example.tingxie.domain.model.Quiz
 
-@Database(entities = [Character::class, QuizResult::class], version = 2)
+@Database(entities = [Character::class, QuizResult::class, Quiz::class], version = 3)
 abstract class CharacterDatabase : RoomDatabase() {
     abstract fun characterDao(): CharacterDao
 

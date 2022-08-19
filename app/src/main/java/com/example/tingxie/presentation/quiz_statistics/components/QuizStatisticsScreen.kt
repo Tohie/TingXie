@@ -74,7 +74,7 @@ fun QuizStatisticsGraphScreen(
                                 )
                             }
                             1 -> {
-                                if (viewModel.state.value.quizResults.isEmpty()) return@HorizontalPager
+                                if (viewModel.state.value.characterResults.isEmpty()) return@HorizontalPager
                                 QuizStatisticsCharacterList (
                                     viewModel = viewModel,
                                     modifier = Modifier

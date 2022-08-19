@@ -80,9 +80,9 @@ class MainActivity : ComponentActivity() {
                             route = Screen.QuizResultsScreen.route,
                             arguments = listOf(
                                 navArgument(
-                                    name = "timestamp"
+                                    name = "quizId"
                                 ) {
-                                    type = NavType.LongType
+                                    type = NavType.IntType
                                     defaultValue = -1
                                 }
                             )

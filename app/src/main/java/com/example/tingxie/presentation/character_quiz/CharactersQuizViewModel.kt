@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tingxie.domain.model.Quiz
 import com.example.tingxie.domain.model.QuizResult
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import com.example.tingxie.presentation.character_quiz.components.CharacterState
@@ -83,31 +84,42 @@ class CharactersQuizViewModel @Inject constructor(
             }
             CharacterQuizEvents.SaveQuizResults -> {
                 val timestamp = Instant.now().toEpochMilli()
-                val results = state.value.characters.map { characterState ->
-                    QuizResult(
-                        resultId = null,
-                        characterIdMap = characterState.character.id!!, // if the character id is null, we're in trouble
-                        isCorrect = characterState.isCorrect,
-                        timestamp = timestamp
-                    )
-                }
-
                 viewModelScope.launch {
+                    val newQuizId = characterUseCases.addQuiz(
+                        Quiz(
+                            quizId = null,
+                            timestamp = timestamp,
+                            numberOfCharacters = _state.value.characters.size,
+                            score = finalScore(),
+                        )
+                    )
+
+                    val results = state.value.characters.map { characterState ->
+                        QuizResult(
+                            resultId = null,
+                            characterIdMap = characterState.character.id!!, // if the character id is null, we're in trouble
+                            isCorrect = characterState.isCorrect,
+                            timestamp = timestamp,
+                            quizResultsIdMap = newQuizId.toInt()
+                        )
+                    }
+
                     characterUseCases.insertQuizResult(results)
-                }
 
-                // Reset all state in case user comes back
-                _state.value = _state.value.copy(
-                    characters = emptyList(),
-                    numberOfCharacters = 0,
-                    currentCharacter = 0,
-                )
-
-                // Go to results page
-                viewModelScope.launch {
-                    _eventFlow.emit(
-                        UiEvent.SaveAndFinishQuiz
+                    // Reset all state in case user comes back
+                    _state.value = _state.value.copy(
+                        characters = emptyList(),
+                        numberOfCharacters = 0,
+                        currentCharacter = 0,
                     )
+
+                    // Go to results page
+                    viewModelScope.launch {
+                        _eventFlow.emit(
+                            UiEvent.SaveAndFinishQuiz
+                        )
+                    }
+
                 }
             }
         }
@@ -130,7 +142,7 @@ class CharactersQuizViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun countResults(): Int {
+    private fun finalScore(): Int {
         return _state.value.characters.foldRight(0) { characterState, acc ->
             if (characterState.isCorrect) { acc + 1} else { acc }
         }
