@@ -58,6 +58,7 @@ class CharactersQuizViewModel @Inject constructor(
 
                 Log.i("Characters", "Updated the correctness")
             }
+
             is CharacterQuizEvents.ChangeCharacterVisibility -> {
                 Log.i("Characters",
                     "Changing the currentCharacter visibility to ${event.isCharacterVisible}")
@@ -72,6 +73,7 @@ class CharactersQuizViewModel @Inject constructor(
                 Log.i("Characters",
                     "Updated the currentCharacter visibility to ${_state.value.characters.get(_state.value.currentCharacter).isVisible}")
             }
+
             CharacterQuizEvents.FinishedQuiz -> {
                 viewModelScope.launch {
                     _eventFlow.emit(
@@ -79,9 +81,11 @@ class CharactersQuizViewModel @Inject constructor(
                     )
                 }
             }
+
             is CharacterQuizEvents.PageChange -> {
                 _state.value = _state.value.copy(currentCharacter = event.number)
             }
+
             CharacterQuizEvents.SaveQuizResults -> {
                 val timestamp = Instant.now().toEpochMilli()
                 viewModelScope.launch {

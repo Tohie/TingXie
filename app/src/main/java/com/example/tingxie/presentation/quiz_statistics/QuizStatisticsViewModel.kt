@@ -59,14 +59,6 @@ class QuizStatisticsViewModel @Inject constructor(
         }
     }
 
-    fun getCorrectAnswers(character: Character): Int? {
-        return _state.value.characterResults.find { it.character == character }?.correctAnswers
-    }
-
-    fun getIncorrectAnswers(character: Character): Int? {
-        return _state.value.characterResults.find { it.character == character }?.incorrectAnswers
-    }
-
     private fun getCharacterQuizResults() {
         characterUseCases.getQuizResults.getCharactersQuizResults().onEach { characterResults ->
             _state.value = _state.value.copy(characterResults = characterResults)
@@ -81,7 +73,7 @@ class QuizStatisticsViewModel @Inject constructor(
 
     private fun getTestScoresLimitedBy(limit: Int) {
         characterUseCases.getQuizResults.getTestScoreData().onEach { quizzes ->
-            updateQuizzes(quizzes)
+            updateQuizzes(quizzes.toList().take(limit).toMap())
         }.launchIn(viewModelScope)
     }
 
