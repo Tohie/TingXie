@@ -77,4 +77,8 @@ class EmptyRepository : CharacterRepository {
     override fun getCharacterResultsByQuiz(quizId: Int): Flow<Map<Character, List<CharacterResult>>> {
         return flow { emit(mapOf()) }
     }
+
+    override fun getCharacterResultsLike(searchWord: String): Flow<Map<Character, List<CharacterResult>>> {
+        return flow { emit(emptyMap()) }
+    }
 }
