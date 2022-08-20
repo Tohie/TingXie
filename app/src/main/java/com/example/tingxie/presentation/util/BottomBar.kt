@@ -69,8 +69,6 @@ fun BottomNavigationBar(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomBar(navController: NavController) {
-    val scope = rememberCoroutineScope()
-
     BottomNavigationBar(
         items = listOf(
             BottomNavItem(
@@ -99,47 +97,4 @@ fun BottomBar(navController: NavController) {
             navController.navigate(item.route)
         }
     )
-}
-
-@Composable
-fun NavigationIconButton(
-    navController: NavController,
-    route: String,
-    isCurrentRoute: Boolean = false,
-    currentRouteIcon: ImageVector,
-    currentLabel: String = "",
-    nonCurrentRouteIcon: ImageVector,
-    contentDescription: String,
-) {
-    Column {
-        IconButton(
-            onClick = {
-                Log.i("character", "current route: ${isCurrentRoute}")
-                navController.navigate(route) {
-                    // Pop up to the start destination of the graph to
-                    // avoid building up a large stack of destinations
-                    // on the back stack as users select items
-                    navController.graph.startDestinationRoute?.let { route ->
-                        popUpTo(route) {
-                            saveState = true
-                        }
-                    }
-                    // Avoid multiple copies of the same destination when
-                    // reselecting the same item
-                    launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
-                    restoreState = true
-                }
-            },
-        ) {
-            Icon(
-                imageVector = if (isCurrentRoute) currentRouteIcon else nonCurrentRouteIcon,
-                contentDescription = contentDescription,
-
-            )
-        }
-        if (isCurrentRoute) {
-            Text(text = currentLabel)
-        }
-    }
 }

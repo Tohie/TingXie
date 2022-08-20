@@ -1,10 +1,12 @@
 package com.example.tingxie.domain.use_case
 
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.util.ChooseCharactersBy
 import com.example.tingxie.domain.model.util.OrderCharacterResultsBy
 import com.example.tingxie.domain.model.util.OrderCharactersBy
 import com.example.tingxie.domain.model.util.Ordering
 import com.example.tingxie.domain.repository.CharacterRepository
+import com.example.tingxie.domain.use_case.utils.toCharacterStatistics
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -27,6 +29,23 @@ class GetCharacters (
 
     fun getNRandomCharacters(number: Int): Flow<List<Character>> {
         return characterRepository.getNRandomCharacters(number)
+    }
+
+    fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy): Flow<List<Character>> {
+        if (chooseCharactersBy is ChooseCharactersBy.Random) return getNRandomCharacters(chooseCharactersBy.amount)
+
+        return characterRepository.getCharacterResults().map { characterResults ->
+            // These transformations could be done by SQL but this method is easier and there's only
+            // a max of 20 results so I think the time difference will be very small
+            val characterStatistics = characterResults.toCharacterStatistics()
+            when (chooseCharactersBy) {
+                is ChooseCharactersBy.LeastCorrect -> characterStatistics.sortedBy { it.correctAnswers }
+                is ChooseCharactersBy.LeastTested -> characterStatistics.sortedBy { it.correctAnswers + it.incorrectAnswers }
+                is ChooseCharactersBy.MostIncorrect -> characterStatistics.sortedByDescending { it.incorrectAnswers }
+                is ChooseCharactersBy.Random -> {} // Unreachable if it's random we returned early at function start
+            }
+            characterStatistics.map { it.character }.take(chooseCharactersBy.amount)
+        }
     }
 
     companion object {

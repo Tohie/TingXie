@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tingxie.domain.model.Quiz
 import com.example.tingxie.domain.model.QuizResult
+import com.example.tingxie.domain.model.util.ChooseCharactersBy
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import com.example.tingxie.presentation.character_quiz.components.CharacterState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,14 +31,10 @@ class CharactersQuizViewModel @Inject constructor(
 
     private var totalCharacters: Int? = null
 
-    init {
-
-    }
-
     fun onEvent(event: CharacterQuizEvents) {
         when (event) {
             is CharacterQuizEvents.StartQuiz -> {
-                getNRandomCharacters(_state.value.numberOfCharacters)
+                getCharactersBy(event.chooseCharactersBy)
             }
 
             is CharacterQuizEvents.ChangeCharacterNumber -> {
@@ -144,8 +141,8 @@ class CharactersQuizViewModel @Inject constructor(
         return _state.value.characters.get(_state.value.currentCharacter)
     }
 
-    private fun getNRandomCharacters(number: Int) {
-        characterUseCases.getCharacters.getNRandomCharacters(number).onEach { characters ->
+    private fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy) {
+        characterUseCases.getCharacters.getCharactersBy(chooseCharactersBy).onEach { characters ->
             _state.value = _state.value.copy(
                 characters = characters.map { character ->
                     CharacterState(character = character, isCorrect = false, isVisible = false)

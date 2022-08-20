@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
+import com.example.tingxie.domain.model.util.ChooseCharactersBy
 
 import com.example.tingxie.presentation.character_quiz.CharacterQuizEvents
 import com.example.tingxie.presentation.character_quiz.CharactersQuizViewModel
@@ -78,7 +79,8 @@ fun CharacterQuizScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                Text(text = "Let's start a quiz!")
+                Text(text = "Let's start a quiz!", fontSize = 20.sp)
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Use a pen and paper to write the answers for each question, use the eye to see the correct answer and choose right or wrong",
                     textAlign = TextAlign.Justify,
@@ -99,13 +101,65 @@ fun CharacterQuizScreen(
                     },
                     update = { }
                 )
-                Button(onClick = { viewModel.onEvent(CharacterQuizEvents.StartQuiz) }) {
-                    Text(text = "Let's Start")
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Test by:",
+                        modifier = Modifier.weight(0.5f),
+                        fontSize = 10.sp
+                    )
+
+                    StartQuizButton(
+                        text = "Random",
+                        chooseCharactersBy = ChooseCharactersBy.Random(viewModel.state.value.numberOfCharacters),
+                        viewModel = viewModel,
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    StartQuizButton(
+                        text = "Least\nTested",
+                        chooseCharactersBy = ChooseCharactersBy.LeastTested(viewModel.state.value.numberOfCharacters),
+                        viewModel = viewModel,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    StartQuizButton(
+                        text = "Most\nIncorrect",
+                        chooseCharactersBy = ChooseCharactersBy.MostIncorrect(viewModel.state.value.numberOfCharacters),
+                        viewModel = viewModel,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    StartQuizButton(
+                        text = "Least\nCorrect",
+                        chooseCharactersBy = ChooseCharactersBy.LeastCorrect(viewModel.state.value.numberOfCharacters),
+                        viewModel = viewModel,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         } else {
             Pager(viewModel = viewModel)
         }
+    }
+}
+
+@Composable
+fun StartQuizButton(
+    text: String,
+    chooseCharactersBy: ChooseCharactersBy,
+    viewModel: CharactersQuizViewModel,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = { viewModel.onEvent(CharacterQuizEvents.StartQuiz(chooseCharactersBy)) },
+        modifier = modifier
+    ) {
+        Text(text = text, fontSize = 10.sp)
     }
 }
 

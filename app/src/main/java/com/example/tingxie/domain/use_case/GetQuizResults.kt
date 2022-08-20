@@ -20,7 +20,7 @@ class GetQuizResults(
     }
 
     fun getCharactersQuizResults(): Flow<List<CharacterStatistics>> {
-       return  repository.getCharacterResults().map { it.toCharacterStatistics() }
+       return repository.getCharacterResults().map { it.toCharacterStatistics() }
     }
 
     fun getCharactersQuizResultsLike(searchWord: String): Flow<List<CharacterStatistics>> {
