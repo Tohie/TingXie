@@ -9,9 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.tingxie.domain.model.CharacterStatistics
+import com.example.tingxie.domain.model.util.OrderCharacterResultsBy
+import com.example.tingxie.domain.model.util.OrderCharactersBy
+import com.example.tingxie.domain.model.util.Ordering
+import com.example.tingxie.presentation.characters.CharactersEvent
+import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsEvent
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsViewModel
-import com.example.tingxie.presentation.util.BottomBar
-import com.example.tingxie.presentation.util.TopBar
+import com.example.tingxie.presentation.util.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -29,7 +34,21 @@ fun QuizStatisticsGraphScreen(
     val pagerState = rememberPagerState()
 
     Scaffold(
-        topBar = { TopBar {} },
+        topBar = {
+            TopBar {
+                // Only show search box when user is looking at character statistics
+                if (pagerState.currentPage == 1) {
+                    TopSearchSortBar(
+                        onSearchQueryChanged = { searchQuery ->
+                            viewModel.onEvent(QuizStatisticsEvent.Search(searchQuery))
+                        },
+                        onExpandSortingOptions = { viewModel.onEvent(QuizStatisticsEvent.ChangeSortingOptionsVisibility) },
+                        sortingControls = { QuizStatisticsSortingControls(viewModel = viewModel) },
+                        isOrderingOptionsVisible = viewModel.state.value.isOrderingOptionsVisible
+                    )
+                }
+            }
+        },
         scaffoldState = scaffoldState,
         bottomBar = { BottomBar(navController = navController)}
     ) { innerPadding ->
@@ -92,4 +111,88 @@ fun QuizStatisticsGraphScreen(
             }
         }
     }
+}
+
+@Composable
+fun QuizStatisticsSortingControls(viewModel: QuizStatisticsViewModel) {
+    val ordering = listOf(
+        SortingItem(
+            text = "Ascending",
+            isSelected = { viewModel.state.value.ordering.isAscending() },
+            onClick = {
+                val ordering = when (viewModel.state.value.ordering) {
+                    is OrderCharacterResultsBy.Best -> OrderCharacterResultsBy.Best(Ordering.Acsending)
+                    is OrderCharacterResultsBy.Character -> OrderCharacterResultsBy.Character(
+                        Ordering.Acsending
+                    )
+                    is OrderCharacterResultsBy.CharacterNumber -> OrderCharacterResultsBy.CharacterNumber(
+                        Ordering.Acsending
+                    )
+                    is OrderCharacterResultsBy.Worst -> OrderCharacterResultsBy.Worst(Ordering.Acsending)
+                }
+                viewModel.onEvent(QuizStatisticsEvent.OrderResultsBy(ordering))
+            }
+        ),
+        SortingItem(
+            text = "Descending",
+            isSelected = { !viewModel.state.value.ordering.isAscending() },
+            onClick = {
+                val ordering = when (viewModel.state.value.ordering) {
+                    is OrderCharacterResultsBy.Best -> OrderCharacterResultsBy.Best(Ordering.Descending)
+                    is OrderCharacterResultsBy.Character -> OrderCharacterResultsBy.Character(Ordering.Descending)
+                    is OrderCharacterResultsBy.CharacterNumber -> OrderCharacterResultsBy.CharacterNumber(Ordering.Descending)
+                    is OrderCharacterResultsBy.Worst -> OrderCharacterResultsBy.Worst(Ordering.Descending)
+                }
+                viewModel.onEvent(QuizStatisticsEvent.OrderResultsBy(ordering))
+            }
+        ),
+    )
+
+    val orderingBy = listOf(
+        SortingItem(
+            text = "Best",
+            isSelected = { viewModel.state.value.ordering is OrderCharacterResultsBy.Best},
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> QuizStatisticsEvent.OrderResultsBy(OrderCharacterResultsBy.Best(Ordering.Acsending))
+                    false -> QuizStatisticsEvent.OrderResultsBy(OrderCharacterResultsBy.Best(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        ),
+        SortingItem(
+            text = "Worst",
+            isSelected = { viewModel.state.value.ordering is OrderCharacterResultsBy.Worst},
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> QuizStatisticsEvent.OrderResultsBy(OrderCharacterResultsBy.Worst(Ordering.Acsending))
+                    false -> QuizStatisticsEvent.OrderResultsBy(OrderCharacterResultsBy.Worst(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        ),
+        SortingItem(
+            text = "Character",
+            isSelected = { viewModel.state.value.ordering is OrderCharacterResultsBy.Character},
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> QuizStatisticsEvent.OrderResultsBy(OrderCharacterResultsBy.Character(Ordering.Acsending))
+                    false -> QuizStatisticsEvent.OrderResultsBy(OrderCharacterResultsBy.Character(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        ),
+        SortingItem(
+            text = "Character\nNumber",
+            isSelected = { viewModel.state.value.ordering is OrderCharacterResultsBy.CharacterNumber},
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> QuizStatisticsEvent.OrderResultsBy(OrderCharacterResultsBy.CharacterNumber(Ordering.Acsending))
+                    false -> QuizStatisticsEvent.OrderResultsBy(OrderCharacterResultsBy.CharacterNumber(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        )
+    )
+    SortingControls(orderingBys = orderingBy, orderings = ordering)
 }

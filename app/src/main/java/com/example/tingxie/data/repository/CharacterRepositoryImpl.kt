@@ -61,6 +61,10 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.getCharacterResults(character = character)
     }
 
+    override fun getCharacterResultsLike(searchWord: String): Flow<Map<Character, List<CharacterResult>>> {
+        return characterDao.getCharacterResults(searchWord)
+    }
+
     override suspend fun insetQuizResults(quizResults: List<QuizResult>) {
         characterDao.insertQuizResults(quizResults = quizResults)
     }

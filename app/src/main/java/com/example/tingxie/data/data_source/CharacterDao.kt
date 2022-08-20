@@ -32,6 +32,10 @@ interface CharacterDao {
     @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id")
     fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>>
 
+    @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id  WHERE character LIKE '%' || :searchWord || '%'")
+    fun getCharacterResultsLike(searchWord: String): Flow<Map<Character, List<CharacterResult>>>
+
+
     @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id WHERE quizResultsIdMap IN (:quizId)")
     fun getCharacterResultsByQuizId(quizId: Int): Flow<Map<Character, List<CharacterResult>>>
 

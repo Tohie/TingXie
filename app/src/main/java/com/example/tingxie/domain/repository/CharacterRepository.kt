@@ -38,4 +38,5 @@ interface CharacterRepository {
     fun getLatestQuiz(): Flow<Map<Quiz, List<CharacterResult>>>
     suspend fun insertQuiz(quiz: Quiz): Long
     fun getCharacterResultsByQuiz(quizId: Int): Flow<Map<Character, List<CharacterResult>>>
+    fun getCharacterResultsLike(searchWord: String): Flow<Map<Character, List<CharacterResult>>>
 }

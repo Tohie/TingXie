@@ -1,6 +1,8 @@
 package com.example.tingxie.data.repository
 
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.CharacterResult
+import com.example.tingxie.domain.model.Quiz
 import com.example.tingxie.domain.model.QuizResult
 import com.example.tingxie.domain.repository.CharacterRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +19,7 @@ class EmptyRepository : CharacterRepository {
     }
 
     override fun getCharactersLike(searchWord: String): Flow<List<Character>> {
-        TODO("Not yet implemented")
+        return flow { emit (emptyList()) }
     }
 
     override suspend fun deleteCharacter(character: Character) {
@@ -36,27 +38,43 @@ class EmptyRepository : CharacterRepository {
         // Do nothing
     }
 
-    override fun getQuizResults(): Flow<Map<QuizResult, Character>> {
+    override fun getQuizResults(): Flow<Map<Quiz, List<CharacterResult>>> {
         return flow { emit(mapOf()) }
     }
 
-    override fun getCharacterResults(): Flow<Map<Character, List<QuizResult>>> {
+    override fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>> {
         return flow { emit(mapOf())}
     }
 
-    override fun getCharacterResults(character: String): Flow<Map<Character, List<QuizResult>>> {
+    override fun getCharacterResults(character: String): Flow<Map<Character, List<CharacterResult>>> {
         return flow { emit(mapOf()) }
     }
 
-    override fun getQuizResult(timestamp: Long): Flow<Map<Character, QuizResult>> {
+    override fun getQuizResultsLimitedBy(limit: Int): Flow<Map<Quiz, List<CharacterResult>>> {
         return flow { emit(mapOf()) }
     }
 
-    override fun getQuizResultsLimitedBy(limit: Int): Flow<Map<QuizResult, Character>> {
+    override fun getQuizResultBetween(start: Long, end: Long): Flow<Map<Quiz, List<CharacterResult>>> {
         return flow { emit(mapOf()) }
     }
 
-    override fun getQuizResultBetween(start: Long, end: Long): Flow<Map<QuizResult, Character>> {
+    override suspend fun insetQuizResults(quizResults: List<QuizResult>) {
+        // Do nothing
+    }
+
+    override fun getQuizResult(quizId: Int): Flow<Map<Quiz, List<CharacterResult>>> {
+        return flow { emit(mapOf()) }
+    }
+
+    override fun getLatestQuiz(): Flow<Map<Quiz, List<CharacterResult>>> {
+        return flow { emit(mapOf()) }
+    }
+
+    override suspend fun insertQuiz(quiz: Quiz): Long {
+        return -1
+    }
+
+    override fun getCharacterResultsByQuiz(quizId: Int): Flow<Map<Character, List<CharacterResult>>> {
         return flow { emit(mapOf()) }
     }
 }

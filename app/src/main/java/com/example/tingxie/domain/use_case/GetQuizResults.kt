@@ -1,6 +1,8 @@
 package com.example.tingxie.domain.use_case
 
 import com.example.tingxie.domain.model.*
+import com.example.tingxie.domain.model.util.OrderCharacterResultsBy
+import com.example.tingxie.domain.model.util.Ordering
 import com.example.tingxie.domain.repository.CharacterRepository
 import com.example.tingxie.domain.use_case.utils.toCharacterStatistics
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +21,10 @@ class GetQuizResults(
 
     fun getCharactersQuizResults(): Flow<List<CharacterStatistics>> {
        return  repository.getCharacterResults().map { it.toCharacterStatistics() }
+    }
+
+    fun getCharactersQuizResultsLike(searchWord: String): Flow<List<CharacterStatistics>> {
+        return  repository.getCharacterResultsLike(searchWord).map { it.toCharacterStatistics() }
     }
 
     fun getCharacterQuizResultsByQuizId(quizId: Int): Flow<List<CharacterStatistics>> {
@@ -65,6 +71,35 @@ class GetQuizResults(
             val endOfDayTimeStamp = endOfDay.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
             return Pair(startOfDayTimeStamp, endOfDayTimeStamp)
+        }
+
+        fun sortCharacterStatistics(characterStatistics: List<CharacterStatistics>, orderingBy: OrderCharacterResultsBy): List<CharacterStatistics> {
+            return when (orderingBy) {
+                is OrderCharacterResultsBy.Best -> {
+                    when (orderingBy.ordering) {
+                        Ordering.Acsending -> { characterStatistics.sortedBy { it.correctAnswers }}
+                        Ordering.Descending -> { characterStatistics.sortedByDescending { it.correctAnswers } }
+                    }
+                }
+                is OrderCharacterResultsBy.Character -> {
+                    when (orderingBy.ordering) {
+                        Ordering.Acsending -> { characterStatistics.sortedBy { it.character.pinyin }}
+                        Ordering.Descending -> { characterStatistics.sortedByDescending { it.character.pinyin } }
+                    }
+                }
+                is OrderCharacterResultsBy.CharacterNumber -> {
+                    when (orderingBy.ordering) {
+                        Ordering.Acsending -> { characterStatistics.sortedBy { it.character.characterNumber }}
+                        Ordering.Descending -> { characterStatistics.sortedByDescending { it.character.characterNumber } }
+                    }
+                }
+                is OrderCharacterResultsBy.Worst -> {
+                    when (orderingBy.ordering) {
+                        Ordering.Acsending -> { characterStatistics.sortedBy { it.incorrectAnswers }}
+                        Ordering.Descending -> { characterStatistics.sortedByDescending { it.incorrectAnswers } }
+                    }
+                }
+            }
         }
     }
 }

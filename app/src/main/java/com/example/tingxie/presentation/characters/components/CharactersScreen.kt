@@ -19,15 +19,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.util.OrderBy
+import com.example.tingxie.domain.model.util.OrderCharactersBy
 import com.example.tingxie.domain.model.util.Ordering
 import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.characters.CharactersState
 import com.example.tingxie.presentation.characters.CharactersViewModel
-import com.example.tingxie.presentation.util.BottomBar
-import com.example.tingxie.presentation.util.CharacterDetail
-import com.example.tingxie.presentation.util.Screen
-import com.example.tingxie.presentation.util.TopBar
+import com.example.tingxie.presentation.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -48,18 +45,16 @@ fun CharactersScreen(
 
     Scaffold(
         topBar = { TopBar {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ){
-                SearchBar(viewModel = viewModel)
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                SortingOptions(state = state, viewModel = viewModel)
-            }
-            SearchBar(viewModel = viewModel)
+            TopSearchSortBar(
+                onSearchQueryChanged = { searchQuery ->
+                    viewModel.onEvent(CharactersEvent.Search(searchQuery))
+                },
+                onExpandSortingOptions = {
+                    viewModel.onEvent(CharactersEvent.ChangeSortingOptionsVisibility)
+                },
+                isOrderingOptionsVisible = viewModel.state.value.isOrderingOptionsVisible,
+                sortingControls = { CharacterSortingControls(viewModel = viewModel) }
+            )
         } },
         bottomBar = { BottomBar(navController) },
         scaffoldState = scaffoldState,
@@ -70,13 +65,6 @@ fun CharactersScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
-
-            }
             CharacterScreenCharacterList(
                 state = state,
                 viewModel = viewModel,
@@ -88,166 +76,78 @@ fun CharactersScreen(
     }
 }
 
-@Composable
-private fun ColumnScope.SortingOptions(state: CharactersState, viewModel: CharactersViewModel) {
-    AnimatedVisibility(
-        visible = state.isOrderingOptionsVisible,
-        enter = expandVertically(),
-        exit = shrinkVertically()
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            SortingControls(state, viewModel)
-        }
-    }
-}
+
 
 @Composable
-private fun SortingControls(
-    state: CharactersState,
+private fun CharacterSortingControls(
     viewModel: CharactersViewModel
 ) {
-    val radioButtonColors = RadioButtonDefaults.colors(
-        selectedColor = MaterialTheme.colors.secondary,
-        unselectedColor = Color.White,
-        disabledColor = Color.Gray
+    val ordering = listOf(
+        SortingItem(
+            text = "Ascending",
+            isSelected = { viewModel.state.value.ordering.isAscending() },
+            onClick = {
+                val event = when (viewModel.state.value.ordering) {
+                    is OrderCharactersBy.Character -> CharactersEvent.ChangeSorting(OrderCharactersBy.Character(Ordering.Acsending))
+                    is OrderCharactersBy.DateAdded -> CharactersEvent.ChangeSorting(OrderCharactersBy.DateAdded(Ordering.Acsending))
+                    is OrderCharactersBy.CharacterNumber -> CharactersEvent.ChangeSorting(OrderCharactersBy.CharacterNumber(Ordering.Acsending))
+                }
+                viewModel.onEvent(event)
+            }
+        ),
+        SortingItem(
+            text = "Descending",
+            isSelected = { !viewModel.state.value.ordering.isAscending() },
+            onClick = {
+                val event = when (viewModel.state.value.ordering) {
+                    is OrderCharactersBy.Character -> CharactersEvent.ChangeSorting(OrderCharactersBy.Character(Ordering.Descending))
+                    is OrderCharactersBy.DateAdded -> CharactersEvent.ChangeSorting(OrderCharactersBy.DateAdded(Ordering.Descending))
+                    is OrderCharactersBy.CharacterNumber -> CharactersEvent.ChangeSorting(OrderCharactersBy.CharacterNumber(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        )
+    )
+    val orderBys = listOf(
+        SortingItem(
+            text = "Date Added",
+            isSelected = { viewModel.state.value.ordering is OrderCharactersBy.DateAdded },
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> CharactersEvent.ChangeSorting(OrderCharactersBy.DateAdded(Ordering.Acsending))
+                    false -> CharactersEvent.ChangeSorting(OrderCharactersBy.DateAdded(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        ),
+        SortingItem(
+            text = "Number",
+            isSelected = { viewModel.state.value.ordering is OrderCharactersBy.CharacterNumber },
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> CharactersEvent.ChangeSorting(OrderCharactersBy.CharacterNumber(Ordering.Acsending))
+                    false -> CharactersEvent.ChangeSorting(OrderCharactersBy.CharacterNumber(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            }
+        ),
+        SortingItem(
+            text = "Character",
+            isSelected = { viewModel.state.value.ordering is OrderCharactersBy.Character },
+            onClick = {
+                val event = when (viewModel.state.value.ordering.isAscending()) {
+                    true -> CharactersEvent.ChangeSorting(OrderCharactersBy.Character(Ordering.Acsending))
+                    false -> CharactersEvent.ChangeSorting(OrderCharactersBy.Character(Ordering.Descending))
+                }
+                viewModel.onEvent(event)
+            },
+        )
     )
 
-    Row(
-        horizontalArrangement = Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Ascending",
-            style = MaterialTheme.typography.body2,
-            fontSize = 10.sp
-        )
-        RadioButton(
-            selected = viewModel.state.value.ordering.isAscending(),
-            onClick = {
-                val event = when (viewModel.state.value.ordering) {
-                    is OrderBy.Character -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Acsending))
-                    is OrderBy.DateAdded -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Acsending))
-                    is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(
-                        OrderBy.CharacterNumber(
-                            Ordering.Acsending))
-                }
-                viewModel.onEvent(event)
-            },
-            colors = radioButtonColors
-        )
-
-        Text(
-            text = "Descending",
-            style = MaterialTheme.typography.body2,
-            fontSize = 10.sp
-        )
-        RadioButton(
-            selected = !viewModel.state.value.ordering.isAscending(),
-            onClick = {
-                val event = when (viewModel.state.value.ordering) {
-                    is OrderBy.Character -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Descending))
-                    is OrderBy.DateAdded -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Descending))
-                    is OrderBy.CharacterNumber -> CharactersEvent.ChangeSorting(
-                        OrderBy.CharacterNumber(
-                            Ordering.Descending))
-                }
-                viewModel.onEvent(event)
-            },
-            colors = radioButtonColors
-        )
-    }
-    Row(
-        horizontalArrangement = Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Date Added",
-            style = MaterialTheme.typography.body2,
-            fontSize = 10.sp
-        )
-        RadioButton(
-            selected = viewModel.state.value.ordering is OrderBy.DateAdded,
-            onClick = {
-                val event = when (viewModel.state.value.ordering.isAscending()) {
-                    true -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Acsending))
-                    false -> CharactersEvent.ChangeSorting(OrderBy.DateAdded(Ordering.Descending))
-                }
-                viewModel.onEvent(event)
-            },
-            colors = radioButtonColors
-        )
-
-        Text(
-            text = "Number",
-            style = MaterialTheme.typography.body2,
-            fontSize = 10.sp
-        )
-        RadioButton(
-            selected = viewModel.state.value.ordering is OrderBy.CharacterNumber,
-            onClick = {
-                val event = when (viewModel.state.value.ordering.isAscending()) {
-                    true -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Acsending))
-                    false -> CharactersEvent.ChangeSorting(OrderBy.CharacterNumber(Ordering.Descending))
-                }
-                viewModel.onEvent(event)
-            },
-            colors = radioButtonColors
-        )
-
-        Text(
-            text = "Character",
-            style = MaterialTheme.typography.body2,
-            fontSize = 10.sp
-        )
-
-        RadioButton(
-            selected = viewModel.state.value.ordering is OrderBy.Character,
-            onClick = {
-                val event = when (viewModel.state.value.ordering.isAscending()) {
-                    true -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Acsending))
-                    false -> CharactersEvent.ChangeSorting(OrderBy.Character(Ordering.Descending))
-                }
-                viewModel.onEvent(event)
-            },
-            colors = radioButtonColors
-        )
-    }
-}
-
-@Composable
-private fun SearchBar(
-    viewModel: CharactersViewModel
-) {
-    var searchText by remember { mutableStateOf("") }
-    Row(modifier = Modifier.fillMaxWidth()) {
-        OutlinedTextField(
-            value = searchText,
-            onValueChange = { newSearch ->
-                searchText = newSearch
-                viewModel.onEvent(CharactersEvent.Search(searchText))
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .weight(6f),
-            textStyle = MaterialTheme.typography.h5,
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = MaterialTheme.colors.secondary
-            )
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        IconButton(
-            onClick = { viewModel.onEvent(CharactersEvent.ChangeSortingOptionsVisibility) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = false)
-        ) {
-            Icon(imageVector = Icons.Default.Expand, contentDescription = "Expand search options")
-        }
-    }
+    SortingControls(
+        orderings = ordering,
+        orderingBys = orderBys
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
