@@ -59,6 +59,7 @@ fun CharacterDetail(
                     text = character.description,
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.onSurface,
+                    overflow = TextOverflow.Ellipsis,
                     fontSize = 10.sp
                 )
             }
