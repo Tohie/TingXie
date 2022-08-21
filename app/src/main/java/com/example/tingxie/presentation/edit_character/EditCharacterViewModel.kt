@@ -5,7 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.tingxie.domain.model.Categories
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.InvalidCategoryException
 import com.example.tingxie.domain.model.InvalidCharacterException
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +43,11 @@ class EditCharacterViewModel @Inject constructor (
         hint = "Enter description of the character without using the 汉字. I.e. 我的peng友很好 for peng."
     ))
     val description: State<EditCharacterTextField> = _description
+
+    private val _categoryName = mutableStateOf(EditCharacterTextField(
+        hint = "Enter the name of the category you would like to create"
+    ))
+    val categoryName: State<EditCharacterTextField> = _categoryName
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -120,9 +128,42 @@ class EditCharacterViewModel @Inject constructor (
             is EditCharacterEvent.ChangeDescriptionFocus -> {
                 _description.value = description.value.copy(
                     isHintVisible = !event.focusState.isFocused &&
-                            character.value.text.isBlank()
+                            description.value.text.isBlank()
                 )
             }
+
+            is EditCharacterEvent.ChangeCategoryNameFocus -> {
+                _categoryName.value = categoryName.value.copy(
+                    isHintVisible = !event.focusState.isFocused &&
+                            categoryName.value.text.isBlank()
+                )
+            }
+            is EditCharacterEvent.EnteredCategoryName -> {
+                _categoryName.value = categoryName.value.copy(
+                    event.value
+                )
+            }
+
+            EditCharacterEvent.SaveCategory -> {
+                viewModelScope.launch {
+                    try {
+                        characterUseCases.categoryUseCases.insertCategory(
+                            Categories(
+                                categoryId = null,
+                                categoryName = categoryName.value.text
+                            )
+                        )
+                        _eventFlow.emit(UiEvent.SaveCharacter)
+                    } catch (e: InvalidCategoryException) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = e.message ?: "Couldn't save category"
+                            )
+                        )
+                    }
+                }
+            }
+
             is EditCharacterEvent.SaveCharacter -> {
                 viewModelScope.launch {
                     try {

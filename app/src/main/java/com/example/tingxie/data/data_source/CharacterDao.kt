@@ -1,10 +1,7 @@
 package com.example.tingxie.data.data_source
 
 import androidx.room.*
-import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.CharacterResult
-import com.example.tingxie.domain.model.QuizResult
-import com.example.tingxie.domain.model.Quiz
+import com.example.tingxie.domain.model.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -70,4 +67,18 @@ interface CharacterDao {
 
     @Query("SELECT * FROM quiz JOIN quizresult ON quizResultsIdMap = quizId JOIN character ON characterIdMap = character.id")
     fun getQuizzes(): Flow<Map<Quiz, List<CharacterResult>>>
+
+    // Categories
+    @Transaction
+    @Query("SELECT * FROM categories")
+    fun getCategories(): Flow<List<CategoriesWithCharacters>>
+
+    @Insert
+    suspend fun insertCategory(categories: Categories)
+
+    @Insert
+    suspend fun addCharacterToCategory(characterCategory: CharacterCategoryCrossRef)
+
+    @Delete
+    suspend fun deleteCharacterFromCategory(characterCategory: CharacterCategoryCrossRef)
 }

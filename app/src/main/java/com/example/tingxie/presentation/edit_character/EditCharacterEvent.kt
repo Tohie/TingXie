@@ -16,5 +16,9 @@ sealed class EditCharacterEvent {
     data class EnteredDescription(val value: String): EditCharacterEvent()
     data class ChangeDescriptionFocus(val focusState: FocusState): EditCharacterEvent()
 
-    object SaveCharacter: EditCharacterEvent()
+    data class EnteredCategoryName(val value: String): EditCharacterEvent()
+    data class ChangeCategoryNameFocus(val focusState: FocusState): EditCharacterEvent()
+
+    object SaveCharacter : EditCharacterEvent()
+    object SaveCategory : EditCharacterEvent()
 }

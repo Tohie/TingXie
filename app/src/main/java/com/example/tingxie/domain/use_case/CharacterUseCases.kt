@@ -6,5 +6,6 @@ data class CharacterUseCases(
     val getCharacters: GetCharacters,
     val insertQuizResult: InsertQuizResult,
     val getQuizResults: GetQuizResults,
-    val addQuiz: AddQuiz
+    val addQuiz: AddQuiz,
+    val categoryUseCases: CategoryUseCases
 )

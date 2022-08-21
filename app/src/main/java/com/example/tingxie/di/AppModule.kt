@@ -3,7 +3,6 @@ package com.example.tingxie.di
 import android.app.Application
 import androidx.room.Room
 import com.example.tingxie.data.data_source.CharacterDatabase
-import com.example.tingxie.data.data_source.MIGRATION_1_2
 import com.example.tingxie.data.repository.CharacterRepositoryImpl
 import com.example.tingxie.domain.repository.CharacterRepository
 import com.example.tingxie.domain.use_case.*
@@ -24,7 +23,6 @@ class AppModule {
             CharacterDatabase::class.java,
             CharacterDatabase.DATABASE_NAME
         )
-            .addMigrations(MIGRATION_1_2)
             .build()
     }
 
@@ -43,7 +41,8 @@ class AppModule {
             getCharacters = GetCharacters(repository),
             insertQuizResult = InsertQuizResult(repository),
             getQuizResults = GetQuizResults(repository),
-            addQuiz = AddQuiz(repository)
+            addQuiz = AddQuiz(repository),
+            categoryUseCases = CategoryUseCases(repository)
         )
     }
 }

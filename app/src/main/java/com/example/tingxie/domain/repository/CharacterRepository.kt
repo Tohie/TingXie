@@ -1,9 +1,6 @@
 package com.example.tingxie.domain.repository
 
-import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.CharacterResult
-import com.example.tingxie.domain.model.Quiz
-import com.example.tingxie.domain.model.QuizResult
+import com.example.tingxie.domain.model.*
 import kotlinx.coroutines.flow.Flow
 
 interface CharacterRepository {
@@ -39,4 +36,8 @@ interface CharacterRepository {
     suspend fun insertQuiz(quiz: Quiz): Long
     fun getCharacterResultsByQuiz(quizId: Int): Flow<Map<Character, List<CharacterResult>>>
     fun getCharacterResultsLike(searchWord: String): Flow<Map<Character, List<CharacterResult>>>
+    fun getCategories(): Flow<List<CategoriesWithCharacters>>
+    suspend fun insertCategory(categories: Categories)
+    suspend fun addCharacterToCategory(characterCategory: CharacterCategoryCrossRef)
+    suspend fun deleteCharacterFromCategory(characterCategory: CharacterCategoryCrossRef)
 }

@@ -1,10 +1,7 @@
 package com.example.tingxie.data.repository
 
 import com.example.tingxie.data.data_source.CharacterDao
-import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.CharacterResult
-import com.example.tingxie.domain.model.Quiz
-import com.example.tingxie.domain.model.QuizResult
+import com.example.tingxie.domain.model.*
 import com.example.tingxie.domain.repository.CharacterRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -84,5 +81,22 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
 
     override suspend fun insertQuiz(quiz: Quiz): Long {
         return characterDao.insertQuiz(quiz)
+    }
+
+    // Categories
+    override fun getCategories(): Flow<List<CategoriesWithCharacters>> {
+        return characterDao.getCategories()
+    }
+
+    override suspend fun insertCategory(categories: Categories) {
+        return characterDao.insertCategory(categories)
+    }
+
+    override suspend fun addCharacterToCategory(characterCategory: CharacterCategoryCrossRef)  {
+        return characterDao.addCharacterToCategory(characterCategory)
+    }
+
+    override suspend fun deleteCharacterFromCategory(characterCategory: CharacterCategoryCrossRef) {
+        return characterDao.deleteCharacterFromCategory(characterCategory)
     }
 }
