@@ -31,7 +31,8 @@ fun QuizStatisticsCharacterList(
                 CharacterDetail(
                     character = characterResult.character,
                     modifier = Modifier.padding(8.dp),
-                    showCharacter = true
+                    showCharacter = true,
+                    Categories = {}
                 ) {
                     Row(
                         modifier = Modifier

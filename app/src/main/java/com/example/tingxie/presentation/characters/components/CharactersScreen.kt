@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.CharacterWithCategories
 import com.example.tingxie.domain.model.util.OrderCharactersBy
 import com.example.tingxie.domain.model.util.Ordering
 import com.example.tingxie.presentation.characters.CharactersEvent
@@ -166,7 +167,7 @@ private fun CharacterScreenCharacterList(
     ) {
         items(
             items = state.characters,
-            key = { item: Character -> item.id!! }
+            key = { item: CharacterWithCategories -> item.character.id!! }
         ) { character ->
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -177,11 +178,12 @@ private fun CharacterScreenCharacterList(
                     viewModel = viewModel,
                     scope = scope,
                     scaffoldState = scaffoldState,
+                    navController = navController,
                     modifier = Modifier
                         .animateItemPlacement()
                         .clickable {
                             navController.navigate(
-                                Screen.EditCharacterScreen.route + "?characterId=${character.id}"
+                                Screen.EditCharacterScreen.route + "?characterId=${character.character.id}"
                             )
                         }
                         .padding(4.dp),
@@ -193,25 +195,33 @@ private fun CharacterScreenCharacterList(
 
 @Composable
 private fun CharacterScreenCharacterDetail(
-    character: Character,
+    character: CharacterWithCategories,
     viewModel: CharactersViewModel,
     scope: CoroutineScope,
     scaffoldState: ScaffoldState,
+    navController: NavController,
     modifier: Modifier
 ) {
     CharacterDetail(
-        character = character,
+        character = character.character,
         modifier = modifier,
-        showCharacter = true
-    ) {
-        EndAlignedDeleteButton(viewModel, character, scope, scaffoldState)
-    }
+        showCharacter = true,
+        AdditionalContent = {
+            EndAlignedDeleteButton(viewModel, character, scope, scaffoldState)
+
+        },
+        Categories = {
+            CategoryClips(categories = character.categories, onClick = {
+                navController.navigate(Screen.EditCharacterScreen.route + "?characterId=${character.character.id}")
+            } )
+        }
+    )
 }
 
 @Composable
 private fun EndAlignedDeleteButton(
     viewModel: CharactersViewModel,
-    character: Character,
+    character: CharacterWithCategories,
     scope: CoroutineScope,
     scaffoldState: ScaffoldState
 ) {

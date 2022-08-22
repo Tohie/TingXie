@@ -91,7 +91,8 @@ private fun QuizResultBreakdown(viewModel: CharacterQuizResultsViewModel) {
                 showCharacter = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(8.dp),
+                Categories = {}
             ) {
                 Row(
                     modifier = Modifier

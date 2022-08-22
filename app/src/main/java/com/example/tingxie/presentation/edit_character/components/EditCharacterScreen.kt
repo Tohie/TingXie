@@ -1,21 +1,28 @@
 package com.example.tingxie.presentation.edit_character
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.tingxie.domain.model.Categories
+import com.example.tingxie.domain.model.CharacterCategoryCrossRef
+import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.util.BottomBar
 import com.example.tingxie.presentation.util.TopBar
 import com.google.accompanist.pager.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -59,39 +66,78 @@ fun EditCharacterScreen(
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             Column {
-                TabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
-                        )
-                    }
-                ) {
-                    Tab(
-                        selected = pagerState.currentPage == 0,
-                        onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                        text = { Text(text = "Add Character")}
-                    )
-                    Tab(
-                        selected = pagerState.currentPage == 1,
-                        onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                        text = { Text(text = "Add Category")}
-                    )
-                }
+                AddCharacterCategoryTabs(pagerState, scope)
 
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    HorizontalPager(
-                        count = 2,
-                        state = pagerState
-                    ) { page ->
-                        when (page) {
-                            0 -> AddCharacter(characterNumberState, viewModel, characterState, pinyinState, descriptionState)
-                            1 -> AddCategory(viewModel = viewModel, categoryNameState = categoryNameState)
-                        }
-                    }
-                }
+                AddCharacterCategoryPager(
+                    innerPadding,
+                    pagerState,
+                    characterNumberState,
+                    viewModel,
+                    characterState,
+                    pinyinState,
+                    descriptionState,
+                    categoryNameState
+                )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun AddCharacterCategoryPager(
+    innerPadding: PaddingValues,
+    pagerState: PagerState,
+    characterNumberState: EditCharacterTextField,
+    viewModel: EditCharacterViewModel,
+    characterState: EditCharacterTextField,
+    pinyinState: EditCharacterTextField,
+    descriptionState: EditCharacterTextField,
+    categoryNameState: EditCharacterTextField
+) {
+    Box(modifier = Modifier.padding(innerPadding)) {
+        HorizontalPager(
+            count = 2,
+            state = pagerState
+        ) { page ->
+            when (page) {
+                0 -> AddCharacter(
+                    characterNumberState,
+                    viewModel,
+                    characterState,
+                    pinyinState,
+                    descriptionState
+                )
+                1 -> AddCategory(viewModel = viewModel, categoryNameState = categoryNameState)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun AddCharacterCategoryTabs(
+    pagerState: PagerState,
+    scope: CoroutineScope
+) {
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        indicator = { tabPositions ->
+            TabRowDefaults.Indicator(
+                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+            )
+        }
+    ) {
+        Tab(
+            selected = pagerState.currentPage == 0,
+            onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
+            text = { Text(text = "Add Character") }
+        )
+        Tab(
+            selected = pagerState.currentPage == 1,
+            onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
+            text = { Text(text = "Add Category") }
+        )
     }
 }
 
@@ -172,14 +218,17 @@ private fun AddCharacter(
     }
 }
 
+
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun FloatingActionButton(viewModel: EditCharacterViewModel, pagerState: PagerState) {
+    if (pagerState.currentPage == 2) return
     FloatingActionButton(
         onClick = {
             if (pagerState.currentPage == 0) {
                 viewModel.onEvent(EditCharacterEvent.SaveCharacter)
-            } else {
+            } else if (pagerState.currentPage == 1){
                 viewModel.onEvent(EditCharacterEvent.SaveCategory)
             }
         },

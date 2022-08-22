@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.example.tingxie.presentation.character_quiz.components.CharacterQuizScreen
 import com.example.tingxie.presentation.character_quiz_results.components.CharacterQuizResultsScreen
 import com.example.tingxie.presentation.characters.components.CharactersScreen
+import com.example.tingxie.presentation.edit_categories.components.EditCategoriesScreen
 import com.example.tingxie.presentation.edit_character.EditCharacterScreen
 import com.example.tingxie.presentation.quiz_statistics.components.QuizStatisticsGraphScreen
 import com.example.tingxie.presentation.util.Screen
@@ -88,6 +89,20 @@ class MainActivity : ComponentActivity() {
                             )
                         ) {
                             CharacterQuizResultsScreen(navController = navController)
+                        }
+
+                        composable(
+                            route = Screen.EditCharacterScreen.route + "?characterId={characterId}",
+                            arguments = listOf(
+                                navArgument(
+                                    name = "characterId"
+                                ) {
+                                    type = NavType.IntType
+                                    defaultValue = -1
+                                }
+                            )
+                        ) {
+                            EditCategoriesScreen(navController = navController)
                         }
                     }
                 }

@@ -24,6 +24,10 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.getCharactersLike(searchWord)
     }
 
+    override fun getCharactersWithCategoriesLike(searchWord: String): Flow<List<CharacterWithCategories>> {
+        return characterDao.getCharactersWithCategoriesLike(searchWord)
+    }
+
     override suspend fun deleteCharacter(character: Character) {
         characterDao.deleteCharacter(character)
     }
@@ -86,6 +90,18 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
     // Categories
     override fun getCategories(): Flow<List<CategoriesWithCharacters>> {
         return characterDao.getCategories()
+    }
+
+    override suspend fun getCategory(categoryId: Int): Categories? {
+        return characterDao.getCategory(categoryId)
+    }
+
+    override fun getCharactersWithCategories(): Flow<List<CharacterWithCategories>> {
+        return characterDao.getCharactersWithCategories()
+    }
+
+    override fun getCharacterWithCategoriesWithId(id: Int): Flow<List<CharacterWithCategories>> {
+        return characterDao.getCharacterWithCategoriesWithId(id)
     }
 
     override suspend fun insertCategory(categories: Categories) {

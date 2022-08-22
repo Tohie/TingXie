@@ -259,19 +259,21 @@ fun Pager(viewModel: CharactersQuizViewModel) {
                             fraction = 1f - pageOffset.coerceIn(0f, 1f)
                         )
                     },
-                showCharacter = currentCharacter.isVisible
-            ) {
-                QuizCardOptions(
-                    viewModel = viewModel,
-                    currentCharacter = currentCharacter,
-                    pageIndex = pageIndex,
-                    changePage = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(pageIndex+1)
+                showCharacter = currentCharacter.isVisible,
+                AdditionalContent = {
+                    QuizCardOptions(
+                        viewModel = viewModel,
+                        currentCharacter = currentCharacter,
+                        pageIndex = pageIndex,
+                        changePage = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(pageIndex+1)
+                            }
                         }
-                    }
-                )
-            }
+                    )
+                },
+                Categories = {}
+            )
         }
     }
 }

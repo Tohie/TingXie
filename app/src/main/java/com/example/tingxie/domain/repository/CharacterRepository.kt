@@ -40,4 +40,8 @@ interface CharacterRepository {
     suspend fun insertCategory(categories: Categories)
     suspend fun addCharacterToCategory(characterCategory: CharacterCategoryCrossRef)
     suspend fun deleteCharacterFromCategory(characterCategory: CharacterCategoryCrossRef)
+    fun getCharactersWithCategories(): Flow<List<CharacterWithCategories>>
+    fun getCharacterWithCategoriesWithId(id: Int): Flow<List<CharacterWithCategories>>
+    suspend fun getCategory(categoryId: Int): Categories?
+    fun getCharactersWithCategoriesLike(searchWord: String): Flow<List<CharacterWithCategories>>
 }

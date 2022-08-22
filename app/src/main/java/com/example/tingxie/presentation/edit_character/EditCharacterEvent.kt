@@ -1,7 +1,9 @@
 package com.example.tingxie.presentation.edit_character
 
 import androidx.compose.ui.focus.FocusState
+import com.example.tingxie.domain.model.Categories
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.CharacterCategoryCrossRef
 
 sealed class EditCharacterEvent {
     data class EnteredCharacterNumber(val value: String): EditCharacterEvent()

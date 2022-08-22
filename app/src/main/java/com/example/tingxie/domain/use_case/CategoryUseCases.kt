@@ -14,6 +14,11 @@ class CategoryUseCases(
         return repository.getCategories()
     }
 
+    suspend fun getCategory(categoryId: Int): Categories? {
+        return repository.getCategory(categoryId)
+    }
+
+
     @Throws(InvalidCategoryException::class)
     suspend fun insertCategory(categories: Categories) {
         if (categories.categoryName.isBlank()) throw InvalidCategoryException("Category name can't be blank")

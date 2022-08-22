@@ -1,20 +1,16 @@
 package com.example.tingxie.presentation.edit_character
 
+import androidx.compose.material.SnackbarResult
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tingxie.domain.model.Categories
-import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.InvalidCategoryException
-import com.example.tingxie.domain.model.InvalidCharacterException
+import com.example.tingxie.domain.model.*
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.NumberFormatException
 import javax.inject.Inject
@@ -58,32 +54,38 @@ class EditCharacterViewModel @Inject constructor (
         savedStateHandle.get<Int>("characterId")?.let { characterId ->
             if(characterId != -1) {
                 viewModelScope.launch {
-                    characterUseCases.getCharacters.getCharacter(characterId)?.also { newCharacter ->
-                        currentCharId = characterId
-
-                        _characterNumber.value = characterNumber.value.copy(
-                            text = newCharacter.characterNumber.toString(),
-                            isHintVisible = false
-                        )
-
-                        _character.value = character.value.copy(
-                            text = newCharacter.character,
-                            isHintVisible = false
-                        )
-                        _pinyin.value = pinyin.value.copy(
-                            text = newCharacter.pinyin,
-                            isHintVisible = false
-                        )
-                        _description.value = description.value.copy(
-                            text = newCharacter.description,
-                            isHintVisible = false
-                        )
-                    }
-
+                    getCharacter(characterId)
                 }
             }
-        }
+            }
     }
+
+    private fun getCharacter(characterId: Int) {
+        viewModelScope.launch {
+            val newCharacter = characterUseCases.getCharacters.getCharacter(characterId)?: return@launch
+            currentCharId = characterId
+
+            _characterNumber.value = characterNumber.value.copy(
+                text = newCharacter.characterNumber.toString(),
+                isHintVisible = false
+            )
+            _character.value = character.value.copy(
+                text = newCharacter.character,
+                isHintVisible = false
+            )
+            _pinyin.value = pinyin.value.copy(
+                text = newCharacter.pinyin,
+                isHintVisible = false
+            )
+            _description.value = description.value.copy(
+                text = newCharacter.description,
+                isHintVisible = false
+            )
+        }
+
+    }
+
+
     fun onEvent(event: EditCharacterEvent) {
         when (event) {
             is EditCharacterEvent.EnteredCharacterNumber -> {
@@ -144,57 +146,65 @@ class EditCharacterViewModel @Inject constructor (
                 )
             }
 
-            EditCharacterEvent.SaveCategory -> {
-                viewModelScope.launch {
-                    try {
-                        characterUseCases.categoryUseCases.insertCategory(
-                            Categories(
-                                categoryId = null,
-                                categoryName = categoryName.value.text
-                            )
-                        )
-                        _eventFlow.emit(UiEvent.SaveCharacter)
-                    } catch (e: InvalidCategoryException) {
-                        _eventFlow.emit(
-                            UiEvent.ShowSnackbar(
-                                message = e.message ?: "Couldn't save category"
-                            )
-                        )
-                    }
-                }
+            is EditCharacterEvent.SaveCategory -> {
+                saveCategory()
             }
 
             is EditCharacterEvent.SaveCharacter -> {
-                viewModelScope.launch {
-                    try {
-                        characterUseCases.addCharacter(
-                            Character(
-                                characterNumber = characterNumber.value.text.toInt(),
-                                character = character.value.text,
-                                pinyin = pinyin.value.text,
-                                description = description.value.text,
-                                id = currentCharId
-                            )
-                        )
-                        _eventFlow.emit(UiEvent.SaveCharacter)
-                    } catch (e: InvalidCharacterException) {
-                        _eventFlow.emit(
-                            UiEvent.ShowSnackbar(
-                                message = e.message ?: "Couldn't save note"
-                            )
-                        )
-                    }  catch (e: NumberFormatException) {
-                        _eventFlow.emit(
-                            UiEvent.ShowSnackbar(
-                                message = "Please enter a valid number"
-                            )
-                        )
-                    }
-                }
+                saveCharacter()
             }
-
         }
     }
+
+    private fun saveCharacter() {
+        viewModelScope.launch {
+            try {
+                characterUseCases.addCharacter(
+                    Character(
+                        characterNumber = characterNumber.value.text.toInt(),
+                        character = character.value.text,
+                        pinyin = pinyin.value.text,
+                        description = description.value.text,
+                        id = currentCharId
+                    )
+                )
+                _eventFlow.emit(UiEvent.SaveCharacter)
+            } catch (e: InvalidCharacterException) {
+                _eventFlow.emit(
+                    UiEvent.ShowSnackbar(
+                        message = e.message ?: "Couldn't save note"
+                    )
+                )
+            } catch (e: NumberFormatException) {
+                _eventFlow.emit(
+                    UiEvent.ShowSnackbar(
+                        message = "Please enter a valid number"
+                    )
+                )
+            }
+        }
+    }
+
+    private fun saveCategory() {
+        viewModelScope.launch {
+            try {
+                characterUseCases.categoryUseCases.insertCategory(
+                    Categories(
+                        categoryId = null,
+                        categoryName = categoryName.value.text
+                    )
+                )
+                _eventFlow.emit(UiEvent.SaveCharacter)
+            } catch (e: InvalidCategoryException) {
+                _eventFlow.emit(
+                    UiEvent.ShowSnackbar(
+                        message = e.message ?: "Couldn't save category"
+                    )
+                )
+            }
+        }
+    }
+
     sealed class UiEvent {
         data class ShowSnackbar(val message: String): UiEvent()
         object SaveCharacter: UiEvent()

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.CharacterWithCategories
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import com.example.tingxie.domain.use_case.GetCharacters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,8 +32,8 @@ class CharactersViewModel @Inject constructor(
         when (event) {
             is CharactersEvent.Delete -> {
                 viewModelScope.launch {
-                    characterUseCases.deleteCharacter(event.character)
-                    lastDeletedCharacter = event.character
+                    characterUseCases.deleteCharacter(event.character.character)
+                    lastDeletedCharacter = event.character.character
                 }
             }
             is CharactersEvent.RestoreCharacter -> {
@@ -42,7 +43,7 @@ class CharactersViewModel @Inject constructor(
                 }
             }
             is CharactersEvent.Search -> {
-                characterUseCases.getCharacters.getCharactersLike(event.character).onEach { chars ->
+                characterUseCases.getCharacters.getCharactersWithCategoriesLike(event.character).onEach { chars ->
                     Log.i("characters", "found some chars ")
                     setCharacters(chars)
                 }.launchIn(viewModelScope)
@@ -57,7 +58,7 @@ class CharactersViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     ordering = event.orderBy
                 )
-                val sorted = GetCharacters.sortCharacters(_state.value.characters, event.orderBy)
+                val sorted = GetCharacters.sortCharactersWithCategories(_state.value.characters, event.orderBy)
                 setCharacters(sorted)
             }
             is CharactersEvent.ChangeAmountOfCharactersToTest -> {
@@ -69,12 +70,12 @@ class CharactersViewModel @Inject constructor(
     }
 
     private fun getCharacters() {
-        characterUseCases.getCharacters.getCharacters()
+        characterUseCases.getCharacters.getCharactersWithCategories()
             .onEach { setCharacters(it) }
             .launchIn(viewModelScope)
     }
 
-    private fun setCharacters(characters: List<Character>) {
+    private fun setCharacters(characters: List<CharacterWithCategories>) {
         _state.value = _state.value.copy(
             characters = characters
         )

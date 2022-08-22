@@ -13,11 +13,22 @@ interface CharacterDao {
     @Query("SELECT * FROM character WHERE character LIKE '%' || :searchWord || '%'")
     fun getCharactersLike(searchWord: String): Flow<List<Character>>
 
+    @Query("SELECT * FROM character WHERE " +
+            "character LIKE '%' || :searchWord || '%'" +
+            "OR characterNumber LIKE '%' || :searchWord || '%'" +
+            "OR description LIKE '%' || :searchWord || '%'" +
+            "OR pinyin LIKE '%' || :searchWord || '%'")
+    fun getCharactersWithCategoriesLike(searchWord: String): Flow<List<CharacterWithCategories>>
+
     @Query("SELECT * FROM character WHERE id IN (:id)")
     suspend fun getId(id: Int): Character?
 
     @Query("SELECT * FROM character ORDER BY RANDOM() LIMIT (:number)")
     fun getNRandomCharacters(number: Int): Flow<List<Character>>
+
+    @Transaction
+    @Query("SELECT * FROM character")
+    fun getCharactersWithCategories(): Flow<List<CharacterWithCategories>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: Character)
@@ -72,6 +83,13 @@ interface CharacterDao {
     @Transaction
     @Query("SELECT * FROM categories")
     fun getCategories(): Flow<List<CategoriesWithCharacters>>
+
+    @Query("SELECT * FROM categories WHERE categoryId IS (:categoryId)")
+    suspend fun getCategory(categoryId: Int): Categories?
+
+    @Transaction
+    @Query("SELECT * FROM character WHERE id IS (:id)")
+    fun getCharacterWithCategoriesWithId(id: Int): Flow<List<CharacterWithCategories>>
 
     @Insert
     suspend fun insertCategory(categories: Categories)
