@@ -1,5 +1,6 @@
 package com.example.tingxie.presentation.character_quiz
 
+import com.example.tingxie.domain.model.Categories
 import com.example.tingxie.domain.model.util.ChooseCharactersBy
 
 sealed class CharacterQuizEvents {
@@ -9,6 +10,7 @@ sealed class CharacterQuizEvents {
     data class ChangeCharacterCorrect(val index: Int, val isCharacterCorrect: Boolean = false) : CharacterQuizEvents()
     data class ChangeQuitWithoutSavingDialogueVisibility(val isVisible: Boolean = false) : CharacterQuizEvents ()
     data class StartQuiz(val chooseCharactersBy: ChooseCharactersBy): CharacterQuizEvents()
+    data class ChangeCategory(val newCategory: Categories?) : CharacterQuizEvents()
 
     object QuitWithoutSaving : CharacterQuizEvents()
     object SaveQuizResults : CharacterQuizEvents()

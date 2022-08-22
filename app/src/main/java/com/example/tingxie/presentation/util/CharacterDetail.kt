@@ -3,12 +3,14 @@ package com.example.tingxie.presentation.util
 import android.graphics.drawable.Icon
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Expand
 import androidx.compose.runtime.*
@@ -28,6 +30,7 @@ fun CharacterDetail(
     character: Character,
     modifier: Modifier = Modifier,
     showCharacter: Boolean = true,
+    showCategories: Boolean = false,
     Categories: @Composable () -> Unit,
     AdditionalContent: @Composable () -> Unit,
 
@@ -53,7 +56,6 @@ fun CharacterDetail(
                 horizontalArrangement = Arrangement.Center
             ){
                 if (showCharacter) {
-                    Log.i("Character", "Showing character")
                     Text(
                         text = "${character.characterNumber} - ${character.character}",
                         style = MaterialTheme.typography.body1,
@@ -61,18 +63,24 @@ fun CharacterDetail(
                         fontSize = 32.sp,
                         modifier = Modifier.padding(8.dp)
                     )
+                    Spacer(modifier = Modifier.width(4.dp))
                 }
-                Column() {
-                    Log.i("Character", "Pinyin: ${character.pinyin}")
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.7f)
+                ) {
                     Text(
                         text = character.pinyin,
                         style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.onSurface,
                         fontSize = 16.sp
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Log.i("Character", "Description: ${character.description}")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Divider()
+                    Spacer(modifier = Modifier.height(4.dp))
+
                     Text(
                         text = character.description,
                         style = MaterialTheme.typography.body1,
@@ -81,12 +89,22 @@ fun CharacterDetail(
                         fontSize = 10.sp
                     )
                 }
-                AdditionalContent()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    if (showCategories) {
+                        IconButton(onClick = { expanded = !expanded }) {
+                            Icon(imageVector = Icons.Default.Expand , contentDescription = "Expand categories view")
+                        }
+                    }
+
+                    AdditionalContent()
+                }
             }
 
-            IconButton(onClick = { expanded = !expanded }) {
-                Icon(imageVector = Icons.Default.Expand , contentDescription = "Expand categories view")
-            }
             if (expanded) {
                 Categories()
             }
@@ -97,18 +115,34 @@ fun CharacterDetail(
 @Composable
 fun CategoryClips(
     categories: List<Categories>,
-    onClick: (Categories) -> Unit
+    onClick: () -> Unit
 ) {
-    LazyRow(
+    Row(
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(
-            items = categories
-        ) { category ->
-            Chip(
-                name = category.categoryName,
-                onClick = { onClick(category) },
-            )
+        LazyRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(
+                items = categories
+            ) { category ->
+                Chip(
+                    name = category.categoryName,
+                    onClick = { onClick() },
+                )
+            }
+        }
+        if (categories.isEmpty()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+
+            }
+            IconButton(onClick = { onClick() }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add categories")
+            }
         }
     }
 }

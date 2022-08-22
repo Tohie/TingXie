@@ -212,7 +212,7 @@ private fun CharacterScreenCharacterDetail(
         },
         Categories = {
             CategoryClips(categories = character.categories, onClick = {
-                navController.navigate(Screen.EditCharacterScreen.route + "?characterId=${character.character.id}")
+                navController.navigate(Screen.EditCategoriesScreen.route + "?characterId=${character.character.id}")
             } )
         }
     )
@@ -226,7 +226,6 @@ private fun EndAlignedDeleteButton(
     scaffoldState: ScaffoldState
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
         IconButton(

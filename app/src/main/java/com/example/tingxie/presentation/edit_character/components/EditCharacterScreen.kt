@@ -98,7 +98,8 @@ private fun AddCharacterCategoryPager(
     Box(modifier = Modifier.padding(innerPadding)) {
         HorizontalPager(
             count = 2,
-            state = pagerState
+            state = pagerState,
+            modifier = Modifier.padding(12.dp)
         ) { page ->
             when (page) {
                 0 -> AddCharacter(

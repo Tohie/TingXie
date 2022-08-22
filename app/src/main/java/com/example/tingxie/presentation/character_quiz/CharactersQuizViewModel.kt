@@ -31,6 +31,14 @@ class CharactersQuizViewModel @Inject constructor(
 
     private var totalCharacters: Int? = null
 
+    init {
+        characterUseCases.categoryUseCases.getCategories().onEach { categories ->
+            _state.value = _state.value.copy(
+                categories = categories.map { it.category }
+            )
+        }.launchIn(viewModelScope)
+    }
+
     fun onEvent(event: CharacterQuizEvents) {
         when (event) {
             is CharacterQuizEvents.StartQuiz -> {
@@ -86,47 +94,67 @@ class CharactersQuizViewModel @Inject constructor(
             }
 
             CharacterQuizEvents.SaveQuizResults -> {
-                val timestamp = Instant.now().toEpochMilli()
-                viewModelScope.launch {
-                    val newQuizId = characterUseCases.addQuiz(
-                        Quiz(
-                            quizId = null,
-                            timestamp = timestamp,
-                            numberOfCharacters = _state.value.characters.size,
-                            score = finalScore(),
-                        )
-                    )
-
-                    val results = state.value.characters.map { characterState ->
-                        QuizResult(
-                            resultId = null,
-                            characterIdMap = characterState.character.id!!, // if the character id is null, we're in trouble
-                            isCorrect = characterState.isCorrect,
-                            timestamp = timestamp,
-                            quizResultsIdMap = newQuizId.toInt()
-                        )
-                    }
-
-                    characterUseCases.insertQuizResult(results)
-
-                    // Reset all state in case user comes back
-                    resetState()
-
-                    // Go to results page
-                    viewModelScope.launch {
-                        _eventFlow.emit(
-                            UiEvent.SaveAndFinishQuiz
-                        )
-                    }
-
-                }
+                saveQuizResults()
             }
             is CharacterQuizEvents.ChangeQuitWithoutSavingDialogueVisibility -> {
                 _state.value = _state.value.copy(
                     isQuitWithoutSavingDialogueVisible = event.isVisible
                 )
             }
+            is CharacterQuizEvents.ChangeCategory -> {
+                _state.value = _state.value.copy(
+                    currentCategory = event.newCategory
+                )
+            }
         }
+    }
+
+    private fun saveQuizResults() {
+        val timestamp = Instant.now().toEpochMilli()
+        viewModelScope.launch {
+            val newQuizId = makeNewQuiz(timestamp)
+
+            val results = getResults(timestamp, newQuizId)
+
+            characterUseCases.insertQuizResult(results)
+
+            // Go to results page
+            saveAndFinish()
+
+        }
+    }
+
+    private suspend fun makeNewQuiz(
+        timestamp: Long
+    ) = characterUseCases.addQuiz(
+        Quiz(
+            quizId = null,
+            timestamp = timestamp,
+            numberOfCharacters = _state.value.characters.size,
+            score = finalScore(),
+        )
+    )
+
+    private fun getResults(
+        timestamp: Long,
+        newQuizId: Long
+    ) = state.value.characters.map { characterState ->
+        QuizResult(
+            resultId = null,
+            characterIdMap = characterState.character.id!!, // if the character id is null, we're in trouble
+            isCorrect = characterState.isCorrect,
+            timestamp = timestamp,
+            quizResultsIdMap = newQuizId.toInt()
+        )
+    }
+
+    private suspend fun saveAndFinish() {
+        // Reset all state in case user comes back
+        resetState()
+
+        _eventFlow.emit(
+            UiEvent.SaveAndFinishQuiz
+        )
     }
 
     private fun resetState() {

@@ -57,7 +57,7 @@ class EditCharacterViewModel @Inject constructor (
                     getCharacter(characterId)
                 }
             }
-            }
+        }
     }
 
     private fun getCharacter(characterId: Int) {

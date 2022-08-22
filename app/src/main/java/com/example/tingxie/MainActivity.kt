@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(
-                            route = Screen.EditCharacterScreen.route + "?characterId={characterId}",
+                            route = Screen.EditCategoriesScreen.route + "?characterId={characterId}",
                             arguments = listOf(
                                 navArgument(
                                     name = "characterId"

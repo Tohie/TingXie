@@ -18,22 +18,35 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun CategoryDropDown(
     categories: List<Categories>,
-    onClick: () -> Unit
+    onClick: (Categories) -> Unit,
+    includeNoneOption: Boolean = false,
+    onNoneClicked: () -> Unit = {},
+    content: @Composable () -> Unit = {
+        Icon(imageVector = Icons.Default.Add, contentDescription = "Add category")
+    }
 ) {
     var expanded by remember {
         mutableStateOf(false)
     }
     IconButton(onClick = { expanded = true }) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = "Add category")
+        content()
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = !expanded }) {
+            if (includeNoneOption) {
+                DropdownMenuItem(onClick = { onNoneClicked() }) {
+                    Text(text = "None")
+                }
+                Divider()
+            }
             categories.forEach { category ->
                 DropdownMenuItem(
                     onClick = {
-                        onClick()
+                        onClick(category)
                     }
                 ) {
                     Text(text = category.categoryName)
                 }
+                Divider()
+
             }
         }
     }

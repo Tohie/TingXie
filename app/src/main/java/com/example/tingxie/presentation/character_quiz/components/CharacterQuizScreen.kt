@@ -26,10 +26,8 @@ import com.example.tingxie.domain.model.util.ChooseCharactersBy
 
 import com.example.tingxie.presentation.character_quiz.CharacterQuizEvents
 import com.example.tingxie.presentation.character_quiz.CharactersQuizViewModel
-import com.example.tingxie.presentation.util.BottomBar
-import com.example.tingxie.presentation.util.CharacterDetail
-import com.example.tingxie.presentation.util.Screen
-import com.example.tingxie.presentation.util.TopBar
+import com.example.tingxie.presentation.character_quiz.StartQuizItem
+import com.example.tingxie.presentation.util.*
 import com.google.accompanist.pager.*
 import io.ak1.drawbox.rememberDrawController
 import kotlinx.coroutines.flow.collectLatest
@@ -69,81 +67,137 @@ fun CharacterQuizScreen(
             QuitWithoutSavingDialogue(viewModel = viewModel, navController = navController)
         }
         if (viewModel.state.value.characters.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text(text = "Let's start a quiz!", fontSize = 20.sp)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Use a pen and paper to write the answers for each question, use the eye to see the correct answer and choose right or wrong",
-                    textAlign = TextAlign.Justify,
-                )
-                AndroidView(
-                    factory = { context ->
-                        NumberPicker(context).apply {
-                            minValue = 1
-                            maxValue = 20
-                            wrapSelectorWheel = true
-
-                            setOnValueChangedListener { _, _, newVal ->
-                                Log.i("character", "changed scroll wheel")
-                                viewModel.onEvent(CharacterQuizEvents.ChangeCharacterNumber(newVal))
-                            }
-                            value = 5
-                        }
-                    },
-                    update = { }
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Test by:",
-                        modifier = Modifier.weight(0.5f),
-                        fontSize = 10.sp
-                    )
-
-                    StartQuizButton(
-                        text = "Random",
-                        chooseCharactersBy = ChooseCharactersBy.Random(viewModel.state.value.numberOfCharacters),
-                        viewModel = viewModel,
-                        modifier = Modifier.weight(1f),
-                    )
-
-                    StartQuizButton(
-                        text = "Least\nTested",
-                        chooseCharactersBy = ChooseCharactersBy.LeastTested(viewModel.state.value.numberOfCharacters),
-                        viewModel = viewModel,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    StartQuizButton(
-                        text = "Most\nIncorrect",
-                        chooseCharactersBy = ChooseCharactersBy.MostIncorrect(viewModel.state.value.numberOfCharacters),
-                        viewModel = viewModel,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    StartQuizButton(
-                        text = "Least\nCorrect",
-                        chooseCharactersBy = ChooseCharactersBy.LeastCorrect(viewModel.state.value.numberOfCharacters),
-                        viewModel = viewModel,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
+            StartQuizPage(viewModel)
         } else {
             Pager(viewModel = viewModel)
+        }
+    }
+}
+
+@Composable
+private fun StartQuizPage(viewModel: CharactersQuizViewModel) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        TestExplanation()
+
+        CharacterAmountControls(viewModel)
+
+        StartQuiz(viewModel, modifier = Modifier.weight(0.1f))
+
+        CategoryControls(viewModel)
+    }
+}
+
+@Composable
+private fun CategoryControls(viewModel: CharactersQuizViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "From: ",
+            fontSize = 10.sp
+        )
+        CategoryDropDown(
+            categories = viewModel.state.value.categories,
+            onClick = { viewModel.onEvent(CharacterQuizEvents.ChangeCategory(it)) },
+            includeNoneOption = true,
+            onNoneClicked = { viewModel.onEvent(CharacterQuizEvents.ChangeCategory(null)) }
+        ) {
+            Text(text = viewModel.state.value.currentCategory?.categoryName ?: run { "None" })
+        }
+    }
+}
+
+@Composable
+private fun StartQuiz(viewModel: CharactersQuizViewModel, modifier: Modifier = Modifier) {
+    StartQuizButtons(
+        viewModel = viewModel,
+        startQuizItems = listOf(
+            StartQuizItem(
+                text = "Random",
+                chooseCharactersBy = ChooseCharactersBy.Random(viewModel.state.value.numberOfCharacters),
+            ),
+            StartQuizItem(
+                text = "Least\nTested",
+                chooseCharactersBy = ChooseCharactersBy.LeastTested(viewModel.state.value.numberOfCharacters),
+            ),
+            StartQuizItem(
+                text = "Most\nIncorrect",
+                chooseCharactersBy = ChooseCharactersBy.MostIncorrect(viewModel.state.value.numberOfCharacters),
+            ),
+            StartQuizItem(
+                text = "Least\nCorrect",
+                chooseCharactersBy = ChooseCharactersBy.LeastCorrect(viewModel.state.value.numberOfCharacters),
+            )
+        )
+    ) {
+        Text(
+            text = "Test by:",
+            modifier = modifier,
+            fontSize = 10.sp
+        )
+    }
+}
+
+@Composable
+private fun TestExplanation() {
+    Text(text = "Let's start a quiz!", fontSize = 20.sp)
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        text = "Use a pen and paper to write the answers for each question, use the eye to see the correct answer and choose right or wrong",
+        textAlign = TextAlign.Justify,
+    )
+}
+
+@Composable
+private fun CharacterAmountControls(viewModel: CharactersQuizViewModel) {
+    AndroidView(
+        factory = { context ->
+            NumberPicker(context).apply {
+                minValue = 1
+                maxValue = 20
+                wrapSelectorWheel = true
+
+                setOnValueChangedListener { _, _, newVal ->
+                    Log.i("character", "changed scroll wheel")
+                    viewModel.onEvent(CharacterQuizEvents.ChangeCharacterNumber(newVal))
+                }
+                value = 5
+            }
+        },
+        update = { }
+    )
+}
+
+@Composable()
+fun StartQuizButtons(
+    viewModel: CharactersQuizViewModel,
+    startQuizItems: List<StartQuizItem>,
+    additionalInfo: @Composable () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        additionalInfo()
+
+        startQuizItems.forEach{ startQuizItem ->
+            StartQuizButton(
+                text = startQuizItem.text,
+                chooseCharactersBy = startQuizItem.chooseCharactersBy,
+                viewModel = viewModel,
+                modifier = Modifier.weight(0.85f/startQuizItems.size, fill = true)
+            )
         }
     }
 }

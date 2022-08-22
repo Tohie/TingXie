@@ -22,6 +22,7 @@ import com.example.tingxie.presentation.edit_character.EditCharacterEvent
 import com.example.tingxie.presentation.edit_character.EditCharacterViewModel
 import com.example.tingxie.presentation.util.BottomBar
 import com.example.tingxie.presentation.util.BottomNavigationBar
+import com.example.tingxie.presentation.util.CategoryDropDown
 import com.example.tingxie.presentation.util.TopBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -47,15 +48,23 @@ fun EditCategoriesScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { TopBar {} },
+        topBar = {
+            TopBar {
+                CategoryDropDown(
+                    categories = viewModel.state.value.allCategories,
+                    onClick = { category ->
+                        viewModel.onEvent(EditCategoriesEvents.AddNewCharacterCategoryCrossRef(category))
+                    }
+                )
+            }
+        },
         bottomBar = { BottomBar(navController = navController)}
-    ) {
-
-    }
-    Column(modifier = Modifier.padding(16.dp)) {
-        AddCategoryDropDown(viewModel)
-
-        CategoriesList(viewModel, scope, scaffoldState)
+    ) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
+            Box(modifier = Modifier.padding(12.dp)) {
+                CategoriesList(viewModel, scope, scaffoldState)
+            }
+        }
     }
 }
 
@@ -75,29 +84,6 @@ private fun CategoriesList(
             key = { it.categoryId!! }
         ) { categoryFromCharacters ->
             CategoryCard(categoryFromCharacters, viewModel, scope, scaffoldState)
-        }
-    }
-}
-
-@Composable
-private fun AddCategoryDropDown(
-    viewModel: EditCategoriesViewModel
-) {
-    var expanded by remember {
-        mutableStateOf(false)
-    }
-    IconButton(onClick = { expanded = true }) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = "Add category")
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = !expanded }) {
-            viewModel.state.value.allCategories.forEach { category ->
-                DropdownMenuItem(
-                    onClick = {
-                        viewModel.onEvent(EditCategoriesEvents.AddNewCharacterCategoryCrossRef(category))
-                    }
-                ) {
-                    Text(text = category.categoryName)
-                }
-            }
         }
     }
 }

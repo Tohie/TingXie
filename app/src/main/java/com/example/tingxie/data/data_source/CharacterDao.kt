@@ -91,10 +91,10 @@ interface CharacterDao {
     @Query("SELECT * FROM character WHERE id IS (:id)")
     fun getCharacterWithCategoriesWithId(id: Int): Flow<List<CharacterWithCategories>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(categories: Categories)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCharacterToCategory(characterCategory: CharacterCategoryCrossRef)
 
     @Delete
