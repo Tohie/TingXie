@@ -12,36 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 
 @Composable
-fun TopSearchSortBar(
-    onSearchQueryChanged: (String) -> Unit,
-    onExpandSortingOptions: () -> Unit,
-    sortingControls: @Composable () -> Unit,
-    isOrderingOptionsVisible: Boolean
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ){
-        SearchBar(
-            onSearchQueryChanged = { searchQuery ->
-                onSearchQueryChanged(searchQuery)
-            },
-            onExpandSortingOptions = {
-                onExpandSortingOptions()
-            }
-        )
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        SortingOptions(
-            isOrderingOptionsVisible = isOrderingOptionsVisible,
-            SortingControls = sortingControls,
-        )
-    }
-}
-
-@Composable
 fun SortingOptions(
     isOrderingOptionsVisible: Boolean,
     SortingControls: @Composable () -> Unit,

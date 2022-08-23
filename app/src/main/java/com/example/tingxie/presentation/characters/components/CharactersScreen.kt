@@ -48,36 +48,38 @@ fun CharactersScreen(
 
 
     Scaffold(
-        topBar = { TopBar {
+        topBar = {
             if (pagerState.currentPage == 0) {
-                TopSearchSortBar2(
+                TopSearchSortBar(
                     onSearchQueryChanged = { searchQuery ->
                         viewModel.onEvent(CharactersEvent.Search(searchQuery))
                     },
                     sortingControls = { CharacterSortingControls(viewModel = viewModel) }
                 )
             } else {
-                CategoryDropDown(
-                    categories = viewModel.state.value.categories.map { it.category },
-                    onClick = { viewModel.onEvent(CharactersEvent.ChangeCategories(it)) },
-                    includeNoneOption = true,
-                    onNoneClicked = { viewModel.onEvent(CharactersEvent.ChangeCategories(null))},
-                    content = {
-                        Text(
-                            text =
-                            if (viewModel.state.value.currentCategoryWithCharacters == null) {
-                                "Category: None"
-                            } else {
-                                "Category: ${viewModel.state.value.currentCategoryWithCharacters!!.category.categoryName}"
-                            },
-                            fontSize = 20.sp
-                        )
+                TopBar {
+                    CategoryDropDown(
+                        categories = viewModel.state.value.categories.map { it.category },
+                        onClick = { viewModel.onEvent(CharactersEvent.ChangeCategories(it)) },
+                        includeNoneOption = true,
+                        onNoneClicked = { viewModel.onEvent(CharactersEvent.ChangeCategories(null)) },
+                        content = {
+                            Text(
+                                text =
+                                if (viewModel.state.value.currentCategoryWithCharacters == null) {
+                                    "Category: None"
+                                } else {
+                                    "Category: ${viewModel.state.value.currentCategoryWithCharacters!!.category.categoryName}"
+                                },
+                                fontSize = 20.sp
+                            )
 
-                    }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
             }
-        } },
+        },
         bottomBar = { BottomBar(navController) },
         scaffoldState = scaffoldState,
         modifier = Modifier

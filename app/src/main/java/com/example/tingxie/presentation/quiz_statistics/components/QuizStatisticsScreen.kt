@@ -35,18 +35,16 @@ fun QuizStatisticsGraphScreen(
 
     Scaffold(
         topBar = {
-            TopBar {
-                // Only show search box when user is looking at character statistics
-                if (pagerState.currentPage == 1) {
-                    TopSearchSortBar(
-                        onSearchQueryChanged = { searchQuery ->
-                            viewModel.onEvent(QuizStatisticsEvent.Search(searchQuery))
-                        },
-                        onExpandSortingOptions = { viewModel.onEvent(QuizStatisticsEvent.ChangeSortingOptionsVisibility) },
-                        sortingControls = { QuizStatisticsSortingControls(viewModel = viewModel) },
-                        isOrderingOptionsVisible = viewModel.state.value.isOrderingOptionsVisible
-                    )
-                }
+            // Only show search box when user is looking at character statistics
+            if (pagerState.currentPage == 1) {
+                TopSearchSortBar(
+                    onSearchQueryChanged = { searchQuery ->
+                        viewModel.onEvent(QuizStatisticsEvent.Search(searchQuery))
+                    },
+                    sortingControls = { QuizStatisticsSortingControls(viewModel = viewModel) },
+                )
+            } else {
+                TopBar()
             }
         },
         scaffoldState = scaffoldState,

@@ -16,15 +16,17 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun TopBar(
-    additional: @Composable () -> Unit = {},
     hasUnderBar: Boolean = false,
     underBar: @Composable () -> Unit = {},
-) {
+    additional: @Composable () -> Unit = {},
+    ) {
+    Log.i("character", "drawing top bar")
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.primary)
     ) {
+        Log.i("character", "drawing column")
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -32,6 +34,7 @@ fun TopBar(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            Log.i("character", "drawing text")
             Text(
                 text = "听写",
                 fontSize = 32.sp,
@@ -45,17 +48,19 @@ fun TopBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 additional()
+                Log.i("character", "drew addition")
                 Spacer(modifier = Modifier.width(4.dp))
             }
         }
         if (hasUnderBar) {
+            Log.i("character", "drawing under bar")
             underBar()
         }
     }
 }
 
 @Composable
-fun TopSearchSortBar2(
+fun TopSearchSortBar(
     onSearchQueryChanged: (String) -> Unit,
     sortingControls: @Composable () -> Unit,
 ) {
