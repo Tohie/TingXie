@@ -13,4 +13,3 @@ data class QuizResult(
     val characterIdMap: Int,
     val quizResultsIdMap: Int
 )
-

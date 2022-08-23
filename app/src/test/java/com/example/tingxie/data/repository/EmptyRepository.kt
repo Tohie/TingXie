@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 
 // Returns null/nothing to test nothing breaks when empty lists/maps/nulls are returned
 class EmptyRepository : CharacterRepository {
-    override fun getCharacters(): Flow<List<Character>> {
+    override suspend fun getCharacters(): Flow<List<Character>> {
         return flow { emit(listOf()) }
     }
 
@@ -42,7 +42,7 @@ class EmptyRepository : CharacterRepository {
         return flow { emit(mapOf()) }
     }
 
-    override fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>> {
+    override suspend fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>> {
         return flow { emit(mapOf())}
     }
 

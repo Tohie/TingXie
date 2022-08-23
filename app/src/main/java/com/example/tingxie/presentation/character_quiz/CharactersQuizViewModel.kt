@@ -60,14 +60,9 @@ class CharactersQuizViewModel @Inject constructor(
                 )
 
                 changeCharacter(currentCharacter, newCurrentCharacter)
-
-                Log.i("Characters", "Updated the correctness")
             }
 
             is CharacterQuizEvents.ChangeCharacterVisibility -> {
-                Log.i("Characters",
-                    "Changing the currentCharacter visibility to ${event.isCharacterVisible}")
-
                 val currentCharacter = getCurrentCharacter()
                 val newCurrentCharacter = currentCharacter.copy(
                     character = currentCharacter.character,
@@ -75,8 +70,6 @@ class CharactersQuizViewModel @Inject constructor(
                     isCorrect = currentCharacter.isCorrect
                 )
                 changeCharacter(currentCharacter, newCurrentCharacter)
-                Log.i("Characters",
-                    "Updated the currentCharacter visibility to ${_state.value.characters.get(_state.value.currentCharacter).isVisible}")
             }
 
             CharacterQuizEvents.QuitWithoutSaving -> {
@@ -170,7 +163,7 @@ class CharactersQuizViewModel @Inject constructor(
     }
 
     private fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy) {
-        characterUseCases.getCharacters.getCharactersBy(chooseCharactersBy).onEach { characters ->
+        characterUseCases.getCharacters.getCharactersBy(chooseCharactersBy, _state.value.currentCategory).onEach { characters ->
             _state.value = _state.value.copy(
                 characters = characters.map { character ->
                     CharacterState(character = character, isCorrect = false, isVisible = false)

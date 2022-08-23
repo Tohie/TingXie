@@ -12,7 +12,7 @@ class FakeCharacterRepository : CharacterRepository {
     private val characters = mutableListOf<Character>()
     private val quizResults = mutableListOf<QuizResult>()
 
-    override fun getCharacters(): Flow<List<Character>> {
+    override suspend fun getCharacters(): Flow<List<Character>> {
         return flow { emit(characters) }
     }
 
@@ -55,7 +55,7 @@ class FakeCharacterRepository : CharacterRepository {
         return flow { emit(results) }
     }
 
-    override fun getCharacterResults(): Flow<Map<Character, List<QuizResult>>> {
+    override suspend fun getCharacterResults(): Flow<Map<Character, List<QuizResult>>> {
         val results: MutableMap<Character, List<QuizResult>> = mutableMapOf()
         for (char in characters) {
             val charResults = quizResults.filter { it.characterIdMap == char.id }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface CharacterDao {
     // Characters
     @Query("SELECT * FROM character")
-    fun getAll(): Flow<List<Character>>
+    suspend fun getAll(): List<Character>
 
     @Query("SELECT * FROM character WHERE character LIKE '%' || :searchWord || '%'")
     fun getCharactersLike(searchWord: String): Flow<List<Character>>
@@ -38,7 +38,7 @@ interface CharacterDao {
 
     // QuizResults
     @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id")
-    fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>>
+    suspend fun getCharacterResults(): Map<Character, List<CharacterResult>>
 
     @Query("SELECT * FROM character JOIN  quizresult ON quizresult.characterIdMap = character.id  WHERE character LIKE '%' || :searchWord || '%'")
     fun getCharacterResultsLike(searchWord: String): Flow<Map<Character, List<CharacterResult>>>
@@ -53,7 +53,7 @@ interface CharacterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuizResults(quizResults: List<QuizResult>)
 
-    @Query("SELECT * FROM character JOIN quizresult ON quizresult.characterIdMap = character.id WHERE character IN (:character)")
+    @Query("SELECT * FROM character LEFT JOIN quizresult ON quizresult.characterIdMap = character.id WHERE character IN (:character)")
     fun getCharacterResults(character: String): Flow<Map<Character, List<CharacterResult>>>
 
     // Quizzes
@@ -99,4 +99,19 @@ interface CharacterDao {
 
     @Delete
     suspend fun deleteCharacterFromCategory(characterCategory: CharacterCategoryCrossRef)
+
+    // Characters in categories
+    @Query("SELECT * FROM Categories  " +
+            "JOIN charactercategorycrossref ON charactercategorycrossref.categoryId IS categories.categoryId " +
+            "JOIN character ON charactercategorycrossref.id = character.id " +
+            "WHERE categories.categoryName = (:categoryName)")
+    fun getCharactersFromCategoryName(categoryName: String): Flow<List<Character>>
+
+    @Query("SELECT * FROM Categories  " +
+            "JOIN charactercategorycrossref ON charactercategorycrossref.categoryId IS categories.categoryId " +
+            "JOIN character ON charactercategorycrossref.id = character.id " +
+            "WHERE categories.categoryName = (:categoryName)" +
+            "ORDER BY RANDOM()" +
+            "LIMIT (:number)")
+    fun getNRandomCharactersFromCategory(number: Int, categoryName: String): Flow<List<Character>>
 }

@@ -206,6 +206,7 @@ private fun CharacterScreenCharacterDetail(
         character = character.character,
         modifier = modifier,
         showCharacter = true,
+        showCategories = true,
         AdditionalContent = {
             EndAlignedDeleteButton(viewModel, character, scope, scaffoldState)
 

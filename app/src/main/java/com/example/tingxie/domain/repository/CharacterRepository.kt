@@ -4,7 +4,7 @@ import com.example.tingxie.domain.model.*
 import kotlinx.coroutines.flow.Flow
 
 interface CharacterRepository {
-    fun getCharacters(): Flow<List<Character>>
+    suspend fun getCharacters(): List<Character>
 
     suspend fun getCharacter(id: Int): Character?
 
@@ -20,7 +20,7 @@ interface CharacterRepository {
 
     fun getQuizResults(): Flow<Map<Quiz, List<CharacterResult>>>
 
-    fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>>
+    suspend fun getCharacterResults(): Map<Character, List<CharacterResult>>
 
     fun getCharacterResults(character: String): Flow<Map<Character, List<CharacterResult>>>
 
@@ -44,4 +44,6 @@ interface CharacterRepository {
     fun getCharacterWithCategoriesWithId(id: Int): Flow<List<CharacterWithCategories>>
     suspend fun getCategory(categoryId: Int): Categories?
     fun getCharactersWithCategoriesLike(searchWord: String): Flow<List<CharacterWithCategories>>
+    fun getCharactersFromCategoryName(categoryName: String): Flow<List<Character>>
+    fun getNRandomCharactersFromCategory(number: Int, categoryName: String): Flow<List<Character>>
 }

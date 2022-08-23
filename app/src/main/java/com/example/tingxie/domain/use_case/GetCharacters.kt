@@ -1,15 +1,13 @@
 package com.example.tingxie.domain.use_case
 
-import com.example.tingxie.domain.model.Character
-import com.example.tingxie.domain.model.CharacterWithCategories
+import com.example.tingxie.domain.model.*
 import com.example.tingxie.domain.model.util.ChooseCharactersBy
-import com.example.tingxie.domain.model.util.OrderCharacterResultsBy
 import com.example.tingxie.domain.model.util.OrderCharactersBy
 import com.example.tingxie.domain.model.util.Ordering
 import com.example.tingxie.domain.repository.CharacterRepository
 import com.example.tingxie.domain.use_case.utils.toCharacterStatistics
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 
 class GetCharacters (
     private val characterRepository: CharacterRepository
@@ -18,6 +16,10 @@ class GetCharacters (
         return characterRepository.getCharacters().map { characters ->
             sortCharacters(characters, orderBy)
         }
+    }
+
+    fun getCharactersFromCategoryName(categoryName: String): Flow<List<Character>> {
+        return characterRepository.getCharactersFromCategoryName(categoryName)
     }
 
     suspend fun getCharacter(id: Int): Character? {
@@ -36,6 +38,10 @@ class GetCharacters (
         return characterRepository.getNRandomCharacters(number)
     }
 
+    fun getNRandomCharactersFromCategory(number: Int, categoryName: String): Flow<List<Character>> {
+        return characterRepository.getNRandomCharactersFromCategory(categoryName = categoryName, number = number)
+    }
+
     fun getCharactersCategoriesWithId(id: Int): Flow<List<CharacterWithCategories>> {
         return characterRepository.getCharacterWithCategoriesWithId(id)
     }
@@ -44,21 +50,37 @@ class GetCharacters (
         return characterRepository.getCharactersWithCategories()
     }
 
-    fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy): Flow<List<Character>> {
+    @OptIn(FlowPreview::class)
+    suspend fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy, categories: Categories? = null): List<Character> {
         if (chooseCharactersBy is ChooseCharactersBy.Random) return getNRandomCharacters(chooseCharactersBy.amount)
 
-        return characterRepository.getCharacterResults().map { characterResults ->
-            // These transformations could be done by SQL but this method is easier and there's only
-            // a max of 20 results so I think the time difference will be very small
-            val characterStatistics = characterResults.toCharacterStatistics()
-            when (chooseCharactersBy) {
-                is ChooseCharactersBy.LeastCorrect -> characterStatistics.sortedBy { it.correctAnswers }
-                is ChooseCharactersBy.LeastTested -> characterStatistics.sortedBy { it.correctAnswers + it.incorrectAnswers }
-                is ChooseCharactersBy.MostIncorrect -> characterStatistics.sortedByDescending { it.incorrectAnswers }
-                is ChooseCharactersBy.Random -> {} // Unreachable if it's random we returned early at function start
+        // HERE BE DRAGONS
+        // if getCharacterResults is a left join then quizResults maybe null, but if I set quizResult?
+        // or List<QuizResults>? room will throw a null pointer exception
+        // currently getCharactersResults is an inner join so instead we getCharacters and map them
+        // to CharacterStatistics with 0 correct, incorrect, and then getCharactersResults and then
+        // add then create a Map<Character, List<CharacterStatistics>?> to order
+
+        val allCharacters = characterRepository.getCharacters()
+        val characterResults = characterRepository.getCharacterResults()
+
+        val allCharacterResults: MutableMap<Character, List<CharacterResult>?> = mutableMapOf()
+        for (character in allCharacters) {
+            if (characterResults.containsKey(character)) {
+                allCharacterResults[character] = characterResults[character]
+            } else {
+                allCharacterResults[character] = null
             }
-            characterStatistics.map { it.character }.take(chooseCharactersBy.amount)
         }
+
+        val characterStatistics = characterResults.toCharacterStatistics()
+        when (chooseCharactersBy) {
+            is ChooseCharactersBy.LeastCorrect -> characterStatistics.sortedBy { it.correctAnswers }
+            is ChooseCharactersBy.LeastTested -> characterStatistics.sortedBy { it.correctAnswers + it.incorrectAnswers }
+            is ChooseCharactersBy.MostIncorrect -> characterStatistics.sortedByDescending { it.incorrectAnswers }
+            is ChooseCharactersBy.Random -> {} // Unreachable if it's random we returned early at function start
+        }
+        return characterStatistics.map { it.character }.take(chooseCharactersBy.amount)
     }
 
     companion object {

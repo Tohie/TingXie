@@ -15,7 +15,7 @@ import java.util.*
 class GetQuizResults(
     private val repository: CharacterRepository
 ) {
-    operator fun invoke(): Flow<Map<Character, List<CharacterResult>>> {
+    operator fun invoke(): Flow<Map<Character, List<CharacterResult?>>> {
         return repository.getCharacterResults()
     }
 

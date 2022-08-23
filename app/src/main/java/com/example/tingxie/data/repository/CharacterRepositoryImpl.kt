@@ -8,9 +8,14 @@ import javax.inject.Inject
 
 class CharacterRepositoryImpl @Inject constructor(private val characterDao: CharacterDao): CharacterRepository{
     // Characters
-    override fun getCharacters(): Flow<List<Character>> {
+    override suspend fun getCharacters(): List<Character> {
         return characterDao.getAll()
     }
+
+    override fun getCharactersFromCategoryName(categoryName: String): Flow<List<Character>> {
+        return characterDao.getCharactersFromCategoryName(categoryName)
+    }
+
 
     override suspend fun getCharacter(id: Int): Character? {
         return characterDao.getId(id)
@@ -18,6 +23,10 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
 
     override fun getNRandomCharacters(number: Int): Flow<List<Character>> {
         return characterDao.getNRandomCharacters(number)
+    }
+
+    override fun getNRandomCharactersFromCategory(number: Int, categoryName: String): Flow<List<Character>> {
+        return characterDao.getNRandomCharactersFromCategory(categoryName = categoryName, number = number)
     }
 
     override fun getCharactersLike(searchWord: String): Flow<List<Character>> {
@@ -45,7 +54,7 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.getAllQuizResults()
     }
 
-    override fun getCharacterResults(): Flow<Map<Character, List<CharacterResult>>> {
+    suspend override fun getCharacterResults(): Map<Character, List<CharacterResult>> {
         return characterDao.getCharacterResults()
     }
 

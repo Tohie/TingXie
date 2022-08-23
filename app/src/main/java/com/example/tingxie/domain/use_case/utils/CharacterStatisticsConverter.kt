@@ -4,32 +4,38 @@ import com.example.tingxie.domain.model.Character
 import com.example.tingxie.domain.model.CharacterResult
 import com.example.tingxie.domain.model.CharacterStatistics
 
-fun Map<Character, List<CharacterResult>>.toCharacterStatistics(): List<CharacterStatistics> {
-    return this.map { (char, result) ->
-            result.foldRight(
-                CharacterStatistics(
-                    character = char,
-                    correctAnswers = 0,
-                    incorrectAnswers = 0,
-                )
-            ) { characterResult, characterStatistic ->
-                val correctAnswers = if (characterResult.quizResult.isCorrect) {
-                    characterStatistic.correctAnswers + 1
-                } else {
-                    characterStatistic.correctAnswers
-                }
+fun Map<Character, List<CharacterResult?>>.toCharacterStatistics(): List<CharacterStatistics> {
+    return this.map { (char, result: List<CharacterResult?>) ->
 
-                val incorrectAnswer = if (characterResult.quizResult.isCorrect) {
-                    characterStatistic.incorrectAnswers
-                } else {
-                    characterStatistic.incorrectAnswers + 1
-                }
+        result.foldRight(
+            CharacterStatistics(
+                character = char,
+                correctAnswers = 0,
+                incorrectAnswers = 0,
+            )
+        ) { characterResult, characterStatistic: CharacterStatistics ->
+            when (characterResult) {
+                null -> characterStatistic
+                else -> {
+                    val correctAnswers = if (characterResult.quizResult.isCorrect) {
+                        characterStatistic.correctAnswers + 1
+                    } else {
+                        characterStatistic.correctAnswers
+                    }
 
-                CharacterStatistics(
-                    character = char,
-                    correctAnswers = correctAnswers,
-                    incorrectAnswers = incorrectAnswer
-                )
+                    val incorrectAnswer = if (characterResult.quizResult.isCorrect) {
+                        characterStatistic.incorrectAnswers
+                    } else {
+                        characterStatistic.incorrectAnswers + 1
+                    }
+
+                    CharacterStatistics(
+                        character = char,
+                        correctAnswers = correctAnswers,
+                        incorrectAnswers = incorrectAnswer
+                    )
+                }
             }
+        }
     }
 }
