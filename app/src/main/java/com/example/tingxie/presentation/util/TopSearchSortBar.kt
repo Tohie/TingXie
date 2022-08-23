@@ -1,5 +1,6 @@
 package com.example.tingxie.presentation.util
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -41,10 +42,11 @@ fun TopSearchSortBar(
 }
 
 @Composable
-private fun ColumnScope.SortingOptions(
+fun SortingOptions(
     isOrderingOptionsVisible: Boolean,
     SortingControls: @Composable () -> Unit,
 ) {
+    Log.i("characters", "drawing sorting options")
     AnimatedVisibility(
         visible = isOrderingOptionsVisible,
         enter = expandVertically(),

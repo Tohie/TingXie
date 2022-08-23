@@ -5,6 +5,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tingxie.domain.model.Categories
+import com.example.tingxie.domain.model.CategoriesWithCharacters
 import com.example.tingxie.domain.model.Character
 import com.example.tingxie.domain.model.CharacterWithCategories
 import com.example.tingxie.domain.use_case.CharacterUseCases
@@ -26,6 +28,7 @@ class CharactersViewModel @Inject constructor(
 
     init {
         getCharacters()
+        getCategories()
     }
 
     fun onEvent(event: CharactersEvent) {
@@ -66,6 +69,19 @@ class CharactersViewModel @Inject constructor(
                     numberOfCharactersToTest = event.amount.toInt()
                 )
             }
+            is CharactersEvent.ChangeCategories -> {
+                getCategory(event.category)
+            }
+        }
+    }
+
+    private fun getCategory(category: Categories?) {
+        category ?: return
+        viewModelScope.launch {
+            val characters = characterUseCases.getCharacters.getCharactersFromCategoryName(category.categoryName)
+            _state.value = _state.value.copy(
+                currentCategoryWithCharacters = characters.firstOrNull(),
+            )
         }
     }
 
@@ -75,9 +91,21 @@ class CharactersViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    private fun getCategories() {
+        characterUseCases.categoryUseCases.getCategories()
+            .onEach { setCategories(it) }
+            .launchIn(viewModelScope)
+    }
+
     private fun setCharacters(characters: List<CharacterWithCategories>) {
         _state.value = _state.value.copy(
             characters = characters
+        )
+    }
+
+    private fun setCategories(categories: List<CategoriesWithCharacters>) {
+        _state.value = _state.value.copy(
+            categories = categories
         )
     }
 }

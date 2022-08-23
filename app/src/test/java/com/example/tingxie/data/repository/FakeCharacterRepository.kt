@@ -32,7 +32,7 @@ class FakeCharacterRepository : CharacterRepository {
         characters.add(character)
     }
 
-    override fun getNRandomCharacters(number: Int): Flow<List<Character>> {
+    override suspend fun getNRandomCharacters(number: Int): Flow<List<Character>> {
         val copy: MutableList<Character> = mutableListOf()
         copy.addAll(characters)
 

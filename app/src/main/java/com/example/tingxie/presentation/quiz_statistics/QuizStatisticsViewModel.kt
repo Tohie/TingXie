@@ -14,6 +14,7 @@ import com.github.mikephil.charting.data.BarEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -93,9 +94,10 @@ class QuizStatisticsViewModel @Inject constructor(
     }
 
     private fun getCharacterQuizResults() {
-        characterUseCases.getQuizResults.getCharactersQuizResults().onEach { characterResults ->
+        viewModelScope.launch {
+            val characterResults = characterUseCases.getQuizResults.getCharactersQuizResults()
             _state.value = _state.value.copy(characterResults = characterResults)
-        }.launchIn(viewModelScope)
+        }
     }
 
     private fun getTestScores() {

@@ -15,12 +15,12 @@ import java.util.*
 class GetQuizResults(
     private val repository: CharacterRepository
 ) {
-    operator fun invoke(): Flow<Map<Character, List<CharacterResult?>>> {
+    operator suspend fun invoke(): Map<Character, List<CharacterResult?>> {
         return repository.getCharacterResults()
     }
 
-    fun getCharactersQuizResults(): Flow<List<CharacterStatistics>> {
-       return repository.getCharacterResults().map { it.toCharacterStatistics() }
+    suspend fun getCharactersQuizResults(): List<CharacterStatistics> {
+       return repository.getCharacterResults().toCharacterStatistics()
     }
 
     fun getCharactersQuizResultsLike(searchWord: String): Flow<List<CharacterStatistics>> {

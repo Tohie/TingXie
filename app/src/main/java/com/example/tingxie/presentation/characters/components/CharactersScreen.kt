@@ -1,5 +1,6 @@
 package com.example.tingxie.presentation.characters.components
 
+import android.widget.Space
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -13,12 +14,10 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.tingxie.domain.model.Character
 import com.example.tingxie.domain.model.CharacterWithCategories
 import com.example.tingxie.domain.model.util.OrderCharactersBy
 import com.example.tingxie.domain.model.util.Ordering
@@ -26,10 +25,13 @@ import com.example.tingxie.presentation.characters.CharactersEvent
 import com.example.tingxie.presentation.characters.CharactersState
 import com.example.tingxie.presentation.characters.CharactersViewModel
 import com.example.tingxie.presentation.util.*
+import com.google.accompanist.pager.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class,
+    ExperimentalPagerApi::class
+)
 @Composable
 fun CharactersScreen(
     navController: NavController,
@@ -42,41 +44,120 @@ fun CharactersScreen(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = sheetState
     )
+    val pagerState = rememberPagerState()
 
 
     Scaffold(
         topBar = { TopBar {
-            TopSearchSortBar(
-                onSearchQueryChanged = { searchQuery ->
-                    viewModel.onEvent(CharactersEvent.Search(searchQuery))
-                },
-                onExpandSortingOptions = {
-                    viewModel.onEvent(CharactersEvent.ChangeSortingOptionsVisibility)
-                },
-                isOrderingOptionsVisible = viewModel.state.value.isOrderingOptionsVisible,
-                sortingControls = { CharacterSortingControls(viewModel = viewModel) }
-            )
+            if (pagerState.currentPage == 0) {
+                TopSearchSortBar2(
+                    onSearchQueryChanged = { searchQuery ->
+                        viewModel.onEvent(CharactersEvent.Search(searchQuery))
+                    },
+                    sortingControls = { CharacterSortingControls(viewModel = viewModel) }
+                )
+            } else {
+                CategoryDropDown(
+                    categories = viewModel.state.value.categories.map { it.category },
+                    onClick = { viewModel.onEvent(CharactersEvent.ChangeCategories(it)) },
+                    includeNoneOption = true,
+                    onNoneClicked = { viewModel.onEvent(CharactersEvent.ChangeCategories(null))},
+                    content = {
+                        Text(
+                            text =
+                            if (viewModel.state.value.currentCategoryWithCharacters == null) {
+                                "Category: None"
+                            } else {
+                                "Category: ${viewModel.state.value.currentCategoryWithCharacters!!.category.categoryName}"
+                            },
+                            fontSize = 20.sp
+                        )
+
+                    }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
         } },
         bottomBar = { BottomBar(navController) },
         scaffoldState = scaffoldState,
         modifier = Modifier
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+
+        Column(
+            modifier = Modifier.padding(innerPadding)
         ) {
-            CharacterScreenCharacterList(
-                state = state,
-                viewModel = viewModel,
-                scope = scope,
-                scaffoldState = scaffoldState,
-                navController = navController
+            CharacterScreenTabRows(pagerState, scope)
+
+            CharacterScreenPager(
+                innerPadding,
+                pagerState,
+                state,
+                viewModel,
+                scope,
+                scaffoldState,
+                navController
             )
         }
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun CharacterScreenTabRows(
+    pagerState: PagerState,
+    scope: CoroutineScope
+) {
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        indicator = { tabPositions ->
+            TabRowDefaults.Indicator(
+                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+            )
+        }
+    ) {
+        Tab(
+            selected = pagerState.currentPage == 0,
+            onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
+            text = { Text(text = "By Character") }
+        )
+        Tab(
+            selected = pagerState.currentPage == 1,
+            onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
+            text = { Text(text = "By Category") }
+        )
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun CharacterScreenPager(
+    innerPadding: PaddingValues,
+    pagerState: PagerState,
+    state: CharactersState,
+    viewModel: CharactersViewModel,
+    scope: CoroutineScope,
+    scaffoldState: ScaffoldState,
+    navController: NavController
+) {
+    Box(modifier = Modifier.padding(innerPadding)) {
+        HorizontalPager(
+            count = 2,
+            state = pagerState,
+            modifier = Modifier.padding(12.dp)
+        ) { page ->
+            when (page) {
+                0 -> CharacterScreenCharacterList(
+                    state = state,
+                    viewModel = viewModel,
+                    scope = scope,
+                    scaffoldState = scaffoldState,
+                    navController = navController
+                )
+                1 -> CategoriesScreenList(viewModel = viewModel)
+            }
+        }
+    }
+}
 
 
 @Composable

@@ -30,7 +30,7 @@ class EmptyRepository : CharacterRepository {
         // Do nothing
     }
 
-    override fun getNRandomCharacters(number: Int): Flow<List<Character>> {
+    override suspend fun getNRandomCharacters(number: Int): Flow<List<Character>> {
         return flow { emit(listOf()) }
     }
 

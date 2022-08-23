@@ -120,6 +120,12 @@ fun CategoryClips(
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
+        if (categories.isEmpty()) {
+            IconButton(onClick = { onClick() }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add categories")
+            }
+        }
+
         LazyRow(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -132,18 +138,7 @@ fun CategoryClips(
                 )
             }
         }
-        if (categories.isEmpty()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
 
-            }
-            IconButton(onClick = { onClick() }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add categories")
-            }
-        }
     }
 }
 

@@ -24,7 +24,7 @@ interface CharacterDao {
     suspend fun getId(id: Int): Character?
 
     @Query("SELECT * FROM character ORDER BY RANDOM() LIMIT (:number)")
-    fun getNRandomCharacters(number: Int): Flow<List<Character>>
+    suspend fun getNRandomCharacters(number: Int): List<Character>
 
     @Transaction
     @Query("SELECT * FROM character")
@@ -105,7 +105,7 @@ interface CharacterDao {
             "JOIN charactercategorycrossref ON charactercategorycrossref.categoryId IS categories.categoryId " +
             "JOIN character ON charactercategorycrossref.id = character.id " +
             "WHERE categories.categoryName = (:categoryName)")
-    fun getCharactersFromCategoryName(categoryName: String): Flow<List<Character>>
+    suspend fun getCharactersFromCategoryName(categoryName: String): List<CategoriesWithCharacters>
 
     @Query("SELECT * FROM Categories  " +
             "JOIN charactercategorycrossref ON charactercategorycrossref.categoryId IS categories.categoryId " +
@@ -113,5 +113,5 @@ interface CharacterDao {
             "WHERE categories.categoryName = (:categoryName)" +
             "ORDER BY RANDOM()" +
             "LIMIT (:number)")
-    fun getNRandomCharactersFromCategory(number: Int, categoryName: String): Flow<List<Character>>
+    suspend fun getNRandomCharactersFromCategory(number: Int, categoryName: String): List<Character>
 }

@@ -12,13 +12,12 @@ import kotlinx.coroutines.flow.*
 class GetCharacters (
     private val characterRepository: CharacterRepository
 ) {
-    fun getCharacters(orderBy: OrderCharactersBy = OrderCharactersBy.DateAdded(Ordering.Acsending)): Flow<List<Character>> {
-        return characterRepository.getCharacters().map { characters ->
-            sortCharacters(characters, orderBy)
-        }
+    suspend fun getCharacters(orderBy: OrderCharactersBy = OrderCharactersBy.DateAdded(Ordering.Acsending)): List<Character> {
+        val characters = characterRepository.getCharacters()
+        return sortCharacters(characters, orderBy)
     }
 
-    fun getCharactersFromCategoryName(categoryName: String): Flow<List<Character>> {
+    suspend fun getCharactersFromCategoryName(categoryName: String): List<CategoriesWithCharacters> {
         return characterRepository.getCharactersFromCategoryName(categoryName)
     }
 
@@ -34,11 +33,11 @@ class GetCharacters (
         return characterRepository.getCharactersWithCategoriesLike(searchWord)
     }
 
-    fun getNRandomCharacters(number: Int): Flow<List<Character>> {
+    suspend fun getNRandomCharacters(number: Int): List<Character> {
         return characterRepository.getNRandomCharacters(number)
     }
 
-    fun getNRandomCharactersFromCategory(number: Int, categoryName: String): Flow<List<Character>> {
+    suspend fun getNRandomCharactersFromCategory(number: Int, categoryName: String): List<Character> {
         return characterRepository.getNRandomCharactersFromCategory(categoryName = categoryName, number = number)
     }
 
@@ -52,7 +51,14 @@ class GetCharacters (
 
     @OptIn(FlowPreview::class)
     suspend fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy, categories: Categories? = null): List<Character> {
-        if (chooseCharactersBy is ChooseCharactersBy.Random) return getNRandomCharacters(chooseCharactersBy.amount)
+        if (chooseCharactersBy is ChooseCharactersBy.Random) {
+            return if (categories == null) {
+                getNRandomCharacters(chooseCharactersBy.amount)
+            } else {
+                getNRandomCharactersFromCategory(chooseCharactersBy.amount, categories.categoryName)
+            }
+
+        }
 
         // HERE BE DRAGONS
         // if getCharacterResults is a left join then quizResults maybe null, but if I set quizResult?
@@ -61,7 +67,12 @@ class GetCharacters (
         // to CharacterStatistics with 0 correct, incorrect, and then getCharactersResults and then
         // add then create a Map<Character, List<CharacterStatistics>?> to order
 
-        val allCharacters = characterRepository.getCharacters()
+
+        val allCharacters: List<Character> = if (categories == null) {
+            characterRepository.getCharacters()
+        } else {
+            characterRepository.getCharactersFromCategoryName(categories.categoryName).first().characters
+        }
         val characterResults = characterRepository.getCharacterResults()
 
         val allCharacterResults: MutableMap<Character, List<CharacterResult>?> = mutableMapOf()
@@ -73,7 +84,7 @@ class GetCharacters (
             }
         }
 
-        val characterStatistics = characterResults.toCharacterStatistics()
+        val characterStatistics = allCharacterResults.toCharacterStatistics()
         when (chooseCharactersBy) {
             is ChooseCharactersBy.LeastCorrect -> characterStatistics.sortedBy { it.correctAnswers }
             is ChooseCharactersBy.LeastTested -> characterStatistics.sortedBy { it.correctAnswers + it.incorrectAnswers }

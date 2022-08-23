@@ -14,7 +14,7 @@ interface CharacterRepository {
 
     suspend fun insertCharacter(character: Character)
 
-    fun getNRandomCharacters(number: Int): Flow<List<Character>>
+    suspend fun getNRandomCharacters(number: Int): List<Character>
 
     suspend fun insertQuizResult(quizResult: QuizResult)
 
@@ -44,6 +44,6 @@ interface CharacterRepository {
     fun getCharacterWithCategoriesWithId(id: Int): Flow<List<CharacterWithCategories>>
     suspend fun getCategory(categoryId: Int): Categories?
     fun getCharactersWithCategoriesLike(searchWord: String): Flow<List<CharacterWithCategories>>
-    fun getCharactersFromCategoryName(categoryName: String): Flow<List<Character>>
-    fun getNRandomCharactersFromCategory(number: Int, categoryName: String): Flow<List<Character>>
+    suspend fun getCharactersFromCategoryName(categoryName: String): List<CategoriesWithCharacters>
+    suspend fun getNRandomCharactersFromCategory(number: Int, categoryName: String): List<Character>
 }

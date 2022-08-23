@@ -12,7 +12,7 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.getAll()
     }
 
-    override fun getCharactersFromCategoryName(categoryName: String): Flow<List<Character>> {
+    override suspend fun getCharactersFromCategoryName(categoryName: String): List<CategoriesWithCharacters> {
         return characterDao.getCharactersFromCategoryName(categoryName)
     }
 
@@ -21,11 +21,11 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.getId(id)
     }
 
-    override fun getNRandomCharacters(number: Int): Flow<List<Character>> {
+    override suspend fun getNRandomCharacters(number: Int): List<Character> {
         return characterDao.getNRandomCharacters(number)
     }
 
-    override fun getNRandomCharactersFromCategory(number: Int, categoryName: String): Flow<List<Character>> {
+    override suspend fun getNRandomCharactersFromCategory(number: Int, categoryName: String): List<Character> {
         return characterDao.getNRandomCharactersFromCategory(categoryName = categoryName, number = number)
     }
 

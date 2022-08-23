@@ -163,7 +163,8 @@ class CharactersQuizViewModel @Inject constructor(
     }
 
     private fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy) {
-        characterUseCases.getCharacters.getCharactersBy(chooseCharactersBy, _state.value.currentCategory).onEach { characters ->
+        viewModelScope.launch {
+            val characters = characterUseCases.getCharacters.getCharactersBy(chooseCharactersBy, _state.value.currentCategory)
             _state.value = _state.value.copy(
                 characters = characters.map { character ->
                     CharacterState(character = character, isCorrect = false, isVisible = false)
@@ -171,8 +172,7 @@ class CharactersQuizViewModel @Inject constructor(
                 currentCharacter = 0
             )
             totalCharacters = characters.size
-            // onEvent(CharacterQuizEvents.NextCharacter(wasCorrect = false))
-        }.launchIn(viewModelScope)
+        }
     }
 
     private fun finalScore(): Int {
