@@ -93,7 +93,7 @@ private fun AddCharacterCategoryPager(
     characterState: EditCharacterTextField,
     pinyinState: EditCharacterTextField,
     descriptionState: EditCharacterTextField,
-    categoryNameState: EditCharacterTextField
+    categoryNameState: EditCharacterTextField,
 ) {
     Box(modifier = Modifier.padding(innerPadding)) {
         HorizontalPager(
@@ -149,12 +149,10 @@ private fun AddCategory(
 ) {
     OutlinedHintTextField(
         text = categoryNameState.text,
-        hint = categoryNameState.hint,
         onValueChange = { viewModel.onEvent(EditCharacterEvent.EnteredCategoryName(it)) },
-        onFocusChange = { viewModel.onEvent(EditCharacterEvent.ChangeCategoryNameFocus(it)) },
-        isHintVisible = categoryNameState.isHintVisible,
+        textStyle = MaterialTheme.typography.h5,
         singleLine = true,
-        textStyle = MaterialTheme.typography.h5
+        hint = categoryNameState.hint
     )
 }
 
@@ -174,47 +172,38 @@ private fun AddCharacter(
     ) {
         OutlinedHintTextField(
             text = characterNumberState.text,
-            hint = characterNumberState.hint,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = { viewModel.onEvent(EditCharacterEvent.EnteredCharacterNumber(it)) },
-            onFocusChange = { viewModel.onEvent(EditCharacterEvent.ChangeCharacterNumberFocus(it)) },
-            isHintVisible = characterNumberState.isHintVisible,
-            singleLine = true,
             textStyle = MaterialTheme.typography.h5,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            singleLine = true,
+            hint = characterNumberState.hint
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedHintTextField(
             text = characterState.text,
-            hint = characterState.hint,
             onValueChange = { viewModel.onEvent(EditCharacterEvent.EnteredCharacter(it)) },
-            onFocusChange = { viewModel.onEvent(EditCharacterEvent.ChangeCharacterFocus(it)) },
-            isHintVisible = characterState.isHintVisible,
             singleLine = true,
-            textStyle = MaterialTheme.typography.h5
+            textStyle = MaterialTheme.typography.h5,
+            hint = characterState.hint
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedHintTextField(
             text = pinyinState.text,
-            hint = pinyinState.hint,
             onValueChange = { viewModel.onEvent(EditCharacterEvent.EnteredPinyin(it)) },
-            onFocusChange = { viewModel.onEvent(EditCharacterEvent.ChangePinyinFocus(it)) },
-            isHintVisible = pinyinState.isHintVisible,
+            textStyle = MaterialTheme.typography.h5,
             singleLine = true,
-            textStyle = MaterialTheme.typography.h5
+            hint = pinyinState.hint
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedHintTextField(
             text = descriptionState.text,
-            hint = descriptionState.hint,
             onValueChange = { viewModel.onEvent(EditCharacterEvent.EnteredDescription(it)) },
-            onFocusChange = { viewModel.onEvent(EditCharacterEvent.ChangeDescriptionFocus(it)) },
-            isHintVisible = descriptionState.isHintVisible,
+            textStyle = MaterialTheme.typography.h5,
             singleLine = false,
-            height = 120.dp,
-            textStyle = MaterialTheme.typography.h5
+            hint = descriptionState.hint
         )
     }
 }

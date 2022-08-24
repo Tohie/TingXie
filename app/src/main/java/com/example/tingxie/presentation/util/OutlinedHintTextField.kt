@@ -19,15 +19,12 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun OutlinedHintTextField(
     text: String,
-    hint: String,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-    isHintVisible: Boolean = true,
     onValueChange: (String) -> Unit,
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = false,
-    height: Dp = 60.dp,
-    onFocusChange: (FocusState) -> Unit
+    hint: String
 ) {
     Box(modifier = modifier) {
         OutlinedTextField(
@@ -36,11 +33,17 @@ fun OutlinedHintTextField(
             singleLine = singleLine,
             textStyle = textStyle,
             modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged { onFocusChange(it) }
-                .height(height),
+                .fillMaxWidth(),
             keyboardOptions = keyboardOptions,
+            placeholder = {
+                Text(
+                    text = hint,
+                    style = textStyle,
+                    fontSize = 20.sp
+                )
+            }
         )
+        /*
         Spacer(modifier = Modifier.width(4.dp))
         if (isHintVisible) {
             Text(
@@ -50,5 +53,6 @@ fun OutlinedHintTextField(
                 fontSize = 20.sp
             )
         }
+         */
     }
 }

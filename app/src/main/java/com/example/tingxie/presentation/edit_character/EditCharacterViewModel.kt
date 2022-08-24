@@ -67,19 +67,15 @@ class EditCharacterViewModel @Inject constructor (
 
             _characterNumber.value = characterNumber.value.copy(
                 text = newCharacter.characterNumber.toString(),
-                isHintVisible = false
             )
             _character.value = character.value.copy(
                 text = newCharacter.character,
-                isHintVisible = false
             )
             _pinyin.value = pinyin.value.copy(
                 text = newCharacter.pinyin,
-                isHintVisible = false
             )
             _description.value = description.value.copy(
                 text = newCharacter.description,
-                isHintVisible = false
             )
         }
 
@@ -93,53 +89,25 @@ class EditCharacterViewModel @Inject constructor (
                     event.value
                 )
             }
-            is EditCharacterEvent.ChangeCharacterNumberFocus -> {
-                _characterNumber.value = characterNumber.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            characterNumber.value.text.isBlank()
-                )
-            }
 
             is EditCharacterEvent.EnteredCharacter -> {
                 _character.value = character.value.copy(
                     event.value
                 )
             }
-            is EditCharacterEvent.ChangeCharacterFocus -> {
-                _character.value = character.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            character.value.text.isBlank()
-                )
-            }
+
             is EditCharacterEvent.EnteredPinyin -> {
                 _pinyin.value = pinyin.value.copy(
                     event.value
                 )
             }
-            is EditCharacterEvent.ChangePinyinFocus -> {
-                _pinyin.value = pinyin.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            pinyin.value.text.isBlank()
-                )
-            }
+
             is EditCharacterEvent.EnteredDescription -> {
                 _description.value = description.value.copy(
                     event.value
                 )
             }
-            is EditCharacterEvent.ChangeDescriptionFocus -> {
-                _description.value = description.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            description.value.text.isBlank()
-                )
-            }
 
-            is EditCharacterEvent.ChangeCategoryNameFocus -> {
-                _categoryName.value = categoryName.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            categoryName.value.text.isBlank()
-                )
-            }
             is EditCharacterEvent.EnteredCategoryName -> {
                 _categoryName.value = categoryName.value.copy(
                     event.value

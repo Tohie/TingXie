@@ -47,7 +47,6 @@ class CharactersViewModel @Inject constructor(
             }
             is CharactersEvent.Search -> {
                 characterUseCases.getCharacters.getCharactersWithCategoriesLike(event.character).onEach { chars ->
-                    Log.i("characters", "found some chars ")
                     setCharacters(chars)
                 }.launchIn(viewModelScope)
             }
