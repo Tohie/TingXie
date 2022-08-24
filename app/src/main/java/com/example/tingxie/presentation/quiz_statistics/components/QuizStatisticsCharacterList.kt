@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.tingxie.domain.model.CharacterResult
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsViewModel
 import com.example.tingxie.presentation.util.CharacterDetail
 

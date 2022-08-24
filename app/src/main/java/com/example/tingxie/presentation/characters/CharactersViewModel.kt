@@ -1,6 +1,5 @@
 package com.example.tingxie.presentation.characters
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -21,7 +20,7 @@ import javax.inject.Inject
 class CharactersViewModel @Inject constructor(
     private val characterUseCases: CharacterUseCases
 ) : ViewModel() {
-    private val _state = mutableStateOf<CharactersState>(CharactersState())
+    private val _state = mutableStateOf(CharactersState())
     val state: State<CharactersState> = _state
 
     private var lastDeletedCharacter: Character? = null

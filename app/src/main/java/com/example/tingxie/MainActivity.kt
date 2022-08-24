@@ -16,7 +16,7 @@ import com.example.tingxie.presentation.character_quiz.components.CharacterQuizS
 import com.example.tingxie.presentation.character_quiz_results.components.CharacterQuizResultsScreen
 import com.example.tingxie.presentation.characters.components.CharactersScreen
 import com.example.tingxie.presentation.edit_categories.components.EditCategoriesScreen
-import com.example.tingxie.presentation.edit_character.EditCharacterScreen
+import com.example.tingxie.presentation.edit_character.components.EditCharacterScreen
 import com.example.tingxie.presentation.quiz_statistics.components.QuizStatisticsGraphScreen
 import com.example.tingxie.presentation.util.Screen
 import com.example.tingxie.ui.theme.TingXieTheme

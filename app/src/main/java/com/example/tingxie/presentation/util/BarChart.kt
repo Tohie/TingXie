@@ -29,7 +29,6 @@ fun StatisticsBarChart(
             BarChart(it)
         },
         update = { barChart ->
-            val entries = barChartData
 
             barChart.xAxis.apply {
                 valueFormatter = IndexAxisValueFormatter(labels)
@@ -48,7 +47,7 @@ fun StatisticsBarChart(
                 setDrawGridLines(false)
             }
 
-            val dataSet = BarDataSet(entries, "Percentage")
+            val dataSet = BarDataSet(barChartData, "Percentage")
             dataSet.color = color.toArgb()
             val barData = BarData(dataSet)
 

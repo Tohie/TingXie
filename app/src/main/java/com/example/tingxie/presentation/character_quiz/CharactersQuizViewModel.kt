@@ -1,6 +1,5 @@
 package com.example.tingxie.presentation.character_quiz
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -23,10 +22,10 @@ import javax.inject.Inject
 class CharactersQuizViewModel @Inject constructor(
     private val characterUseCases: CharacterUseCases,
 ) : ViewModel() {
-    private var _state = mutableStateOf<CharacterQuizState>(CharacterQuizState())
+    private var _state = mutableStateOf(CharacterQuizState())
     val state: State<CharacterQuizState> = _state
 
-    private val _eventFlow = MutableSharedFlow<CharactersQuizViewModel.UiEvent>()
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var totalCharacters: Int? = null
@@ -158,8 +157,8 @@ class CharactersQuizViewModel @Inject constructor(
         )
     }
 
-    fun getCurrentCharacter(): CharacterState {
-        return _state.value.characters.get(_state.value.currentCharacter)
+    private fun getCurrentCharacter(): CharacterState {
+        return _state.value.characters[_state.value.currentCharacter]
     }
 
     private fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy) {

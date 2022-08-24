@@ -1,33 +1,20 @@
 package com.example.tingxie.presentation.util
 
-import android.transition.Scene
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.QueryStats
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Checklist
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
@@ -66,7 +53,6 @@ fun BottomNavigationBar(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomBar(navController: NavController) {
     BottomNavigationBar(

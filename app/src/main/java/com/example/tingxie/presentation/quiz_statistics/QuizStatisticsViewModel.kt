@@ -2,12 +2,10 @@ package com.example.tingxie.presentation.quiz_statistics
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tingxie.domain.model.*
-import com.example.tingxie.domain.model.util.OrderCharacterResultsBy
-import com.example.tingxie.domain.model.util.Ordering
+import com.example.tingxie.domain.model.CharacterResult
+import com.example.tingxie.domain.model.Quiz
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import com.example.tingxie.domain.use_case.GetQuizResults
 import com.github.mikephil.charting.data.BarEntry
@@ -26,7 +24,7 @@ import javax.inject.Inject
 class QuizStatisticsViewModel @Inject constructor(
     private val characterUseCases: CharacterUseCases
 ) : ViewModel() {
-    private var _state = mutableStateOf<QuizStatisticsState>(QuizStatisticsState())
+    private var _state = mutableStateOf(QuizStatisticsState())
     val state: State<QuizStatisticsState> = _state
 
     init {
@@ -75,7 +73,7 @@ class QuizStatisticsViewModel @Inject constructor(
     }
 
     fun getBarChartData(): List<BarEntry> {
-        return _state.value.quizzes.toList().mapIndexed() { index, (quiz, _) ->
+        return _state.value.quizzes.toList().mapIndexed { index, (quiz, _) ->
             BarEntry(
                 index.toFloat(),
                 (quiz.score.toFloat() / quiz.numberOfCharacters) * 100 // Give score as percentage

@@ -19,9 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class EditCategoriesViewModel @Inject constructor(
     val characterUseCases: CharacterUseCases,
-    val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    val _state = mutableStateOf(EditCategoriesState())
+    private val _state = mutableStateOf(EditCategoriesState())
     val state: State<EditCategoriesState> = _state
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()

@@ -1,8 +1,6 @@
 package com.example.tingxie.presentation.characters
 
-import com.example.tingxie.domain.model.Categories
 import com.example.tingxie.domain.model.CategoriesWithCharacters
-import com.example.tingxie.domain.model.Character
 import com.example.tingxie.domain.model.CharacterWithCategories
 import com.example.tingxie.domain.model.util.OrderCharactersBy
 import com.example.tingxie.domain.model.util.Ordering

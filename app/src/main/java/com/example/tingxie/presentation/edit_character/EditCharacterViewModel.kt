@@ -1,18 +1,19 @@
 package com.example.tingxie.presentation.edit_character
 
-import androidx.compose.material.SnackbarResult
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tingxie.domain.model.*
+import com.example.tingxie.domain.model.Categories
+import com.example.tingxie.domain.model.Character
+import com.example.tingxie.domain.model.InvalidCategoryException
+import com.example.tingxie.domain.model.InvalidCharacterException
 import com.example.tingxie.domain.use_case.CharacterUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import java.lang.NumberFormatException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -86,31 +87,31 @@ class EditCharacterViewModel @Inject constructor (
         when (event) {
             is EditCharacterEvent.EnteredCharacterNumber -> {
                 _characterNumber.value = characterNumber.value.copy(
-                    event.value
+                    text = event.value
                 )
             }
 
             is EditCharacterEvent.EnteredCharacter -> {
                 _character.value = character.value.copy(
-                    event.value
+                    text = event.value
                 )
             }
 
             is EditCharacterEvent.EnteredPinyin -> {
                 _pinyin.value = pinyin.value.copy(
-                    event.value
+                    text = event.value
                 )
             }
 
             is EditCharacterEvent.EnteredDescription -> {
                 _description.value = description.value.copy(
-                    event.value
+                    text = event.value
                 )
             }
 
             is EditCharacterEvent.EnteredCategoryName -> {
                 _categoryName.value = categoryName.value.copy(
-                    event.value
+                    text = event.value
                 )
             }
 

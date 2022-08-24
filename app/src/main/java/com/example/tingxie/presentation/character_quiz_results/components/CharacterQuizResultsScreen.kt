@@ -8,13 +8,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.tingxie.domain.model.CharacterResult
 import com.example.tingxie.domain.model.CharacterStatistics
 import com.example.tingxie.presentation.character_quiz_results.CharacterQuizResultsViewModel
 import com.example.tingxie.presentation.util.BottomBar
@@ -27,9 +25,6 @@ fun CharacterQuizResultsScreen(
     navController: NavController,
     viewModel: CharacterQuizResultsViewModel = hiltViewModel()
 ) {
-    val scope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
-    
     Scaffold(
         topBar = { TopBar {} },
         bottomBar = { BottomBar(navController = navController)}

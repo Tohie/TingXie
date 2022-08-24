@@ -15,7 +15,7 @@ import java.util.*
 class GetQuizResults(
     private val repository: CharacterRepository
 ) {
-    operator suspend fun invoke(): Map<Character, List<CharacterResult?>> {
+    suspend operator fun invoke(): Map<Character, List<CharacterResult?>> {
         return repository.getCharacterResults()
     }
 

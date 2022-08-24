@@ -49,7 +49,6 @@ class GetCharacters (
         return characterRepository.getCharactersWithCategories()
     }
 
-    @OptIn(FlowPreview::class)
     suspend fun getCharactersBy(chooseCharactersBy: ChooseCharactersBy, categories: Categories? = null): List<Character> {
         if (chooseCharactersBy is ChooseCharactersBy.Random) {
             return if (categories == null) {
@@ -86,9 +85,9 @@ class GetCharacters (
 
         val characterStatistics = allCharacterResults.toCharacterStatistics()
         when (chooseCharactersBy) {
-            is ChooseCharactersBy.LeastCorrect -> characterStatistics.sortedBy { it.correctAnswers }
-            is ChooseCharactersBy.LeastTested -> characterStatistics.sortedBy { it.correctAnswers + it.incorrectAnswers }
-            is ChooseCharactersBy.MostIncorrect -> characterStatistics.sortedByDescending { it.incorrectAnswers }
+            is ChooseCharactersBy.LeastCorrect -> characterStatistics.sortedByDescending { it.correctAnswers }
+            is ChooseCharactersBy.LeastTested -> characterStatistics.sortedByDescending { it.correctAnswers + it.incorrectAnswers }
+            is ChooseCharactersBy.MostIncorrect -> characterStatistics.sortedBy { it.incorrectAnswers }
             is ChooseCharactersBy.Random -> {} // Unreachable if it's random we returned early at function start
         }
         return characterStatistics.map { it.character }.take(chooseCharactersBy.amount)

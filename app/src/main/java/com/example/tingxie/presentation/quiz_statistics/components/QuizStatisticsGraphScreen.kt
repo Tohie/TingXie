@@ -11,11 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.tingxie.domain.model.Quiz
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsEvent
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsState
 import com.example.tingxie.presentation.quiz_statistics.QuizStatisticsViewModel
-import java.util.*
 
 @Composable
 fun QuizStatisticsGraphScreen(
@@ -23,7 +21,7 @@ fun QuizStatisticsGraphScreen(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        Column() {
+        Column {
             GraphControls(
                 onDateChanged = { _, year, month, dayOfMonth ->
                     viewModel.onEvent(QuizStatisticsEvent.DateChanged(year, month, dayOfMonth))
@@ -120,6 +118,6 @@ fun GraphButton(
     text: String
 ) {
     Button(onClick = onClick) {
-        Text(text = text.toString())
+        Text(text = text)
     }
 }

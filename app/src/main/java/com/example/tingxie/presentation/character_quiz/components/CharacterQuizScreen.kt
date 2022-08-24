@@ -29,19 +29,16 @@ import com.example.tingxie.presentation.character_quiz.CharactersQuizViewModel
 import com.example.tingxie.presentation.character_quiz.StartQuizItem
 import com.example.tingxie.presentation.util.*
 import com.google.accompanist.pager.*
-import io.ak1.drawbox.rememberDrawController
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CharacterQuizScreen(
     navController: NavController,
     viewModel: CharactersQuizViewModel = hiltViewModel()
 ) {
     val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -64,7 +61,7 @@ fun CharacterQuizScreen(
 
     ) {
         if (viewModel.state.value.isQuitWithoutSavingDialogueVisible) {
-            QuitWithoutSavingDialogue(viewModel = viewModel, navController = navController)
+            QuitWithoutSavingDialogue(viewModel = viewModel)
         }
         if (viewModel.state.value.characters.isEmpty()) {
             StartQuizPage(viewModel)
@@ -179,7 +176,7 @@ private fun CharacterAmountControls(viewModel: CharactersQuizViewModel) {
     )
 }
 
-@Composable()
+@Composable
 fun StartQuizButtons(
     viewModel: CharactersQuizViewModel,
     startQuizItems: List<StartQuizItem>,
@@ -220,7 +217,6 @@ fun StartQuizButton(
 @Composable
 fun QuitWithoutSavingDialogue(
     viewModel: CharactersQuizViewModel,
-    navController: NavController,
 ) {
     val onDismiss: () -> Unit =  {
         viewModel.onEvent(CharacterQuizEvents.ChangeQuitWithoutSavingDialogueVisibility(false))
@@ -262,7 +258,6 @@ fun QuitWithoutSavingDialogue(
 @Composable
 fun Pager(viewModel: CharactersQuizViewModel) {
     val pagerState = rememberPagerState()
-    val drawController = rememberDrawController()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(pagerState) {
@@ -278,7 +273,7 @@ fun Pager(viewModel: CharactersQuizViewModel) {
         state = pagerState,
     ) { pageIndex ->
         if (viewModel.state.value.characters.isEmpty()) return@VerticalPager
-        val currentCharacter = viewModel.state.value.characters.get(pageIndex)
+        val currentCharacter = viewModel.state.value.characters[pageIndex]
 
         Column(
             modifier = Modifier

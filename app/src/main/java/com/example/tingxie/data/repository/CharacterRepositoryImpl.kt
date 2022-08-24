@@ -54,7 +54,7 @@ class CharacterRepositoryImpl @Inject constructor(private val characterDao: Char
         return characterDao.getAllQuizResults()
     }
 
-    suspend override fun getCharacterResults(): Map<Character, List<CharacterResult>> {
+    override suspend fun getCharacterResults(): Map<Character, List<CharacterResult>> {
         return characterDao.getCharacterResults()
     }
 

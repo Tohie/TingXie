@@ -7,8 +7,6 @@ import androidx.compose.material.icons.filled.Expand
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.tingxie.presentation.characters.CharactersEvent
-import com.example.tingxie.presentation.characters.CharactersViewModel
 
 @Composable
 fun SearchBar(
